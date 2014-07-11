@@ -19,14 +19,6 @@ public class tabdat extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
 
-        /*
-        * Testing the parse api
-        */
-        Parse.initialize(this, "5jgmHwYOhlsKfKXpr2xfVXVgsnUqawFegZ2o2KI5", "92uou7grH5WO6LSk57CtYuQXi0QgviFBI6DYxjeC");
-        ParseObject testObject = new ParseObject("TestObject22");
-        testObject.put("foo","bar");
-        testObject.saveInBackground();
-
         new Handler().postDelayed(new Runnable() {
             /*
              * Showing splash screen with a timer. This will be useful when you
