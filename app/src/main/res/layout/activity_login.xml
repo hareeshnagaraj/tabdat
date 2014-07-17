@@ -1,10 +1,15 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:background="#e8424a"
     android:paddingBottom="@dimen/activity_vertical_margin"
+    android:layout_weight="1"
+    android:orientation="vertical"
+    android:layout_gravity="center_vertical"
+    android:fillViewport="true"
+    android:gravity="center_horizontal"
     tools:context="thproject.test.com.myapplication.LoginActivity">
 
     <ImageView
@@ -14,20 +19,60 @@
         android:src="@drawable/ic_launcher"
         android:layout_marginTop="134dp"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="80dp"
-        android:text="@string/fb_login"
-        android:id="@+id/fbloginbutton"
-        android:background="#FFFFFF"
-        android:textColor="#e8424a"
-        android:clickable="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="75dp"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_horizontal" />
+
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:inputType="textPersonName"
+        android:text="Email"
+        android:textColor="#ffffffff"
+        android:textAlignment="center"
+        android:ems="10"
+        android:id="@+id/email"
+        android:layout_marginTop="92dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:layout_alignParentStart="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_below="@+id/imgLogo"
+        android:layout_gravity="top"
+        android:linksClickable="false"
+        android:background="@color/primary_red"
+        android:gravity="center" />
 
-</RelativeLayout>
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:inputType="textPassword"
+        android:text="password"
+        android:textAlignment="center"
+        android:textColor="#ffffffee"
+        android:ems="10"
+        android:id="@+id/password"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/username"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="-5dp"
+        android:background="@color/primary_red"
+        android:gravity="center" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:text="@string/fb_login"
+        android:id="@+id/loginButton"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:background="#ffffffff"
+        android:textColor="@color/primary_red"
+        android:singleLine="false" />
+
+</LinearLayout>

@@ -6,7 +6,7 @@
     <string name="action_settings">Settings</string>
     <string name="fb_app_id">1384376321701997</string>
     <string name="fb_app_secret">5c9ce0ebad7d1a0a863fc9afb52471bc</string>
-    <string name="fb_login">LOGIN WITH FACEBOOK</string>
+    <string name="fb_login">LOG IN</string>
 
     <color name="primary_red">#e8424a</color>
 

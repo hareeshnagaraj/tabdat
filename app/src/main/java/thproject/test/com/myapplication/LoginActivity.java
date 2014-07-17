@@ -8,6 +8,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+
 
 import com.parse.LogInCallback;
 import com.parse.Parse;
@@ -22,40 +24,34 @@ import java.util.List;
 import thproject.test.com.myapplication.R;
 
 public class LoginActivity extends Activity {
+    Button loginButton;
+    EditText email;
+    EditText password;
+    String user_email;
+    String user_password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        /*
-        * Testing the parse api
-        */
-        Parse.initialize(this, "5jgmHwYOhlsKfKXpr2xfVXVgsnUqawFegZ2o2KI5", "92uou7grH5WO6LSk57CtYuQXi0QgviFBI6DYxjeC");
-//        ParseObject testObject = new ParseObject("UserObject");
-//        testObject.put("foo","bar");
-//        testObject.saveInBackground();
-
-
-
 
         /*
-        * Button to log the user in to facebook
+        * This button is used to grab the user's email and password information, and prompt them to correctly enter the information if they have not
         * */
-        Button button = (Button) findViewById(R.id.fbloginbutton);
-        button.setOnClickListener(new View.OnClickListener() {
+        loginButton = (Button) findViewById(R.id.loginButton);
+        email = (EditText) findViewById(R.id.email);
+        password = (EditText) findViewById(R.id.password);
 
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
-//                Intent i = new Intent(LoginActivity.this, MainActivity.class);
-//                startActivity(i);
-//                overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left);
-//                // close this activity
-//                finish();
-                fbLogin();
+                user_email = email.getText().toString();
+                user_password = password.getText().toString();
 
             }
         });
+
 
     }
 
@@ -66,20 +62,7 @@ public class LoginActivity extends Activity {
     private void fbLogin(){
         List<String> permissions = Arrays.asList("basic_info", "user_about_me",
                 "user_relationships", "user_birthday", "user_location");
-        ParseFacebookUtils.logIn(permissions, this, new LogInCallback() {
-            @Override
-            public void done(ParseUser user, ParseException err) {
 
-                if (user == null) {
-                    Log.d("LOGIN","Uh oh. The user cancelled the Facebook login.");
-                } else if (user.isNew()) {
-                    Log.d("LOGIN","NEW USER");
-
-                } else {
-                    Log.d("LOGIN","SUCCESS");
-                }
-            }
-        });
     }
 
     @Override
