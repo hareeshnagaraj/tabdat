@@ -19,5 +19,8 @@
     <string name="action_example">Example action</string>
     <string name="title_activity_splash_screen">tabdat</string>
     <string name="title_activity_login">LoginActivity</string>
+    <string name="login_default_email">Email</string>
+    <string name="login_default_password">password</string>
+
 
 </resources>
