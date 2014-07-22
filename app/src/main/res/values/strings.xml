@@ -21,6 +21,6 @@
     <string name="title_activity_login">LoginActivity</string>
     <string name="login_default_email">Email</string>
     <string name="login_default_password">password</string>
-
+    <string name="title_activity_main_tab">MainTabActivity</string>
 
 </resources>
