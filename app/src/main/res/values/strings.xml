@@ -9,6 +9,9 @@
     <string name="fb_login">LOG IN</string>
 
     <color name="primary_red">#e8424a</color>
+    <color name="second_grey">#ff6c6b6b</color>
+    <color name="card_shadow">#ff252525</color>
+    <color name="card_white">#ffc3c3c3</color>
 
     <string name="title_activity_main">MainActivity</string>
     <string name="title_section1">My Tabs</string>

@@ -1,23 +1,21 @@
 package thproject.test.com.myapplication;
 
-import android.app.Activity;
-
 import android.app.ActionBar;
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
-import android.view.Gravity;
+import android.support.v4.widget.DrawerLayout;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.support.v4.widget.DrawerLayout;
 import android.widget.ArrayAdapter;
-import android.widget.TextView;
-import thproject.test.com.myapplication.R;
+import android.widget.ListView;
+
+import java.util.ArrayList;
 
 public class MainTabActivity extends Activity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -54,6 +52,12 @@ public class MainTabActivity extends Activity
         SongGrabber grabsongs = new SongGrabber();
         grabsongs.getUserSongs(context);
 
+        //initializing the listView
+        ListView listview = (ListView) findViewById(R.id.mainTabsList);
+        ArrayList<String> myStringArray1 =  new ArrayList<String>();
+        myStringArray1.add("something");
+        ArrayAdapter<String> newAdapter = new ArrayAdapter<String>(context,R.layout.card_element,myStringArray1);
+
     }
 
     @Override
@@ -82,7 +86,7 @@ public class MainTabActivity extends Activity
     public void restoreActionBar() {
         ActionBar actionBar = getActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        actionBar.setDisplayShowTitleEnabled(false);
+        actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setTitle(mTitle);
     }
 
