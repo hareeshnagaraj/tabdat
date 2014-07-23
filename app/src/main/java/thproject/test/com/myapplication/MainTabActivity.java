@@ -53,10 +53,11 @@ public class MainTabActivity extends Activity
         grabsongs.getUserSongs(context);
 
         //initializing the listView
-        ListView listview = (ListView) findViewById(R.id.mainTabsList);
-        ArrayList<String> myStringArray1 =  new ArrayList<String>();
-        myStringArray1.add("something");
-        ArrayAdapter<String> newAdapter = new ArrayAdapter<String>(context,R.layout.card_element,myStringArray1);
+//        ListView listview = (ListView) findViewById(R.id.mainTabsList);
+//        ArrayList<String> myStringArray1 =  new ArrayList<String>();
+//        myStringArray1.add("something");
+//        ArrayAdapter<String> newAdapter = new ArrayAdapter<String>(context,R.layout.card_element,myStringArray1);
+        //working on adding the cards...
 
     }
 
