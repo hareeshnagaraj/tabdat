@@ -38,11 +38,9 @@ public class NowLayout extends LinearLayout implements OnGlobalLayoutListener {
             int[] location = new int[2];
 
             child.getLocationOnScreen(location);
-
             if (location[1] > heightPx) {
                 break;
             }
-
             if (!inversed) {
                 child.startAnimation(AnimationUtils.loadAnimation(getContext(),
                         R.anim.slide_up_left));

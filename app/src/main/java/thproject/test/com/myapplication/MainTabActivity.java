@@ -7,15 +7,22 @@ import android.app.FragmentManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 public class MainTabActivity extends Activity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -29,6 +36,15 @@ public class MainTabActivity extends Activity
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
     private CharSequence mTitle;
+
+    /*
+    * Used to store the current frag
+    * */
+    private int currentActivity = 1;
+    private Context context;
+    private SongGrabber grabsongs;
+    private HashMap songMap = new HashMap<String,String>();
+    public thproject.test.com.myapplication.NowLayout nowLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,25 +64,20 @@ public class MainTabActivity extends Activity
         getActionBar().setDisplayShowHomeEnabled(false);
 
         //getting the user's songs
-        Context context = getApplicationContext();
-        SongGrabber grabsongs = new SongGrabber();
-        grabsongs.getUserSongs(context);
-
-        //initializing the listView
-//        ListView listview = (ListView) findViewById(R.id.mainTabsList);
-//        ArrayList<String> myStringArray1 =  new ArrayList<String>();
-//        myStringArray1.add("something");
-//        ArrayAdapter<String> newAdapter = new ArrayAdapter<String>(context,R.layout.card_element,myStringArray1);
-        //working on adding the cards...
-
+        context = getApplicationContext();
+        grabsongs = new SongGrabber();
+        songMap = grabsongs.grabMap();
+        nowLayout = (thproject.test.com.myapplication.NowLayout) findViewById(R.id.mainTabLayout);
+        grabsongs.getUserSongs(context, nowLayout);
     }
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
+        PlaceholderFragment fragment = new PlaceholderFragment();
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction()
-                .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
+                .replace(R.id.container, fragment.newInstance(position + 1))
                 .commit();
     }
 
@@ -74,12 +85,15 @@ public class MainTabActivity extends Activity
         switch (number) {
             case 1:
                 mTitle = getString(R.string.title_section1);
+                grabsongs.setCurrentActivity(1);
                 break;
             case 2:
                 mTitle = getString(R.string.title_section2);
+                grabsongs.setCurrentActivity(2);
                 break;
             case 3:
                 mTitle = getString(R.string.title_section3);
+                grabsongs.setCurrentActivity(3);
                 break;
         }
     }
@@ -117,10 +131,12 @@ public class MainTabActivity extends Activity
         return super.onOptionsItemSelected(item);
     }
 
+
+
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment {
+    public class PlaceholderFragment extends Fragment {
         /**
          * The fragment argument representing the section number for this
          * fragment.
@@ -131,7 +147,7 @@ public class MainTabActivity extends Activity
          * Returns a new instance of this fragment for the given section
          * number.
          */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
+        public PlaceholderFragment newInstance(int sectionNumber) {
             PlaceholderFragment fragment = new PlaceholderFragment();
             Bundle args = new Bundle();
             args.putInt(ARG_SECTION_NUMBER, sectionNumber);
@@ -140,12 +156,24 @@ public class MainTabActivity extends Activity
         }
 
         public PlaceholderFragment() {
+
         }
 
         @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            thproject.test.com.myapplication.NowLayout myFragmentView = null;
             View rootView = inflater.inflate(R.layout.fragment_main_tab, container, false);
+            //updating the fragment with the appropriate info
+            myFragmentView = (NowLayout) rootView.findViewById(R.id.mainTabLayout);
+            if(myFragmentView != null){
+                Log.d("not null alert","now layout is null");
+                TextView newCard = new TextView(context);
+                newCard.setTextAppearance(context,R.style.nowCardStyle);
+
+            }
+            else{
+                Log.d("null alert","now layout is null");
+            }
             return rootView;
         }
 

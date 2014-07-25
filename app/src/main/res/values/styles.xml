@@ -13,6 +13,7 @@
     </style>
 
 
+    <!-- Style for cards being used throughout -->
     <style name="nowCardStyle" parent="android:Widget.TextView">
         <item name="android:background">@drawable/search_bg_shadow</item>
         <item name="android:gravity">center</item>
