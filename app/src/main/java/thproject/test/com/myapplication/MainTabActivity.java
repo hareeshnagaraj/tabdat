@@ -7,22 +7,13 @@ import android.app.FragmentManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 public class MainTabActivity extends Activity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -154,6 +145,11 @@ public class MainTabActivity extends Activity
 
         }
 
+        /*
+        * The fragment oncreate method starts our SongGrabber class which finds all the songs in the user's library and
+        * displays them - the context from the fragment is passed to SongGrabber
+        *
+        * */
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             grabsongs = new SongGrabber();

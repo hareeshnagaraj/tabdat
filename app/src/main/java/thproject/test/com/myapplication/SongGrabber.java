@@ -7,8 +7,11 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -26,10 +29,10 @@ public class SongGrabber extends Activity {
 
     private int currentActivity = 1;
     private HashMap songMap = new HashMap<String,String>();
+    private String cardText;
 
 
-
-    public void getUserSongs(Context mContext, LinearLayout myFragmentView){
+    public void getUserSongs(final Context mContext, LinearLayout myFragmentView){
         ContentResolver musicResolver = mContext.getContentResolver();
         Uri musicUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         Cursor musicCursor = musicResolver.query(musicUri, null, null, null, null);
@@ -53,12 +56,21 @@ public class SongGrabber extends Activity {
                 if(thisTitle == null || thisTitle == "<unknown>"){
                     thisTitle = "Untitled";
                 }
-                if(thisArtist == null || thisArtist == "<unknown>"){
+                if(thisArtist == null || thisArtist.contains("<unknown>")){
                     thisArtist = "Unknown Artist";
                 }
-                String cardText = thisTitle + "\n" + thisArtist;
+                cardText = thisTitle + "\n" + thisArtist;
                 TextView newCard = (TextView) inflater.inflate(R.layout.textviewcard, null);
                 newCard.setText(cardText);
+                newCard.setId(numsongs);
+
+                newCard.setOnTouchListener(new OnSwipeTouchListener(mContext,newCard) {
+                    @Override
+                    public void onSwipeLeft(View view) {
+                        Toast.makeText(mContext,Integer.toString(view.getId()),Toast.LENGTH_SHORT).show();
+                    }
+                });
+
                 if(myFragmentView != null){
                     myFragmentView.addView(newCard);
                 }
