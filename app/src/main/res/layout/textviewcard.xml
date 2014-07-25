@@ -4,5 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     style="@style/nowCardStyle"
-    android:text="@string/hello_world">
+    android:text="@string/hello_world"
+    android:gravity="left"
+    android:paddingLeft="20dp"
+    android:paddingTop="20dp">
 </TextView>

@@ -165,15 +165,16 @@ public class MainTabActivity extends Activity
             View rootView = inflater.inflate(R.layout.fragment_main_tab, container, false);
             //updating the fragment with the appropriate info
             myFragmentView = (NowLayout) rootView.findViewById(R.id.mainTabLayout);
-            if(myFragmentView != null){
-                Log.d("not null alert","now layout is null");
-                TextView newCard = new TextView(context);
-                newCard.setTextAppearance(context,R.style.nowCardStyle);
 
-            }
-            else{
-                Log.d("null alert","now layout is null");
-            }
+            Log.d("not null alert","now layout is null");
+            TextView newCard = (TextView)getLayoutInflater().inflate(R.layout.textviewcard, null);
+//            newCard.setTextAppearance(context,R.style.nowCardStyle);
+//            newCard.setBackgroundResource(R.drawable.search_bg_shadow);
+//            newCard.setHeight(200);
+            newCard.setText("Wasssuuup");
+            myFragmentView.addView(newCard);
+
+
             return rootView;
         }
 
