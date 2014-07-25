@@ -6,6 +6,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -26,10 +27,13 @@ public class SongGrabber extends Activity {
     private int currentActivity = 1;
     private HashMap songMap = new HashMap<String,String>();
 
-    public void getUserSongs(Context mContext, LinearLayout nowLayout){
+
+
+    public void getUserSongs(Context mContext, LinearLayout myFragmentView){
         ContentResolver musicResolver = mContext.getContentResolver();
         Uri musicUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         Cursor musicCursor = musicResolver.query(musicUri, null, null, null, null);
+        LayoutInflater inflater = (LayoutInflater) mContext.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
 
         int numsongs = 0;
         if(musicCursor!=null && musicCursor.moveToFirst()){
@@ -46,17 +50,22 @@ public class SongGrabber extends Activity {
                 String thisTitle = musicCursor.getString(titleColumn);
                 String thisArtist = musicCursor.getString(artistColumn);
                 Log.d("from songGrabber", thisTitle + " " + thisArtist);
-                if(thisTitle == null){
+                if(thisTitle == null || thisTitle == "<unknown>"){
                     thisTitle = "Untitled";
                 }
-                if(thisArtist == null){
+                if(thisArtist == null || thisArtist == "<unknown>"){
                     thisArtist = "Unknown Artist";
                 }
-//                TextView newCard = new TextView(mContext);
-//                newCard.setTextAppearance(mContext,R.style.nowCardStyle);
-//                if(nowLayout != null){
-//                    nowLayout.addView(newCard);
-//                }
+                String cardText = thisTitle + "\n" + thisArtist;
+                TextView newCard = (TextView) inflater.inflate(R.layout.textviewcard, null);
+                newCard.setText(cardText);
+                if(myFragmentView != null){
+                    myFragmentView.addView(newCard);
+                }
+                else{
+                    Log.d("NULL IN SONGgrabber","null");
+                }
+
                 songMap.put(thisArtist,thisTitle);
                 numsongs++;
             }
@@ -66,23 +75,9 @@ public class SongGrabber extends Activity {
         }
     }
 
-    public void setCurrentActivity(int a){
-        currentActivity = a;
-    }
     public HashMap<String,String> grabMap(){
         return songMap;
     }
-    public void addTabChildren(LinearLayout nowLayout){
-        int numsongs2 = 0;
-        Iterator myVeryOwnIterator = songMap.keySet().iterator();
-        while(myVeryOwnIterator.hasNext()) {
-            String key=(String)myVeryOwnIterator.next();
-            String value=(String)songMap.get(key);
-            Log.d("from addTabChildren",key + " " + value);
-            numsongs2++;
-        }
-        Log.d("num songs from songGrabber2", Integer.toString(numsongs2));
 
-    }
 
 }

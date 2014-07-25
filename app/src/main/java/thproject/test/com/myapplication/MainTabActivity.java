@@ -42,8 +42,6 @@ public class MainTabActivity extends Activity
     * */
     private int currentActivity = 1;
     private Context context;
-    private SongGrabber grabsongs;
-    private HashMap songMap = new HashMap<String,String>();
     public thproject.test.com.myapplication.NowLayout nowLayout;
 
     @Override
@@ -65,10 +63,7 @@ public class MainTabActivity extends Activity
 
         //getting the user's songs
         context = getApplicationContext();
-        grabsongs = new SongGrabber();
-        songMap = grabsongs.grabMap();
         nowLayout = (thproject.test.com.myapplication.NowLayout) findViewById(R.id.mainTabLayout);
-        grabsongs.getUserSongs(context, nowLayout);
     }
 
     @Override
@@ -85,15 +80,12 @@ public class MainTabActivity extends Activity
         switch (number) {
             case 1:
                 mTitle = getString(R.string.title_section1);
-                grabsongs.setCurrentActivity(1);
                 break;
             case 2:
                 mTitle = getString(R.string.title_section2);
-                grabsongs.setCurrentActivity(2);
                 break;
             case 3:
                 mTitle = getString(R.string.title_section3);
-                grabsongs.setCurrentActivity(3);
                 break;
         }
     }
@@ -137,6 +129,9 @@ public class MainTabActivity extends Activity
      * A placeholder fragment containing a simple view.
      */
     public class PlaceholderFragment extends Fragment {
+        private SongGrabber grabsongs;
+        private HashMap songMap = new HashMap<String,String>();
+
         /**
          * The fragment argument representing the section number for this
          * fragment.
@@ -161,19 +156,13 @@ public class MainTabActivity extends Activity
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            grabsongs = new SongGrabber();
+            songMap = grabsongs.grabMap();
+
             thproject.test.com.myapplication.NowLayout myFragmentView = null;
             View rootView = inflater.inflate(R.layout.fragment_main_tab, container, false);
-            //updating the fragment with the appropriate info
             myFragmentView = (NowLayout) rootView.findViewById(R.id.mainTabLayout);
-
-            Log.d("not null alert","now layout is null");
-            TextView newCard = (TextView)getLayoutInflater().inflate(R.layout.textviewcard, null);
-//            newCard.setTextAppearance(context,R.style.nowCardStyle);
-//            newCard.setBackgroundResource(R.drawable.search_bg_shadow);
-//            newCard.setHeight(200);
-            newCard.setText("Wasssuuup");
-            myFragmentView.addView(newCard);
-
+            grabsongs.getUserSongs(context, myFragmentView);
 
             return rootView;
         }

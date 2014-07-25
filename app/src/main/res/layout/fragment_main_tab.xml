@@ -10,37 +10,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-        <TextView
-            android:id="@+id/txtView"
-            style="@style/nowCardStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/hello_world"
-            android:gravity="left"
-            tools:context="thproject.test.com.myapplication.MainTabActivity$PlaceholderFragment"
-            android:paddingLeft="20dp"
-            android:paddingTop="20dp" />
-        <!--<TextView-->
-            <!--android:id="@+id/txtView2"-->
-            <!--style="@style/nowCardStyle"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:text="@string/hello_world"-->
-            <!--tools:context=".MainTabActivity" />-->
-        <!--<TextView-->
-            <!--android:id="@+id/txtView3"-->
-            <!--style="@style/nowCardStyle"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:text="@string/hello_world"-->
-            <!--tools:context=".MainTabActivity" />-->
-        <!--<TextView-->
-            <!--android:id="@+id/txtView4"-->
-            <!--style="@style/nowCardStyle"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:text="@string/hello_world"-->
-            <!--tools:context=".MainTabActivity" />-->
     </thproject.test.com.myapplication.NowLayout>
 
 </ScrollView>
