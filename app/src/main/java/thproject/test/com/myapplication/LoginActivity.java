@@ -32,7 +32,7 @@ public class LoginActivity extends Activity {
     EditText password;
     String user_email,user_password,default_email,default_password;
     private static int SPLASH_TIME_OUT = 3000;
-    public MySQLiteHelper db = new MySQLiteHelper(this);
+    public MySQLiteHelper db;
 
 
     @Override
@@ -41,25 +41,9 @@ public class LoginActivity extends Activity {
         setContentView(R.layout.activity_login);
 
         //getting our DB
-        MySQLiteHelper db = getDB(this);
+        db = getDB(this);
+        db.addUser("hi","its me");
 
-        //purely for testing, I will be bypassing the login system
-        new Handler().postDelayed(new Runnable() {
-
-//             * Showing splash screen with a timer. This will be useful when you
-//             * want to show case your app logo / company
-
-            @Override
-            public void run() {
-                // This method will be executed once the timer is over
-                // Start your app main activity
-                Intent i = new Intent(LoginActivity.this, MainTabActivity.class);
-                startActivity(i);
-                // close this activity
-                finish();
-            }
-        }, SPLASH_TIME_OUT);
-        //end of testing bypass
 
 
         /*
@@ -77,7 +61,7 @@ public class LoginActivity extends Activity {
                 user_email = email.getText().toString();
                 user_password = password.getText().toString();
 
-                //Catch cases for people trying to continue without username or password
+                /*//Catch cases for people trying to continue without username or password
                 if( user_email.equalsIgnoreCase(default_email) ){
                     Toast.makeText(getApplicationContext(),"Please Enter an Email",Toast.LENGTH_SHORT).show();
                 }
@@ -89,16 +73,31 @@ public class LoginActivity extends Activity {
                 }
                 else{
 
-                    /*
-                    * Here we authenticate with the database, inserting/grabbing the relevant info
-                    * Using the AsyncTask method
-                    *
-                    *
-                    * Still need to implement the following:
-                    * */
                     new loginAsync().execute();
 
-                }
+                }*/
+
+                //more testing - the above async is the final
+                db.addUser(default_email,default_password);
+                db.getAllUsers();
+
+                //purely for testing, I will be bypassing the login system
+                new Handler().postDelayed(new Runnable() {
+
+//             * Showing splash screen with a timer. This will be useful when you
+//             * want to show case your app logo / company
+
+                    @Override
+                    public void run() {
+                        // This method will be executed once the timer is over
+                        // Start your app main activity
+                        Intent i = new Intent(LoginActivity.this, MainTabActivity.class);
+                        startActivity(i);
+                        // close this activity
+                        finish();
+                    }
+                }, SPLASH_TIME_OUT);
+                //end of testing bypass
             }
         });
 

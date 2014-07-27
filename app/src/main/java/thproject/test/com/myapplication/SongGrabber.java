@@ -52,31 +52,31 @@ public class SongGrabber extends Activity {
                 long thisId = musicCursor.getLong(idColumn);
                 String thisTitle = musicCursor.getString(titleColumn);
                 String thisArtist = musicCursor.getString(artistColumn);
-//                Log.d("from songGrabber", thisTitle + " " + thisArtist);
+
                 if(thisTitle == null || thisTitle == "<unknown>"){
                     thisTitle = "Untitled";
                 }
                 if(thisArtist == null || thisArtist.contains("<unknown>")){
                     thisArtist = "Unknown Artist";
                 }
-                cardText = thisTitle + "\n" + thisArtist;
-                TextView newCard = (TextView) inflater.inflate(R.layout.textviewcard, null);
-                newCard.setText(cardText);
-                newCard.setId(numsongs);
-
-                newCard.setOnTouchListener(new OnSwipeTouchListener(mContext,newCard) {
-                    @Override
-                    public void onSwipeLeft(View view) {
-                        Toast.makeText(mContext,Integer.toString(view.getId()),Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-                if(myFragmentView != null){
-                    myFragmentView.addView(newCard);
-                }
-                else{
-                    Log.d("NULL IN SONGgrabber","null");
-                }
+//                cardText = thisTitle + "\n" + thisArtist;
+//                TextView newCard = (TextView) inflater.inflate(R.layout.textviewcard, null);
+//                newCard.setText(cardText);
+//                newCard.setId(numsongs);
+//
+//                newCard.setOnTouchListener(new OnSwipeTouchListener(mContext,newCard) {
+//                    @Override
+//                    public void onSwipeLeft(View view) {
+//                        Toast.makeText(mContext,Integer.toString(view.getId()),Toast.LENGTH_SHORT).show();
+//                    }
+//                });
+//
+//                if(myFragmentView != null){
+//                    myFragmentView.addView(newCard);
+//                }
+//                else{
+//                    Log.d("NULL IN SONGgrabber","null");
+//                }
 
                 songMap.put(thisArtist,thisTitle);
                 numsongs++;

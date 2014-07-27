@@ -36,6 +36,7 @@ public class MainTabActivity extends Activity
     private int currentActivity = 1;
     private Context context;
     public thproject.test.com.myapplication.NowLayout nowLayout;
+    MySQLiteHelper db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +53,7 @@ public class MainTabActivity extends Activity
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
         //creating our database and adding a single tab
-        MySQLiteHelper db = getDB(this);
+        db = getDB(this);
         db.addTab(new Tab("a test","of this","functionality"));
 
 
@@ -166,6 +167,7 @@ public class MainTabActivity extends Activity
             thproject.test.com.myapplication.NowLayout myFragmentView = null;
             View rootView = inflater.inflate(R.layout.fragment_main_tab, container, false);
             myFragmentView = (NowLayout) rootView.findViewById(R.id.mainTabLayout);
+
             grabsongs.getUserSongs(context, myFragmentView);
 
             return rootView;

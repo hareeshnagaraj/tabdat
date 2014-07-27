@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -29,10 +30,6 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "tabDB";
     // tabs table name
     private static final String TABLE_TABS = "tabs";
-
-
-    // Database Name
-    private static final String USER_DATABASE_NAME = "usersDB";
     // tabs table name
     private static final String TABLE_USERS = "users";
 
@@ -44,7 +41,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 
     //users table column names
     private static final String KEY_EMAIL = "email";
-    private static final String KEY_PASSWORD = "passwords";
+    private static final String KEY_PASSWORD = "password";
 
     //keys for the tab DB
     private static final String[] COLUMNS = {KEY_ID,KEY_TITLE,KEY_ARTIST,KEY_LINKS};
@@ -55,15 +52,17 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     //creating a static class that is accessed between activities
     private static  MySQLiteHelper globaldb;
 
-    //accessing our static class
-    public static synchronized MySQLiteHelper getDB(Context context) {
-        if (globaldb == null) {
-            globaldb = new MySQLiteHelper(context);
-        }
-        return globaldb;
-    }
 
+    private static final String createTabsDB = "CREATE TABLE tabs ( " +
+            "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            "title TEXT, "+
+            "artist TEXT,"+
+            "links TEXT )";
 
+    private static final String createUsersDB = "CREATE TABLE users ( " +
+            "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            "email TEXT, "+
+            "password TEXT )";
 
     public MySQLiteHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
@@ -73,23 +72,18 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
+
+    //accessing our static class
+    public static synchronized MySQLiteHelper getDB(Context context) {
+        if (globaldb == null) {
+            globaldb = new MySQLiteHelper(context);
+        }
+        return globaldb;
+    }
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String tabtable = "CREATE TABLE tabs ( " +
-                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "title TEXT, "+
-                "artist TEXT,"+
-                "links TEXT )";
-
-
-        String usertable = "CREATE TABLE users ( " +
-                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "email TEXT, "+
-                "password TEXT )";
-
-        // create books table
-        db.execSQL(tabtable);
-        db.execSQL(usertable);
+        db.execSQL(createTabsDB);
+        db.execSQL(createUsersDB);
     }
 
     @Override
@@ -105,9 +99,30 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(KEY_EMAIL,email);
         values.put(KEY_PASSWORD,password);
-        db.insert(TABLE_TABS,null,values);
-
+        db.insert(TABLE_USERS,null,values);
     }
+
+    /*
+    * getting the list of all users
+    * */
+   public List<User> getAllUsers(){
+       List<User> users = new LinkedList<User>();
+       String query = "SELECT  * FROM " + TABLE_USERS;
+       SQLiteDatabase db = getWritableDatabase();
+       Cursor cursor = db.rawQuery(query, null);
+       User current = null;
+       if(cursor.moveToNext()){
+           do{
+               current = new User();
+               current.setId(Integer.parseInt(cursor.getString(0)));
+               current.setEmail(cursor.getString(1));
+               current.setPassword(cursor.getString(2));
+               users.add(current);
+               Log.d("getAllUsers list", current.toString());
+           }while(cursor.moveToNext());
+       }
+       return users;
+   }
 
     /*
     * used to add a tab
@@ -130,6 +145,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     * Used to retrieve a tab
     * */
     public Tab getTab(int id){
+        Tab tab;
         // 1. get reference to readable DB
         SQLiteDatabase db = this.getReadableDatabase();
         // 2. build query
@@ -144,17 +160,23 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
                         null); // h. limit
 
         // 3. if we got results get the first one
-        if (cursor != null)
+        if (cursor != null){
             cursor.moveToFirst();
 
-        /*
-        * Build our new tab object
-        * */
-        Tab tab = new Tab();
-        tab.setId(Integer.parseInt(cursor.getString(0)));
-        tab.setTitle(cursor.getString(1));
-        tab.setArtist(cursor.getString(2));
-        tab.setLinks(cursor.getString(3));
+            /*
+            * Build our new tab object
+            * */
+            tab = new Tab();
+            tab.setId(Integer.parseInt(cursor.getString(0)));
+            tab.setTitle(cursor.getString(1));
+            tab.setArtist(cursor.getString(2));
+            tab.setLinks(cursor.getString(3));
+        }
+        else{
+            tab = new Tab();
+            tab.setId(-1);
+            tab.setTitle("NO_TAB");
+        }
 
         Log.d("getTab",tab.toString());
         return tab;
