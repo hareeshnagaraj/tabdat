@@ -24,17 +24,24 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static thproject.test.com.myapplication.MySQLiteHelper.getDB;
+
 public class LoginActivity extends Activity {
     Button loginButton;
     EditText email;
     EditText password;
     String user_email,user_password,default_email,default_password;
     private static int SPLASH_TIME_OUT = 3000;
+    public MySQLiteHelper db = new MySQLiteHelper(this);
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        //getting our DB
+        MySQLiteHelper db = getDB(this);
 
         //purely for testing, I will be bypassing the login system
         new Handler().postDelayed(new Runnable() {
@@ -81,15 +88,13 @@ public class LoginActivity extends Activity {
                     Toast.makeText(getApplicationContext(),"Please Enter a Valid Password",Toast.LENGTH_SHORT).show();
                 }
                 else{
+
                     /*
                     * Here we authenticate with the database, inserting/grabbing the relevant info
                     * Using the AsyncTask method
                     *
                     *
                     * Still need to implement the following:
-                    *
-                    * SQLite or some local database
-                    * check if user is logged in / has id or not
                     * */
                     new loginAsync().execute();
 

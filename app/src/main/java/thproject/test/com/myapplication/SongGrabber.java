@@ -52,7 +52,7 @@ public class SongGrabber extends Activity {
                 long thisId = musicCursor.getLong(idColumn);
                 String thisTitle = musicCursor.getString(titleColumn);
                 String thisArtist = musicCursor.getString(artistColumn);
-                Log.d("from songGrabber", thisTitle + " " + thisArtist);
+//                Log.d("from songGrabber", thisTitle + " " + thisArtist);
                 if(thisTitle == null || thisTitle == "<unknown>"){
                     thisTitle = "Untitled";
                 }

@@ -15,6 +15,8 @@ import android.view.ViewGroup;
 
 import java.util.HashMap;
 
+import static thproject.test.com.myapplication.MySQLiteHelper.getDB;
+
 public class MainTabActivity extends Activity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
@@ -49,12 +51,18 @@ public class MainTabActivity extends Activity
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
+        //creating our database and adding a single tab
+        MySQLiteHelper db = getDB(this);
+        db.addTab(new Tab("a test","of this","functionality"));
+
+
         //disable application icon from ActionBar
         getActionBar().setDisplayShowHomeEnabled(false);
 
         //getting the user's songs
         context = getApplicationContext();
         nowLayout = (thproject.test.com.myapplication.NowLayout) findViewById(R.id.mainTabLayout);
+
     }
 
     @Override

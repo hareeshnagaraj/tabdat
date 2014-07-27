@@ -30,13 +30,40 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     // tabs table name
     private static final String TABLE_TABS = "tabs";
 
+
+    // Database Name
+    private static final String USER_DATABASE_NAME = "usersDB";
+    // tabs table name
+    private static final String TABLE_USERS = "users";
+
     // tabs Table Columns names
     private static final String KEY_ID = "id";
     private static final String KEY_TITLE = "title";
     private static final String KEY_ARTIST = "artist";
     private static final String KEY_LINKS = "links";
 
+    //users table column names
+    private static final String KEY_EMAIL = "email";
+    private static final String KEY_PASSWORD = "passwords";
+
+    //keys for the tab DB
     private static final String[] COLUMNS = {KEY_ID,KEY_TITLE,KEY_ARTIST,KEY_LINKS};
+
+    //keys for the column DB
+    private static final String[] USER_COLUMNS = {KEY_ID,KEY_EMAIL,KEY_PASSWORD};
+
+    //creating a static class that is accessed between activities
+    private static  MySQLiteHelper globaldb;
+
+    //accessing our static class
+    public static synchronized MySQLiteHelper getDB(Context context) {
+        if (globaldb == null) {
+            globaldb = new MySQLiteHelper(context);
+        }
+        return globaldb;
+    }
+
+
 
     public MySQLiteHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
@@ -54,12 +81,31 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
                 "artist TEXT,"+
                 "links TEXT )";
 
+
+        String usertable = "CREATE TABLE users ( " +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "email TEXT, "+
+                "password TEXT )";
+
         // create books table
         db.execSQL(tabtable);
+        db.execSQL(usertable);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i2) {
+
+    }
+
+    /*
+    * Used to add a user to our DB, so that multiple users can be present on same device
+    * */
+    public void addUser(String email, String password){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(KEY_EMAIL,email);
+        values.put(KEY_PASSWORD,password);
+        db.insert(TABLE_TABS,null,values);
 
     }
 
@@ -104,7 +150,6 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         /*
         * Build our new tab object
         * */
-
         Tab tab = new Tab();
         tab.setId(Integer.parseInt(cursor.getString(0)));
         tab.setTitle(cursor.getString(1));
