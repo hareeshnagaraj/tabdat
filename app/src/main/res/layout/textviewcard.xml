@@ -6,7 +6,7 @@
     style="@style/nowCardStyle"
     android:text="@string/hello_world"
     android:gravity="left"
-    android:paddingLeft="20dp"
-    android:paddingTop="20dp"
+    android:paddingLeft="25dp"
+    android:paddingTop="25dp"
     android:textSize="25dp">
 </TextView>
