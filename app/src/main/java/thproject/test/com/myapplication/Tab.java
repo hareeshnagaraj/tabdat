@@ -17,6 +17,38 @@ public class Tab {
         this.links = links;
     }
 
+    public String getTitle(){
+        return this.title;
+    }
+
+    public String getId(){
+        return Integer.toString(this.id);
+    }
+
+    public String getArtist(){
+        return this.title;
+    }
+
+    public String getLinks(){
+        return this.title;
+    }
+
+    public void setTitle(String title){
+        this.title = title;
+    }
+
+    public void setArtist(String artist){
+        this.artist = artist;
+    }
+
+    public void setLinks(String links){
+        this.links = links;
+    }
+
+    public void setId(int id){
+        this.id = id;
+    }
+
     @Override
     public String toString(){
         return "Tab [id=" + id + ", title=" + title + ", artist=" + artist + " links="+links
