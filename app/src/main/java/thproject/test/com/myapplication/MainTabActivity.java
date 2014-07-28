@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import java.util.HashMap;
 
@@ -72,7 +73,7 @@ public class MainTabActivity extends Activity
                 Log.d("message", "hit");
                 Bundle data = msg.getData();
                 Bundle extras = new Bundle();
-                extras.putString("artist",data.getString("artist"));
+                extras.putString("artist", data.getString("artist"));
                 startSongActivity(extras);
             }
         };
@@ -82,6 +83,7 @@ public class MainTabActivity extends Activity
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
         PlaceholderFragment fragment = new PlaceholderFragment();
+        fragment.setPosition(position);
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction()
                 .replace(R.id.container, fragment.newInstance(position + 1))
@@ -166,7 +168,7 @@ public class MainTabActivity extends Activity
      */
     public class PlaceholderFragment extends Fragment {
         private SongGrabber grabsongs;
-        private HashMap songMap = new HashMap<String,String>();
+        private int position = 0;
 
         /**
          * The fragment argument representing the section number for this
@@ -179,7 +181,10 @@ public class MainTabActivity extends Activity
          * number.
          */
         public PlaceholderFragment newInstance(int sectionNumber) {
+            Toast.makeText(getApplicationContext(), Integer.toString(sectionNumber), Toast.LENGTH_SHORT).show();
+
             PlaceholderFragment fragment = new PlaceholderFragment();
+            fragment.setPosition(sectionNumber);
             Bundle args = new Bundle();
             args.putInt(ARG_SECTION_NUMBER, sectionNumber);
             fragment.setArguments(args);
@@ -191,6 +196,12 @@ public class MainTabActivity extends Activity
         }
 
         /*
+        * Sets the position
+        * */
+        public void setPosition(int a){
+            this.position = a;
+        }
+        /*
         * The fragment oncreate method starts our SongGrabber class which finds all the songs in the user's library and
         * displays them - the context from the fragment is passed to SongGrabber
         *
@@ -199,12 +210,33 @@ public class MainTabActivity extends Activity
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
             thproject.test.com.myapplication.NowLayout myFragmentView = null;
-            View rootView = inflater.inflate(R.layout.fragment_main_tab, container, false);
-            myFragmentView = (NowLayout) rootView.findViewById(R.id.mainTabLayout);
-            //update the UI with specific context here (myFragmentView)
-            //initially all artists will be displayed, user can then swipe to view songs
-            grabsongs = new SongGrabber();
-            grabsongs.displayArtists(context,myFragmentView);
+            Log.d("section number",ARG_SECTION_NUMBER);
+            View rootView = null;
+
+            /*
+
+            different layouts for each fragment
+            1 = main tab layout
+            2 = share tab layout
+            3 = settings/other/might be removed
+
+            */
+            switch(position){
+                case 1:
+                    rootView = inflater.inflate(R.layout.fragment_main_tab, container, false);
+                    myFragmentView = (NowLayout) rootView.findViewById(R.id.mainTabLayout);
+                    //update the UI with specific context here (myFragmentView)
+                    //initially all artists will be displayed, user can then swipe to view songs
+                    grabsongs = new SongGrabber();
+                    grabsongs.displayArtists(context,myFragmentView);
+                    break;
+                case 2:
+                    rootView = inflater.inflate(R.layout.fragment_my, container, false);
+                    break;
+                case 3:
+                    rootView = inflater.inflate(R.layout.fragment_my, container, false);
+                    break;
+            }
             return rootView;
         }
 

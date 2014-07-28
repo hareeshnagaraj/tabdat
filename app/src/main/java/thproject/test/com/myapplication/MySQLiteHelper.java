@@ -236,7 +236,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         Cursor cursor = db.query(true, TABLE_TABS, new String[] {"title"}, "artist=?", new String[] {artist}, null , null, "title", null);
         if(cursor.moveToNext()){
             do{
-                Log.d("getNumberOfTabsBy : " , cursor.getString(0));
+//                Log.d("getNumberOfTabsBy : " , cursor.getString(0));
                 numtabs++;
             }while(cursor.moveToNext());
         }
@@ -254,7 +254,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         Cursor cursor = db.query(true, TABLE_TABS, new String[] {"title"}, "artist=?", new String[] {artist}, null , null, "title", null);
         if(cursor.moveToNext()){
             do{
-                Log.d("getSongsBy : " , cursor.getString(0));
+//                Log.d("getSongsBy : " , cursor.getString(0));
                 songs.add(cursor.getString(0));
             }while(cursor.moveToNext());
         }
@@ -286,7 +286,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
                 tab.setArtist(cursor.getString(2));
                 tab.setLinks(cursor.getString(3));
                 tabs.add(tab);
-                Log.d("getAllTabs : " , tab.toString());
+//                Log.d("getAllTabs : " , tab.toString());
 
             }while(cursor.moveToNext());
         }
