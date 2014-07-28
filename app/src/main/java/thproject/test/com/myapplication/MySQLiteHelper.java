@@ -225,6 +225,23 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         cursor.close();
         return artists;
     }
+    /*
+    *
+    * Get number of tabs by an artist
+    *
+    * */
+    public int getNumberOfTabsBy(String artist){
+        int numtabs = 0;
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor cursor = db.query(true, TABLE_TABS, new String[] {"title"}, "artist=?", new String[] {artist}, null , null, "title", null);
+        if(cursor.moveToNext()){
+            do{
+                Log.d("getNumberOfTabsBy : " , cursor.getString(0));
+                numtabs++;
+            }while(cursor.moveToNext());
+        }
+        return numtabs;
+    }
 
     /*
     * Returning all the tabs that we currently have stored

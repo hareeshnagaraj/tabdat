@@ -113,28 +113,62 @@ public class SongGrabber extends Activity {
 
         for (int i=0; i<artistlist.size(); i++) {
             Log.d("displayArtist :",artistlist.get(i));
+            String displaytext;
             String currentArtist = artistlist.get(i);
-            cardText = currentArtist;
+            int numberOfSongs = db.getNumberOfTabsBy(currentArtist);
+            if(numberOfSongs > 1){
+                displaytext = currentArtist + "\n" + Integer.toString(numberOfSongs) + " Songs";
+            }
+            else{
+                displaytext = currentArtist + "\n" + Integer.toString(numberOfSongs) +" Song";
+            }
+            cardText = displaytext;
 
             TextView newCard = (TextView) inflater.inflate(R.layout.textviewcard, null);
             newCard.setText(cardText);
             newCard.setId(i);
 
-            newCard.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View view, MotionEvent motionEvent) {
-                    int cardnum = view.getId();
-                    String cardname = artistlist.get(cardnum);
-                    Toast.makeText(mContext,cardname,Toast.LENGTH_SHORT).show();
-                    return false;
-                }
-            });
-            myFragmentView.addView(newCard);
+//            newCard.setOnTouchListener(new OnSwipeTouchListener(mContext,newCard) {
+//
+//                public void onSwipeLeft(View view) {
+//                    int cardnum = view.getId();
+//                    String cardname = artistlist.get(cardnum);
+//                    Toast.makeText(mContext,cardname,Toast.LENGTH_SHORT).show();
+//                }
+//
+//                @Override
+//                public void onTouch(View view) {
+//
+//                }
+//            });
+//            myFragmentView.addView(newCard);
+            addArtistCard(mContext,newCard,myFragmentView,artistlist);
         }
     }
 
     public HashMap<String,String> grabMap(){
         return songMap;
+    }
+
+    /*
+    * Method to add card to list of artists displayed in our main activity fragment
+    * Left swipe on each card takes us to an activity that contains the list of songs for that particular artist
+    * */
+    public void addArtistCard(final Context acontext, View view, LinearLayout layout,final List<String> artistlist){
+        view.setOnTouchListener(new OnSwipeTouchListener(acontext,view) {
+
+            public void onSwipeLeft(View view) {
+                int cardnum = view.getId();
+                String cardname = artistlist.get(cardnum);
+                Toast.makeText(acontext,cardname,Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onTouch(View view) {
+
+            }
+        });
+        layout.addView(view);
     }
 
 
