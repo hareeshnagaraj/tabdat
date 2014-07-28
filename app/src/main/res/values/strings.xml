@@ -25,5 +25,6 @@
     <string name="login_default_email">Email</string>
     <string name="login_default_password">password</string>
     <string name="title_activity_main_tab">MainTabActivity</string>
+    <string name="title_activity_songs">SongsActivity</string>
 
 </resources>

@@ -3,6 +3,7 @@ package thproject.test.com.myapplication;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
@@ -127,24 +128,28 @@ public class SongGrabber extends Activity {
             TextView newCard = (TextView) inflater.inflate(R.layout.textviewcard, null);
             newCard.setText(cardText);
             newCard.setId(i);
-
-//            newCard.setOnTouchListener(new OnSwipeTouchListener(mContext,newCard) {
-//
-//                public void onSwipeLeft(View view) {
-//                    int cardnum = view.getId();
-//                    String cardname = artistlist.get(cardnum);
-//                    Toast.makeText(mContext,cardname,Toast.LENGTH_SHORT).show();
-//                }
-//
-//                @Override
-//                public void onTouch(View view) {
-//
-//                }
-//            });
-//            myFragmentView.addView(newCard);
-            addArtistCard(mContext,newCard,myFragmentView,artistlist);
+            addArtistCard(mContext, newCard, myFragmentView, artistlist);
         }
     }
+    /*
+    *
+    * Method to display all of an artist's songs
+    *
+    * */
+
+    public void displaySongs(final Context mContext, LinearLayout myFragmentView,String artist){
+        final List<String> songs = db.getSongsBy(artist);
+        LayoutInflater inflater = (LayoutInflater) mContext.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+
+        for(int j=0; j<songs.size(); j++){
+            String songname = songs.get(j);
+            TextView newCard = (TextView) inflater.inflate(R.layout.songcard, null);
+            newCard.setText(songname);
+            newCard.setId(j);
+            addSongCard(mContext,newCard,myFragmentView,songs);
+        }
+    }
+
 
     public HashMap<String,String> grabMap(){
         return songMap;
@@ -161,6 +166,7 @@ public class SongGrabber extends Activity {
                 int cardnum = view.getId();
                 String cardname = artistlist.get(cardnum);
                 Toast.makeText(acontext,cardname,Toast.LENGTH_SHORT).show();
+                MainTabActivity.signalHandlerDisplaySongs(cardname);
             }
 
             @Override
@@ -170,6 +176,17 @@ public class SongGrabber extends Activity {
         });
         layout.addView(view);
     }
+
+    /*
+    *
+    * Method to add card that displays the list of a single artist's songs
+    *
+    * */
+    public void addSongCard(final Context acontext, View view, LinearLayout layout,final List<String> songlist){
+        layout.addView(view);
+    }
+
+
 
 
 }

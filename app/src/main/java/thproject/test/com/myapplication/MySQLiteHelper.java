@@ -242,6 +242,25 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         }
         return numtabs;
     }
+    /*
+    *
+    * Get all tabs by an artist
+    *
+    * */
+    public List<String> getSongsBy(String artist){
+        List<String> songs = new LinkedList<String>();
+        SQLiteDatabase db = getWritableDatabase();
+
+        Cursor cursor = db.query(true, TABLE_TABS, new String[] {"title"}, "artist=?", new String[] {artist}, null , null, "title", null);
+        if(cursor.moveToNext()){
+            do{
+                Log.d("getSongsBy : " , cursor.getString(0));
+                songs.add(cursor.getString(0));
+            }while(cursor.moveToNext());
+        }
+        return songs;
+    }
+
 
     /*
     * Returning all the tabs that we currently have stored

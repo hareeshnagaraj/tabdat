@@ -28,7 +28,12 @@
         <activity
             android:name=".MainTabActivity"
             android:label="@string/title_activity_main_tab"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".SongsActivity"
+            android:label="@string/title_activity_songs"
+            android:screenOrientation="portrait" >
         </activity>
     </application>
 

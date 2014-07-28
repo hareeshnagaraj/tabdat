@@ -5,8 +5,12 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,6 +24,7 @@ import static thproject.test.com.myapplication.MySQLiteHelper.getDB;
 public class MainTabActivity extends Activity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
+    private static Handler handler;
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
@@ -61,6 +66,16 @@ public class MainTabActivity extends Activity
         context = getApplicationContext();
         nowLayout = (thproject.test.com.myapplication.NowLayout) findViewById(R.id.mainTabLayout);
 
+        //creating a handler to start the next activity
+        handler = new Handler(){
+            public void handleMessage(Message msg) {
+                Log.d("message", "hit");
+                Bundle data = msg.getData();
+                Bundle extras = new Bundle();
+                extras.putString("artist",data.getString("artist"));
+                startSongActivity(extras);
+            }
+        };
     }
 
     @Override
@@ -94,6 +109,30 @@ public class MainTabActivity extends Activity
         actionBar.setTitle(mTitle);
     }
 
+   /*
+   *
+   * Method to signal handler to start new activity
+   *
+   * */
+    public static void signalHandlerDisplaySongs(String artist){
+
+        Message msg = new Message();
+        Bundle data = new Bundle();
+        data.putString("artist",artist);
+        msg.setData(data);
+        handler.sendMessage(msg);
+    }
+
+    /*
+    * Method to start new activity
+    * */
+    private void startSongActivity(Bundle extras){
+        Intent i;
+        i = new Intent(MainTabActivity.this,SongsActivity.class);
+        i.putExtras(extras);
+        startActivity(i);
+        // close this activity
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
