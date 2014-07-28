@@ -12,7 +12,7 @@ import android.view.View;
 /**
  * Detects left and right swipes across a view.
  */
-public class OnSwipeTouchListener implements View.OnTouchListener {
+public abstract class OnSwipeTouchListener implements View.OnTouchListener {
 
     private final GestureDetector gestureDetector;
     private final View cardView;
@@ -35,6 +35,12 @@ public class OnSwipeTouchListener implements View.OnTouchListener {
     public boolean onTouch(View v, MotionEvent event) {
         return gestureDetector.onTouchEvent(event);
     }
+
+    //                @Override
+    //                public void onSwipeLeft(View view) {
+    //                    Toast.makeText(mContext,Integer.toString(view.getId()),Toast.LENGTH_SHORT).show();
+    //                }
+                    public abstract void onTouch(View view);
 
     private final class GestureListener extends GestureDetector.SimpleOnGestureListener {
 

@@ -108,24 +108,28 @@ public class SongGrabber extends Activity {
     *
     * */
     public void displayArtists(final Context mContext,LinearLayout myFragmentView){
-        List<String> artistlist = db.getAllArtists();
+        final List<String> artistlist = db.getAllArtists();
         LayoutInflater inflater = (LayoutInflater) mContext.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
 
         for (int i=0; i<artistlist.size(); i++) {
             Log.d("displayArtist :",artistlist.get(i));
             String currentArtist = artistlist.get(i);
+            cardText = currentArtist;
+
             TextView newCard = (TextView) inflater.inflate(R.layout.textviewcard, null);
             newCard.setText(cardText);
             newCard.setId(i);
 
-            cardText = currentArtist;
-            if(myFragmentView != null && cardText != ""){
-                myFragmentView.addView(newCard);
-            }
-            else{
-                Log.d("NULL IN SONGgrabber","null");
-            }
-
+            newCard.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View view, MotionEvent motionEvent) {
+                    int cardnum = view.getId();
+                    String cardname = artistlist.get(cardnum);
+                    Toast.makeText(mContext,cardname,Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+            });
+            myFragmentView.addView(newCard);
         }
     }
 
