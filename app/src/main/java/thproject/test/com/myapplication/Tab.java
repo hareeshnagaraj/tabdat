@@ -26,11 +26,11 @@ public class Tab {
     }
 
     public String getArtist(){
-        return this.title;
+        return this.artist;
     }
 
     public String getLinks(){
-        return this.title;
+        return this.links;
     }
 
     public void setTitle(String title){

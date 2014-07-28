@@ -118,7 +118,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
                current.setEmail(cursor.getString(1));
                current.setPassword(cursor.getString(2));
                users.add(current);
-               Log.d("getAllUsers list", current.toString());
+               Log.d("getAllUsers ", current.toString());
            }while(cursor.moveToNext());
        }
        return users;
@@ -128,8 +128,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     * used to add a tab
     * */
     public void addTab(Tab newtab){
-        Log.d("new tab", newtab.toString());
-
+//        Log.d("addTab", newtab.toString());
         // 1. get reference to writable DB
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -139,6 +138,30 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         values.put(KEY_ARTIST, newtab.getArtist()); // get author
         values.put(KEY_LINKS,newtab.getLinks()); //get links to tabs
         db.insert(TABLE_TABS,null,values);
+    }
+
+    /*
+    * Simple boolean check of Tab in our DB
+    * */
+    public boolean tabExists(String title, String artist){
+        boolean exists;
+        String query = "SELECT * FROM tabs WHERE title = ? AND artist = ?";
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor checkCursor = db.rawQuery(query,new String[]{title,artist});
+
+        try {
+            if (checkCursor.moveToFirst()) {
+                exists = true;
+//                Log.d("tabExists" + title, "found tab in DB");
+            } else {
+                exists = false;
+//                Log.d("tabExists" + title, "no tab in DB");
+            }
+        }
+        finally{
+            checkCursor.close();
+        }
+        return exists;
     }
 
     /*
@@ -183,9 +206,31 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     }
 
     /*
+    * Returning all the artists
+    * */
+    public List<String>  getAllArtists(){
+        List<String> artists = new LinkedList<String>();
+
+        String query = "SELECT artist FROM " + TABLE_TABS;
+
+        SQLiteDatabase db = getWritableDatabase();
+
+        Cursor cursor = db.query(true, TABLE_TABS, new String[] {"artist"}, null, null, "artist", null, null, null);
+        if(cursor.moveToNext()){
+            do{
+                Log.d("getAllArtists : " , cursor.getString(0));
+                artists.add(cursor.getString(0));
+            }while(cursor.moveToNext());
+        }
+        cursor.close();
+        return artists;
+    }
+
+    /*
     * Returning all the tabs that we currently have stored
     * */
     public List<Tab> getAllTabs(){
+        Log.d("getAllTabs : " , "beginning query");
 
         List<Tab> tabs = new LinkedList<Tab>();
         // 1. build the query
@@ -205,8 +250,11 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
                 tab.setArtist(cursor.getString(2));
                 tab.setLinks(cursor.getString(3));
                 tabs.add(tab);
+                Log.d("getAllTabs : " , tab.toString());
+
             }while(cursor.moveToNext());
         }
+        Log.d("getAllTabs : " , "end query");
         return tabs;
     }
 

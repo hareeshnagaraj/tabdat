@@ -1,10 +1,13 @@
 package thproject.test.com.myapplication;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -33,7 +36,8 @@ public class LoginActivity extends Activity {
     String user_email,user_password,default_email,default_password;
     private static int SPLASH_TIME_OUT = 3000;
     public MySQLiteHelper db;
-
+    public SongGrabber grabsongs;
+    Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,8 +46,7 @@ public class LoginActivity extends Activity {
 
         //getting our DB
         db = getDB(this);
-        db.addUser("hi","its me");
-
+        grabsongs = new SongGrabber();
 
 
         /*
@@ -76,28 +79,10 @@ public class LoginActivity extends Activity {
                     new loginAsync().execute();
 
                 }*/
+                //bypassing the login checks temporarily
+                new loginAsync().execute();
 
-                //more testing - the above async is the final
-                db.addUser(default_email,default_password);
-                db.getAllUsers();
 
-                //purely for testing, I will be bypassing the login system
-                new Handler().postDelayed(new Runnable() {
-
-//             * Showing splash screen with a timer. This will be useful when you
-//             * want to show case your app logo / company
-
-                    @Override
-                    public void run() {
-                        // This method will be executed once the timer is over
-                        // Start your app main activity
-                        Intent i = new Intent(LoginActivity.this, MainTabActivity.class);
-                        startActivity(i);
-                        // close this activity
-                        finish();
-                    }
-                }, SPLASH_TIME_OUT);
-                //end of testing bypass
             }
         });
 
@@ -124,30 +109,57 @@ public class LoginActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+    //used to update the local sqlite database with songs from user's phone
+    private void updateSongsInDb(){
+       context = getApplicationContext();
+       grabsongs.getUserSongs(context);
+    }
+
+    //used to start the main login activity
+    private void startMain(){
+        Intent i = new Intent(LoginActivity.this, MainTabActivity.class);
+        startActivity(i);
+        // close this activity
+        finish();
+    }
+
+
+/*
+    Class to handle asynchronous login
+*/
     private class loginAsync extends AsyncTask<Void, Void, Void>{
+
+    /*
+    *     Server - side login is implemented as well commented out for time being
+    * */
         @Override
         protected Void doInBackground(Void... voids) {
-            HttpClient httpclient = new DefaultHttpClient();
-            HttpPost httppost = new HttpPost("http://162.243.66.98:3000/users");
-            try {
-                // Add your data
-                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-                nameValuePairs.add(new BasicNameValuePair("email", user_email));
-                nameValuePairs.add(new BasicNameValuePair("password", user_password));
-                httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-                // Execute HTTP Post Request
-                HttpResponse response = httpclient.execute(httppost);
 
-            } catch (ClientProtocolException e) {
-                // TODO Auto-generated catch block
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-            }
+//            HttpClient httpclient = new DefaultHttpClient();
+//            HttpPost httppost = new HttpPost("http://162.243.66.98:3000/users");
+//
+//            try {
+//                // Add your data
+//                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+//                nameValuePairs.add(new BasicNameValuePair("email", user_email));
+//                nameValuePairs.add(new BasicNameValuePair("password", user_password));
+//                httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+//                // Execute HTTP Post Request
+//                HttpResponse response = httpclient.execute(httppost);
+//
+//            } catch (ClientProtocolException e) {
+//                // TODO Auto-generated catch block
+//            } catch (IOException e) {
+//                // TODO Auto-generated catch block
+//            }
+            Log.d("loginAsync : ", "beginning update query");
+            updateSongsInDb();
+            Log.d("loginAsync : ", "end update query");
             return null;
         }
-        protected void onPostExecute(Void... voids) {
-            Toast.makeText(getApplicationContext(),"Executed!",Toast.LENGTH_SHORT).show();
-
+        @Override
+        protected void onPostExecute(Void v) {
+            startMain();
         }
 
 

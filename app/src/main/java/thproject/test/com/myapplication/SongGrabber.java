@@ -15,7 +15,10 @@ import android.widget.Toast;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import static thproject.test.com.myapplication.MySQLiteHelper.getDB;
+
 
 /**
  *
@@ -30,13 +33,16 @@ public class SongGrabber extends Activity {
     private int currentActivity = 1;
     private HashMap songMap = new HashMap<String,String>();
     private String cardText;
+    MySQLiteHelper db = getDB(this);
 
 
-    public void getUserSongs(final Context mContext, LinearLayout myFragmentView){
+    public void getUserSongs(final Context mContext){
         ContentResolver musicResolver = mContext.getContentResolver();
         Uri musicUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         Cursor musicCursor = musicResolver.query(musicUri, null, null, null, null);
         LayoutInflater inflater = (LayoutInflater) mContext.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+
+        Tab newtab = null;
 
         int numsongs = 0;
         if(musicCursor!=null && musicCursor.moveToFirst()){
@@ -52,6 +58,7 @@ public class SongGrabber extends Activity {
                 long thisId = musicCursor.getLong(idColumn);
                 String thisTitle = musicCursor.getString(titleColumn);
                 String thisArtist = musicCursor.getString(artistColumn);
+                newtab = new Tab();
 
                 if(thisTitle == null || thisTitle == "<unknown>"){
                     thisTitle = "Untitled";
@@ -59,6 +66,14 @@ public class SongGrabber extends Activity {
                 if(thisArtist == null || thisArtist.contains("<unknown>")){
                     thisArtist = "Unknown Artist";
                 }
+
+                //Querying database to see if tab record exists, if not, add it
+                if(!db.tabExists(thisTitle,thisArtist)){
+                    newtab.setTitle(thisTitle);
+                    newtab.setArtist(thisArtist);
+                    db.addTab(newtab);
+                }
+
 //                cardText = thisTitle + "\n" + thisArtist;
 //                TextView newCard = (TextView) inflater.inflate(R.layout.textviewcard, null);
 //                newCard.setText(cardText);
@@ -83,6 +98,33 @@ public class SongGrabber extends Activity {
             }
             while (musicCursor.moveToNext());
             Log.d("num songs from songGrabber", Integer.toString(numsongs));
+
+        }
+    }
+
+    /*
+    *
+    * Used to display all of the artist cards
+    *
+    * */
+    public void displayArtists(final Context mContext,LinearLayout myFragmentView){
+        List<String> artistlist = db.getAllArtists();
+        LayoutInflater inflater = (LayoutInflater) mContext.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+
+        for (int i=0; i<artistlist.size(); i++) {
+            Log.d("displayArtist :",artistlist.get(i));
+            String currentArtist = artistlist.get(i);
+            TextView newCard = (TextView) inflater.inflate(R.layout.textviewcard, null);
+            newCard.setText(cardText);
+            newCard.setId(i);
+
+            cardText = currentArtist;
+            if(myFragmentView != null && cardText != ""){
+                myFragmentView.addView(newCard);
+            }
+            else{
+                Log.d("NULL IN SONGgrabber","null");
+            }
 
         }
     }

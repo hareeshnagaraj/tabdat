@@ -54,9 +54,6 @@ public class MainTabActivity extends Activity
 
         //creating our database and adding a single tab
         db = getDB(this);
-        db.addTab(new Tab("a test","of this","functionality"));
-
-
         //disable application icon from ActionBar
         getActionBar().setDisplayShowHomeEnabled(false);
 
@@ -161,15 +158,14 @@ public class MainTabActivity extends Activity
         * */
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            grabsongs = new SongGrabber();
-            songMap = grabsongs.grabMap();
 
             thproject.test.com.myapplication.NowLayout myFragmentView = null;
             View rootView = inflater.inflate(R.layout.fragment_main_tab, container, false);
             myFragmentView = (NowLayout) rootView.findViewById(R.id.mainTabLayout);
-
-            grabsongs.getUserSongs(context, myFragmentView);
-
+            //update the UI with specific context here (myFragmentView)
+            //initially all artists will be displayed, user can then swipe to view songs
+            grabsongs = new SongGrabber();
+            grabsongs.displayArtists(context,myFragmentView);
             return rootView;
         }
 
