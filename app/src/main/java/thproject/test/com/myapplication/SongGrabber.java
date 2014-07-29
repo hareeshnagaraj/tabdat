@@ -34,6 +34,7 @@ public class SongGrabber extends Activity {
     private int currentActivity = 1;
     private HashMap songMap = new HashMap<String,String>();
     private String cardText;
+    private String artist = "";
     MySQLiteHelper db = getDB(this);
 
 
@@ -141,6 +142,8 @@ public class SongGrabber extends Activity {
         final List<String> songs = db.getSongsBy(artist);
         LayoutInflater inflater = (LayoutInflater) mContext.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
 
+        this.artist = artist;
+
         for(int j=0; j<songs.size(); j++){
             String songname = songs.get(j);
             TextView newCard = (TextView) inflater.inflate(R.layout.songcard, null);
@@ -170,9 +173,7 @@ public class SongGrabber extends Activity {
             }
 
             @Override
-            public void onTouch(View view) {
-
-            }
+            public void onTouch(View view) { }
         });
         layout.addView(view);
     }
@@ -183,14 +184,23 @@ public class SongGrabber extends Activity {
     *
     * */
     public void addSongCard(final Context acontext, View view, LinearLayout layout,final List<String> songlist){
+
+        String searchArtist = this.artist;
+        final TabScraper scraper = new TabScraper();
+        scraper.setArtist(searchArtist);
+
         view.setOnTouchListener(new OnSwipeTouchListener(acontext,view) {
-            @Override
-            public void onTouch(View view) {
+
+            public void onSwipeLeft(View view) {
                 int songid = view.getId();
                 String songname = songlist.get(songid);
                 Toast.makeText(acontext,songname,Toast.LENGTH_SHORT).show();
-
+                scraper.setSongTitle(songname);
+                scraper.scrapeUltimateGuitar();
             }
+
+            @Override
+            public void onTouch(View view) { }
         });
         layout.addView(view);
     }

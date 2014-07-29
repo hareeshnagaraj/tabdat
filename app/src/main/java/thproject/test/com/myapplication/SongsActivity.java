@@ -10,6 +10,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import thproject.test.com.myapplication.R;
+import android.widget.Toast;
+
 /*
 *
 * In this class we display all the songs of a particular artist, then allow a click to show the available tabs
@@ -34,13 +36,13 @@ public class SongsActivity extends Activity {
                 Log.d("SongsActivity", artist);
             }
         }
-        //disable application icon from ActionBar
+
+        //disable application icon from ActionBar, set up remaining attributes
         ActionBar actionBar = getActionBar();
-//        actionBar.setHomeAsUpIndicator(Drawable.createFromPath("@drawable/"));
         actionBar.setDisplayShowHomeEnabled(false);
         actionBar.setDisplayHomeAsUpEnabled(true);
-
         getActionBar().setTitle(artist);
+
         nowSongLayout = (thproject.test.com.myapplication.NowLayout) findViewById(R.id.mainSongsLayout);
         context = getApplicationContext();
         grabsongs = new SongGrabber();
