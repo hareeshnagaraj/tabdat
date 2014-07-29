@@ -183,6 +183,15 @@ public class SongGrabber extends Activity {
     *
     * */
     public void addSongCard(final Context acontext, View view, LinearLayout layout,final List<String> songlist){
+        view.setOnTouchListener(new OnSwipeTouchListener(acontext,view) {
+            @Override
+            public void onTouch(View view) {
+                int songid = view.getId();
+                String songname = songlist.get(songid);
+                Toast.makeText(acontext,songname,Toast.LENGTH_SHORT).show();
+
+            }
+        });
         layout.addView(view);
     }
 
