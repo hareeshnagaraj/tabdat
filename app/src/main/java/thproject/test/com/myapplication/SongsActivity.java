@@ -1,8 +1,11 @@
 package thproject.test.com.myapplication;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -32,7 +35,11 @@ public class SongsActivity extends Activity {
             }
         }
         //disable application icon from ActionBar
-        getActionBar().setDisplayShowHomeEnabled(false);
+        ActionBar actionBar = getActionBar();
+//        actionBar.setHomeAsUpIndicator(Drawable.createFromPath("@drawable/"));
+        actionBar.setDisplayShowHomeEnabled(false);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
         getActionBar().setTitle(artist);
         nowSongLayout = (thproject.test.com.myapplication.NowLayout) findViewById(R.id.mainSongsLayout);
         context = getApplicationContext();
@@ -56,6 +63,10 @@ public class SongsActivity extends Activity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_settings) {
+            return true;
+        }
+        if(id == android.R.id.home){
+            onBackPressed();
             return true;
         }
         return super.onOptionsItemSelected(item);
