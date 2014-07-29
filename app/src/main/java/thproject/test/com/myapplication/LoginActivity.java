@@ -38,6 +38,7 @@ public class LoginActivity extends Activity {
     public MySQLiteHelper db;
     public SongGrabber grabsongs;
     Context context;
+    static Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +49,20 @@ public class LoginActivity extends Activity {
         db = getDB(this);
         grabsongs = new SongGrabber();
 
+        //creating a handler to start the next activity
+        handler = new Handler(){
+            public void handleMessage(Message msg) {
+                Bundle data = msg.getData();
+                String artist = data.getString("artist");
+                String title = data.getString("title");
+
+                final TabScraper scraper = new TabScraper();
+                scraper.setArtist(artist);
+                scraper.setSongTitle(title);
+                scraper.scrapeUltimateGuitar();
+                Log.d("LoginActivityHandler","past scraper");
+            }
+        };
 
         /*
         * This button is used to grab the user's email and password information, and prompt them to correctly enter the information if they have not
@@ -117,12 +132,26 @@ public class LoginActivity extends Activity {
 
     //used to start the main login activity
     private void startMain(){
+        Log.d("startMain","links as of mainActivity");
+        db.getAllLinks();
         Intent i = new Intent(LoginActivity.this, MainTabActivity.class);
         startActivity(i);
         // close this activity
         finish();
     }
 
+    /*
+    * Class to signal scrape
+    * */
+
+    public static void scrapeSong(String artist, String title){
+        Message msg = new Message();
+        Bundle data = new Bundle();
+        data.putString("artist",artist);
+        data.putString("title",title);
+        msg.setData(data);
+        handler.sendMessage(msg);
+    }
 
 /*
     Class to handle asynchronous login

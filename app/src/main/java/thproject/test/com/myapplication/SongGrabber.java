@@ -31,8 +31,6 @@ import static thproject.test.com.myapplication.MySQLiteHelper.getDB;
  */
 public class SongGrabber extends Activity {
 
-    private int currentActivity = 1;
-    private HashMap songMap = new HashMap<String,String>();
     private String cardText;
     private String artist = "";
     MySQLiteHelper db = getDB(this);
@@ -74,28 +72,9 @@ public class SongGrabber extends Activity {
                     newtab.setTitle(thisTitle);
                     newtab.setArtist(thisArtist);
                     db.addTab(newtab);
+                    //Scraping the web for this song via handler, and adding that to our DB
                 }
 
-//                cardText = thisTitle + "\n" + thisArtist;
-//                TextView newCard = (TextView) inflater.inflate(R.layout.textviewcard, null);
-//                newCard.setText(cardText);
-//                newCard.setId(numsongs);
-//
-//                newCard.setOnTouchListener(new OnSwipeTouchListener(mContext,newCard) {
-//                    @Override
-//                    public void onSwipeLeft(View view) {
-//                        Toast.makeText(mContext,Integer.toString(view.getId()),Toast.LENGTH_SHORT).show();
-//                    }
-//                });
-//
-//                if(myFragmentView != null){
-//                    myFragmentView.addView(newCard);
-//                }
-//                else{
-//                    Log.d("NULL IN SONGgrabber","null");
-//                }
-
-                songMap.put(thisArtist,thisTitle);
                 numsongs++;
             }
             while (musicCursor.moveToNext());
@@ -135,9 +114,9 @@ public class SongGrabber extends Activity {
     /*
     *
     * Method to display all of an artist's songs
+    * Scraping is done on the fly
     *
     * */
-
     public void displaySongs(final Context mContext, LinearLayout myFragmentView,String artist){
         final List<String> songs = db.getSongsBy(artist);
         LayoutInflater inflater = (LayoutInflater) mContext.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
@@ -151,12 +130,41 @@ public class SongGrabber extends Activity {
             newCard.setId(j);
             addSongCard(mContext,newCard,myFragmentView,songs);
         }
+
+    }
+
+    /*
+    * Method to show loading progress in SongsActivity, and scrape tabs as necessary
+    * */
+    public void showProgressInSongsActivity(String artist, String songname){
+
+        //scraping a specific song
+//        TabScraper scraper = new TabScraper();
+//        scraper.setArtist(artist);
+//        scraper.setSongTitle(songname);
+//        scraper.scrapeUltimateGuitar();
+//        db.getLink(artist,songname);
+        HashMap<String,Link> songHash;
+
+        songHash = db.getLink(artist, songname);
+        //int numTabs = Integer.parseInt(songHash.get("numlinks"));
+        Link dummyLink = songHash.get("numlinks");
+        int numTabs = dummyLink.getID();
+
+        if(numTabs == 0){   // here we need to scrape for tabs
+            SongsActivity.showProgress(artist,songname,"init");
+            Log.d("showProgressInSongsActivity",songname + " has " + Integer.toString(numTabs) + " tabs"); //logs number of songs for this tab
+
+        }
+        else{       //tabs already exist in database
+            Log.d("showProgressInSongsActivity",songname + " has " + Integer.toString(numTabs) + " tabs"); //logs number of songs for this tab
+
+        }
+
     }
 
 
-    public HashMap<String,String> grabMap(){
-        return songMap;
-    }
+
 
     /*
     * Method to add card to list of artists displayed in our main activity fragment
@@ -168,7 +176,6 @@ public class SongGrabber extends Activity {
             public void onSwipeLeft(View view) {
                 int cardnum = view.getId();
                 String cardname = artistlist.get(cardnum);
-                Toast.makeText(acontext,cardname,Toast.LENGTH_SHORT).show();
                 MainTabActivity.signalHandlerDisplaySongs(cardname);
             }
 
@@ -185,7 +192,7 @@ public class SongGrabber extends Activity {
     * */
     public void addSongCard(final Context acontext, View view, LinearLayout layout,final List<String> songlist){
 
-        String searchArtist = this.artist;
+        final String searchArtist = this.artist;
         final TabScraper scraper = new TabScraper();
         scraper.setArtist(searchArtist);
 
@@ -194,11 +201,12 @@ public class SongGrabber extends Activity {
             public void onSwipeLeft(View view) {
                 int songid = view.getId();
                 String songname = songlist.get(songid);
-                Toast.makeText(acontext,songname,Toast.LENGTH_SHORT).show();
-                scraper.setSongTitle(songname);
-                scraper.scrapeUltimateGuitar();
-            }
+//                scraper.setSongTitle(songname);
+//                scraper.scrapeUltimateGuitar();
+                //db.getLink(songname,searchArtist);
+                showProgressInSongsActivity(searchArtist,songname);
 
+            }
             @Override
             public void onTouch(View view) { }
         });

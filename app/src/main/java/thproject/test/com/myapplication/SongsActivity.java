@@ -2,9 +2,14 @@ package thproject.test.com.myapplication;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.Fragment;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -18,12 +23,13 @@ import android.widget.Toast;
 *
 *
 * */
-public class SongsActivity extends Activity {
+public class SongsActivity extends FragmentActivity{
     private String artist;
-    private Context context;
+    Context context;
     private SongGrabber grabsongs;
+    private static Handler handler;
     public thproject.test.com.myapplication.NowLayout nowSongLayout;
-
+    public ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +42,34 @@ public class SongsActivity extends Activity {
                 Log.d("SongsActivity", artist);
             }
         }
+        context = getApplicationContext();
+
+        //Handler to show loading progress
+        handler = new Handler(){
+            public void handleMessage(Message msg) {
+                Bundle data = msg.getData();
+                String artist = data.getString("artist");
+                String title = data.getString("title");
+                String action = data.getString("action");
+
+                //First action occurs when no tabs are present, progress dialog shown
+                if(action.compareTo("init") == 0) {
+                    progressDialog = new ProgressDialog(SongsActivity.this);
+                    progressDialog.setMessage("Loading tab " + title);
+                    progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                    progressDialog.show();
+                    //begin scrape process
+                    beginScraper(artist,title);
+                }
+                //Action when loading the tabs is complete
+                if(action.compareTo("complete") == 0){
+                    progressDialog.hide();
+                    Toast.makeText(getApplicationContext(),"Loading complete!",Toast.LENGTH_SHORT).show();
+                }
+            }
+        };
+
+
 
         //disable application icon from ActionBar, set up remaining attributes
         ActionBar actionBar = getActionBar();
@@ -48,6 +82,33 @@ public class SongsActivity extends Activity {
         grabsongs = new SongGrabber();
         grabsongs.displaySongs(context,nowSongLayout,artist);
 
+    }
+
+
+
+    public static void showProgress(String artist, String title, String action){
+        Message msg = new Message();
+        Bundle data = new Bundle();
+        data.putString("artist",artist);
+        data.putString("title",title);
+        data.putString("action", action);
+        msg.setData(data);
+        handler.sendMessage(msg);
+    }
+
+    public static void signalCompletion(){
+        Message msg = new Message();
+        Bundle data = new Bundle();
+        data.putString("action","complete");
+        msg.setData(data);
+        handler.sendMessage(msg);
+    }
+
+    public void beginScraper(String artist, String title){
+        final TabScraper scraper = new TabScraper();
+        scraper.setArtist(artist);
+        scraper.setSongTitle(title);
+        scraper.scrapeUltimateGuitar();
     }
 
 

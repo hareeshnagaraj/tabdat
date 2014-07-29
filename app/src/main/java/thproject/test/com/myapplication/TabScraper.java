@@ -1,4 +1,5 @@
 package thproject.test.com.myapplication;
+import android.app.Activity;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -11,16 +12,19 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import static thproject.test.com.myapplication.MySQLiteHelper.getDB;
+
 /**
  * Created by hareeshnagaraj on 7/28/14.
  *
  * Class that will actually scrape the web for tabs and store them in the database
  */
 
-public class TabScraper {
+public class TabScraper extends Activity{
     private String artist;
     private String songtitle;
     private static final String ultimateGuitarURL1 = "http://www.ultimate-guitar.com/search.php?search_type=title&value=";
+    MySQLiteHelper db = getDB(this);
 
     public TabScraper(String artist, String songtitle){
         this.artist = artist;
@@ -47,7 +51,6 @@ public class TabScraper {
     * */
     public void scrapeUltimateGuitar(){
         new scrapeAsync().execute("ultimate-guitar");
-
     }
 
     /*
@@ -62,11 +65,21 @@ public class TabScraper {
             if(string[0] == "ultimate-guitar") {
                 String url = ultimateGuitarURL1 + songtitle;
                 ultimateGuitarParse(url);
-
             }
             return null;
         }
+
+
+        @Override
+        protected void onPostExecute(String v){
+           Log.d("scrapeAsync","onPostExecute" + v);
+            /*
+            * After execution, message sent to the SongsActivity to close progress dialog and show options
+            * */
+            SongsActivity.signalCompletion();
+        }
     }
+
 
     /*
     *
@@ -76,6 +89,7 @@ public class TabScraper {
     * */
     public void ultimateGuitarParse(String url){
         Boolean currentartist = false;
+        String printLink = "";
 
         Document doc = null;
         try {
@@ -112,21 +126,41 @@ public class TabScraper {
                     int hrefLength = href.length();
                     String tabIdentifier = href.substring(hrefLength - 8, hrefLength);
 
-                    //Guitar Tab
-                    if(tabIdentifier.compareTo("_tab.htm") == 0){
-                        Log.d("tabscraper tab type ", "guitar");
-                        Log.d("tabscraper  href ", href);
+                    //getting the print link
+                    try {
+                        Document tabPage = Jsoup.connect(href).get();
+                        Elements printLinkSearch = tabPage.select("a#print_link");
+                        printLink = printLinkSearch.attr("abs:href");
 
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    Link newTab = new Link();
+                    newTab.setArtist(artist);
+                    newTab.setTitle(songtitle);
+                    newTab.setLink(printLink);
+                    newTab.setSource("ultimate-guitar");
+
+                    //Guitar Tab
+                    if(tabIdentifier.compareTo("_tab.htm") == 0 && printLink != null){
+//                        Log.d("tabscraper tab type ", "guitar");
+//                        Log.d("tabscraper  href ", href);
+//                        Log.d("tab scraper print link ",printLink);
+                          db.addLink(newTab);
                     }
                     //Bass Tab
-                    else if(tabIdentifier.compareTo("btab.htm") == 0){
-                        Log.d("tabscraper tab type ", "bass");
-                        Log.d("tabscraper  href ", href);
+                    else if(tabIdentifier.compareTo("btab.htm") == 0 && printLink != null){
+//                        Log.d("tabscraper tab type ", "bass");
+//                        Log.d("tabscraper  href ", href);
+//                        Log.d("tab scraper print link ",printLink);
+                          db.addLink(newTab);
                     }
 
                 }
 
              }
         }
+        db.getAllLinks();
     }
 }

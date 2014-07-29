@@ -10,6 +10,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -32,12 +33,15 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     private static final String TABLE_TABS = "tabs";
     // tabs table name
     private static final String TABLE_USERS = "users";
+    private static final String TABLE_LINKS = "links";
 
     // tabs Table Columns names
     private static final String KEY_ID = "id";
     private static final String KEY_TITLE = "title";
     private static final String KEY_ARTIST = "artist";
     private static final String KEY_LINKS = "links";
+    private static final String KEY_LINK = "link";
+    private static final String KEY_SOURCE = "source";
 
     //users table column names
     private static final String KEY_EMAIL = "email";
@@ -45,6 +49,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 
     //keys for the tab DB
     private static final String[] COLUMNS = {KEY_ID,KEY_TITLE,KEY_ARTIST,KEY_LINKS};
+    private static final String[] LINK_COLUMNS = {KEY_ID,KEY_ARTIST,KEY_TITLE,KEY_LINK,KEY_SOURCE};
 
     //keys for the column DB
     private static final String[] USER_COLUMNS = {KEY_ID,KEY_EMAIL,KEY_PASSWORD};
@@ -63,6 +68,13 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
             "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
             "email TEXT, "+
             "password TEXT )";
+
+    private static final String createLinksDB = "CREATE TABLE links ( " +
+            "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            "artist TEXT, "+
+            "title TEXT, "+
+            "link TEXT, "+
+            "source TEXT )";
 
     public MySQLiteHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
@@ -84,6 +96,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(createTabsDB);
         db.execSQL(createUsersDB);
+        db.execSQL(createLinksDB);
     }
 
     @Override
@@ -91,7 +104,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 
     }
 
-    /*
+     /*
     * Used to add a user to our DB, so that multiple users can be present on same device
     * */
     public void addUser(String email, String password){
@@ -125,7 +138,9 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
    }
 
     /*
+    *
     * used to add a tab
+    *
     * */
     public void addTab(Tab newtab){
 //        Log.d("addTab", newtab.toString());
@@ -138,6 +153,106 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         values.put(KEY_ARTIST, newtab.getArtist()); // get author
         values.put(KEY_LINKS,newtab.getLinks()); //get links to tabs
         db.insert(TABLE_TABS,null,values);
+    }
+    /*
+    *
+    * Used to add a link to the DB
+    *
+    * */
+    public void addLink(Link link){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "SELECT * FROM links WHERE title = ? AND link = ?";
+        Cursor checkCursor = db.rawQuery(query,new String[]{link.getTitle(),link.getLink()});
+        //Conditionally inserting the link if it doesn't already exist
+        if(checkCursor.moveToFirst()){
+            //Link exists
+        }
+        else{
+            //Link doesn't exist
+            ContentValues values = new ContentValues();
+            values.put(KEY_TITLE,link.getTitle());
+            values.put(KEY_ARTIST,link.getArtist());
+            values.put(KEY_LINK,link.getLink());
+            values.put(KEY_SOURCE,link.getSource());
+            db.insert(TABLE_LINKS,null,values);
+        }
+        checkCursor.close();
+    }
+
+    /*
+    * Get all the links of a specific tab
+    * */
+//    public List<Link> getLink(String title, String artist){
+//        List<Link> tabLinks = new LinkedList<Link>();
+//        SQLiteDatabase db = this.getReadableDatabase();
+//        Link link;
+//        int numlinks;
+//        Cursor cursor =
+//                db.query(TABLE_LINKS, // a. table
+//                        LINK_COLUMNS, // b. column names
+//                        " artist = ? AND title = ?", // c. selections
+//                        new String[] { artist, title }, // d. selections args
+//                        null, // e. group by
+//                        null, // f. having
+//                        null, // g. order by
+//                        null); // h. limit
+//        numlinks = cursor.getCount();
+//        if (cursor.moveToNext()){
+//            do{
+//                link = new Link();
+//                link.setID(Integer.parseInt(cursor.getString(0)));
+//                link.setArtist(cursor.getString(1));
+//                link.setTitle(cursor.getString(2));
+//                link.setLink(cursor.getString(3));
+//                link.setSource(cursor.getString(4));
+////                tabLinks.add(link);
+//                Log.d("getLink",link.toString());
+//            }while(cursor.moveToNext());
+//        }
+//        return tabLinks;
+//    }
+
+    /*
+    * Get number of links for a specific tab, store and return a HashMap
+    *
+    * */
+    public HashMap<String,Link> getLink(String artist, String title){
+        int numlinks = 0;
+        HashMap<String,Link> linkHash = new HashMap();
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Link link;
+        Link dummyLink = new Link();
+        Cursor cursor =
+                db.query(TABLE_LINKS, // a. table
+                        LINK_COLUMNS, // b. column names
+                        " artist = ? AND title = ?", // c. selections
+                        new String[] { artist, title }, // d. selections args
+                        null, // e. group by
+                        null, // f. having
+                        null, // g. order by
+                        null); // h. limit
+        numlinks = cursor.getCount();
+        dummyLink.setTitle("numberOfLinks");
+        dummyLink.setID(numlinks);
+        linkHash.put("numlinks",dummyLink);
+
+        if (cursor.moveToNext()){
+            do{
+                link = new Link();
+                link.setID(Integer.parseInt(cursor.getString(0)));
+                link.setArtist(cursor.getString(1));
+                link.setTitle(cursor.getString(2));
+                link.setLink(cursor.getString(3));
+                link.setSource(cursor.getString(4));
+                numlinks++;
+                Log.d("getLink",link.toString());
+                linkHash.put(Integer.toString(numlinks),link);
+            }while(cursor.moveToNext());
+        }
+        Log.d("getLink",Integer.toString(numlinks));
+
+        return linkHash;
     }
 
     /*
@@ -225,6 +340,35 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         cursor.close();
         return artists;
     }
+
+    /*
+    * Returning all the links we have stored
+    * */
+    public List<Link> getAllLinks(){
+        Log.d("getAllLinks","begin query");
+        List<Link> links = new LinkedList<Link>();
+        String query = "SELECT * FROM " + TABLE_LINKS;
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+
+        Link link = null;
+        if(cursor.moveToNext()){
+            do{
+               link = new Link();
+               link.setID(Integer.parseInt(cursor.getString(0)));
+               link.setArtist(cursor.getString(1));
+               link.setTitle(cursor.getString(2));
+               link.setLink(cursor.getString(3));
+               link.setSource(cursor.getString(4));
+               links.add(link);
+               Log.d("getAllLinks",link.toString());
+
+            }while(cursor.moveToNext());
+        }
+        Log.d("getAllLinks","end query");
+        return links;
+    }
+
     /*
     *
     * Get number of tabs by an artist
