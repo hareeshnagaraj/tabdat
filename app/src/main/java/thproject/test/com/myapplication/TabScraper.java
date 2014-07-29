@@ -4,10 +4,12 @@ import android.util.Log;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by hareeshnagaraj on 7/28/14.
@@ -54,27 +56,77 @@ public class TabScraper {
     public class scrapeAsync extends AsyncTask<String, Void, String>{
         @Override
         protected String doInBackground(String... string) {
-            try {
+            /*
+            * Scrape functionality if string is ultimate-guitar.com, multiple steps
+            * */
+            if(string[0] == "ultimate-guitar") {
+                String url = ultimateGuitarURL1 + songtitle;
+                ultimateGuitarParse(url);
 
-                /*
-                * Scrape functionality if string is ultimate-guitar.com
-                * */
-                if(string[0] == "ultimate-guitar") {
-                    String url = ultimateGuitarURL1 + songtitle;
-                    Document doc = Jsoup.connect(url).get();
-                    Elements newsHeadlines = doc.select(".tresults");
-                    String test = newsHeadlines.toString();
-                    Log.d("tabscraper", test);
-                    Elements artistTest = doc.select(".song.search_art");
-                    Log.d("tabscraper artist ", artistTest.toString());
-
-                }
-
-            } catch (IOException e) {
-                e.printStackTrace();
             }
             return null;
         }
     }
 
+    /*
+    *
+    * Function to parse UG page
+    * 1. Execute query and get results for search page
+    * 2. Open links to each tab and store print version
+    * */
+    public void ultimateGuitarParse(String url){
+        Boolean currentartist = false;
+
+        Document doc = null;
+        try {
+            doc = Jsoup.connect(url).get();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Elements table = doc.select(".tresults");
+        Elements tableCells = table.select("a");
+
+        //iterating and getting links
+        for( Element link : tableCells ){
+            String linkClass = link.className();
+//          Log.d("tabscraper link class", linkClass);
+
+            if(linkClass.compareTo("song search_art") == 0){
+                /*
+                * Defining the current artist based on the above string comparison, which allows us to perform certain actions
+                * */
+               // Log.d("tabscraper link iteration data", link.html());
+                if(this.artist.compareTo(link.html()) == 0){
+                   currentartist = true;
+                }
+                else{
+                    currentartist = false;
+                }
+            }
+            else{
+                /*
+                * Storing the link for the tab
+                * */
+                if(currentartist && (linkClass.compareTo("song") == 0)){
+                    String href = link.attr("href");
+                    int hrefLength = href.length();
+                    String tabIdentifier = href.substring(hrefLength - 8, hrefLength);
+
+                    //Guitar Tab
+                    if(tabIdentifier.compareTo("_tab.htm") == 0){
+                        Log.d("tabscraper tab type ", "guitar");
+                        Log.d("tabscraper  href ", href);
+
+                    }
+                    //Bass Tab
+                    else if(tabIdentifier.compareTo("btab.htm") == 0){
+                        Log.d("tabscraper tab type ", "bass");
+                        Log.d("tabscraper  href ", href);
+                    }
+
+                }
+
+             }
+        }
+    }
 }
