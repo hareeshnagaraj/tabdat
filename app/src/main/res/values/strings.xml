@@ -32,22 +32,9 @@
 
     <!--Gracenote strings-->
     <string name="gracenote_action_string">Recognize Song</string>
-    <string name="gracenote_client_id">2095360-22ACC49414BC0733B94A8CEFE858E0ED</string>
+    <string name="gracenote_client_id">2095360</string>
     <string name="gracenote_client_tag">22ACC49414BC0733B94A8CEFE858E0ED</string>
-    <string name="gracenote_license_string">-- BEGIN LICENSE v1.0 B774D5BF --
-licensee: Gracenote, Inc.
-name:
-notes: Lic Gen 2.1
-start_date: 0000-00-00
-client_id: 2095360
-musicid_file: enabled
-musicid_search: enabled
-musicid_stream: enabled
-musicid: enabled
-playlist: enabled
--- SIGNATURE B774D5BF --
-lAADAgAfAVaz/YRmF/G9JklkWZvKS0I+oGOziAEznh3coCplxwAe7x6zQzP4sS3+1NjjAeojMhDl20YOB7rgnJ/whIkc
--- END LICENSE B774D5BF --</string>
+    <string name="gracenote_license_string">-- BEGIN LICENSE v1.0 B774D5BF --\nlicensee: Gracenote, Inc.\nname:\nnotes: Lic Gen 2.1\nstart_date: 0000-00-00\nclient_id: 2095360\nmusicid_file: enabled\nmusicid_search: enabled\nmusicid_stream: enabled\nmusicid: enabled\nplaylist: enabled\n-- SIGNATURE B774D5BF --\nlAADAgAfAVaz/YRmF/G9JklkWZvKS0I+oGOziAEznh3coCplxwAe7x6zQzP4sS3+1NjjAeojMhDl20YOB7rgnJ/whIkc\n-- END LICENSE B774D5BF --</string>
 
 
 </resources>

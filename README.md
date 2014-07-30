@@ -1,4 +1,5 @@
 tabdat
 ======
 
-An app to listen to songs and generate tabs
+An app to aggregate tab resources - support for song recognition, search, and cross platform cataloging
+

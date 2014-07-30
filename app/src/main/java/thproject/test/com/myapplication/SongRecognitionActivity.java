@@ -3,8 +3,13 @@ package thproject.test.com.myapplication;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.Button;
+
 import com.gracenote.gnsdk.*;
 
 public class SongRecognitionActivity extends Activity {
@@ -18,14 +23,33 @@ public class SongRecognitionActivity extends Activity {
         String clientTag = getString(R.string.gracenote_client_tag);
         Context context = this.getApplicationContext();
 
-        // Initialize GNSDK manager and user
+        // Initialize GNSDK manager, user, locale
         try {
             GnManager gnsdk = new GnManager(context, gnsdkLicense, GnLicenseInputMode.kLicenseInputModeString);
             GnUser gnUser = new GnUser( new GnUserStore(context), clientId, clientTag, "1" );
+            GnLocale locale = new GnLocale(GnLocaleGroup.kLocaleGroupMusic, GnLanguage.kLanguageEnglish, GnRegion.kRegionNorthAmerica, GnDescriptor.kDescriptorDefault, gnUser);
 
         } catch (GnException e) {
             e.printStackTrace();
         }
+
+        Button recordButton = (Button) findViewById(R.id.record);
+        recordButton.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                recordingTest();
+                return false;
+            }
+        });
+
+
+    }
+
+    public void recordingTest(){
+        Log.d("recordingTest", "begin");
+    }
+
+    public void startRecording(){
 
     }
 
