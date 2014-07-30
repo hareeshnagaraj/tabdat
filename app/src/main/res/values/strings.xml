@@ -28,5 +28,26 @@
     <string name="title_activity_songs">SongsActivity</string>
     <string name="share_tab">Share this Tab</string>
     <string name="title_activity_tab_view">TabViewActivity</string>
+    <string name="title_activity_song_recognition">SongRecognitionActivity</string>
+
+    <!--Gracenote strings-->
+    <string name="gracenote_action_string">Recognize Song</string>
+    <string name="gracenote_client_id">2095360-22ACC49414BC0733B94A8CEFE858E0ED</string>
+    <string name="gracenote_client_tag">22ACC49414BC0733B94A8CEFE858E0ED</string>
+    <string name="gracenote_license_string">-- BEGIN LICENSE v1.0 B774D5BF --
+licensee: Gracenote, Inc.
+name:
+notes: Lic Gen 2.1
+start_date: 0000-00-00
+client_id: 2095360
+musicid_file: enabled
+musicid_search: enabled
+musicid_stream: enabled
+musicid: enabled
+playlist: enabled
+-- SIGNATURE B774D5BF --
+lAADAgAfAVaz/YRmF/G9JklkWZvKS0I+oGOziAEznh3coCplxwAe7x6zQzP4sS3+1NjjAeojMhDl20YOB7rgnJ/whIkc
+-- END LICENSE B774D5BF --</string>
+
 
 </resources>

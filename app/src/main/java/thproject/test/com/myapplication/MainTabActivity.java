@@ -4,6 +4,7 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,8 +15,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
 
 import java.util.HashMap;
@@ -77,6 +80,7 @@ public class MainTabActivity extends Activity
                 startSongActivity(extras);
             }
         };
+
     }
 
     @Override
@@ -136,6 +140,15 @@ public class MainTabActivity extends Activity
         // close this activity
     }
 
+    /*
+    * Start song recognition activity
+    * */
+    private void startSongRecognitionActivity(){
+        Intent i;
+        i = new Intent(MainTabActivity.this,SongRecognitionActivity.class);
+        startActivity(i);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if (!mNavigationDrawerFragment.isDrawerOpen()) {
@@ -144,6 +157,9 @@ public class MainTabActivity extends Activity
             // decide what to show in the action bar.
             getMenuInflater().inflate(R.menu.main_tab, menu);
             restoreActionBar();
+
+
+
             return true;
         }
         return super.onCreateOptionsMenu(menu);
@@ -156,6 +172,10 @@ public class MainTabActivity extends Activity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_settings) {
+            return true;
+        }
+        if(id == R.id.song_recognition){       //Starting the song recognition activity from action bar
+            startSongRecognitionActivity();
             return true;
         }
         return super.onOptionsItemSelected(item);

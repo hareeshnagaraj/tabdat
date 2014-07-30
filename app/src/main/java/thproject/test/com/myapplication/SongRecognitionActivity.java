@@ -1,42 +1,39 @@
 package thproject.test.com.myapplication;
 
 import android.app.Activity;
-import android.content.Intent;
+import android.content.Context;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
+import com.gracenote.gnsdk.*;
 
-public class tabdat extends Activity {
-    // Splash screen timer
-    private static int SPLASH_TIME_OUT = 3000;
+public class SongRecognitionActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_splash_screen);
+        setContentView(R.layout.activity_song_recognition);
+        String gnsdkLicense = getString(R.string.gracenote_license_string);
+        String clientId = getString(R.string.gracenote_client_id);
+        String clientTag = getString(R.string.gracenote_client_tag);
+        Context context = this.getApplicationContext();
 
-        new Handler().postDelayed(new Runnable() {
-            /*
-             * Showing splash screen with a timer. This will be useful when you
-             * want to show case your app logo / company
-             */
-            @Override
-            public void run() {
-                // This method will be executed once the timer is over
-                // Start your app main activity
-                Intent i = new Intent(tabdat.this, LoginActivity.class);
-                startActivity(i);
-                // close this activity
-                finish();
-            }
-        }, SPLASH_TIME_OUT);
+        // Initialize GNSDK manager and user
+        try {
+            GnManager gnsdk = new GnManager(context, gnsdkLicense, GnLicenseInputMode.kLicenseInputModeString);
+            GnUser gnUser = new GnUser( new GnUserStore(context), clientId, clientTag, "1" );
+
+        } catch (GnException e) {
+            e.printStackTrace();
+        }
+
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.splash_screen, menu);
+        getMenuInflater().inflate(R.menu.song_recognition, menu);
         return true;
     }
 
