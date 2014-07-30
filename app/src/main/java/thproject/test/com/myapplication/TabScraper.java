@@ -49,7 +49,7 @@ public class TabScraper extends Activity{
     * Used them all the time growing up
     *
     * */
-    public void scrapeUltimateGuitar(){
+    public void scrape(){
         new scrapeAsync().execute("ultimate-guitar");
     }
 

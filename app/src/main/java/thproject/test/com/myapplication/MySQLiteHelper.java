@@ -251,8 +251,35 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
             }while(cursor.moveToNext());
         }
         Log.d("getLink",Integer.toString(numlinks));
-
+        cursor.close();
         return linkHash;
+    }
+
+    /*
+    * Get link from a specific source
+    * */
+    public Link getLinkFromSource(String source){
+        Link link = new Link();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor =
+                db.query(TABLE_LINKS, // a. table
+                        LINK_COLUMNS, // b. column names
+                        " link = ?", // c. selections
+                        new String[] { source }, // d. selections args
+                        null, // e. group by
+                        null, // f. having
+                        null, // g. order by
+                        null); // h. limit
+        int numlinks = cursor.getCount();
+        Log.d("getLinkFromSource num : ", Integer.toString(numlinks));
+        if(cursor.moveToFirst()){
+            link.setID(Integer.parseInt(cursor.getString(0)));
+            link.setArtist(cursor.getString(1));
+            link.setTitle(cursor.getString(2));
+            link.setLink(cursor.getString(3));
+            link.setSource(cursor.getString(4));
+        }
+        return link;
     }
 
     /*

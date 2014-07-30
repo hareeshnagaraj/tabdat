@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
@@ -52,9 +53,12 @@ public class TabPickerDialog extends DialogFragment {
         builder.setItems(items, new DialogInterface.OnClickListener(){
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                Log.d("TabPickerDialog item selected", Integer.toString(i));
+                Link selectedLink = getSelectedLink(i);
+                Log.d("TabPickerDialog item selected", selectedLink.toString());
 //                Link selectedLink = links.get(i);
 //                Log.d("TabPickerDialog link selected", selectedLink.toString());
+                //signaling the SongsActivity to open the TabViewActivity
+                SongsActivity.signalTabView(selectedLink);
             }
         });
 
@@ -67,4 +71,16 @@ public class TabPickerDialog extends DialogFragment {
     public void setLinks(List<Link> links){
         this.links = links;
     }
-}
+    public Link getSelectedLink(int num){
+        Link returnLink;
+        try{
+            returnLink = links.get(num);
+        }
+        catch (NullPointerException e){
+            returnLink = new Link();
+            returnLink.setTitle("NO LINK");
+        }
+        return returnLink;
+    }
+
+ }

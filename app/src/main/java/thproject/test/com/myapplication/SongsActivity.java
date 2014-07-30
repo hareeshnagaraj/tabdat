@@ -6,7 +6,9 @@ import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -29,7 +31,6 @@ import static thproject.test.com.myapplication.MySQLiteHelper.getDB;
 /*
 *
 * In this class we display all the songs of a particular artist, then allow a click to show the available tabs
-*
 *
 * */
 public class SongsActivity extends FragmentActivity implements TabPickerDialog.TabPickerListener{
@@ -74,7 +75,6 @@ public class SongsActivity extends FragmentActivity implements TabPickerDialog.T
                 //Action when loading the tabs is complete
                 if(action.compareTo("complete") == 0){
                     progressDialog.hide();
-                    Toast.makeText(getApplicationContext(),"Loading complete!",Toast.LENGTH_SHORT).show();
                     showTabDialog(artist,title);
                 }
                 //Action if tab alreadye exists
@@ -84,11 +84,18 @@ public class SongsActivity extends FragmentActivity implements TabPickerDialog.T
                     }
                     showTabDialog(artist,title);
                 }
+                //Action to start the TabViewActivity
+                if(action.compareTo("showtab") == 0){
+                    String src = data.getString("link");
+                    String srctype = data.getString("source");
+                    Bundle extras = new Bundle();
+                    extras.putString("link",src);
+                    extras.putString("source",srctype);
+                    startTabView(extras);
+                }
 
             }
         };
-
-
 
         //disable application icon from ActionBar, set up remaining attributes
         ActionBar actionBar = getActionBar();
@@ -114,6 +121,10 @@ public class SongsActivity extends FragmentActivity implements TabPickerDialog.T
         handler.sendMessage(msg);
     }
 
+
+    /*
+    * Used to signal the handler with the appropriate message
+    * */
     public static void signalCompletion(String a){
         Message msg = new Message();
         Bundle data = new Bundle();
@@ -132,11 +143,29 @@ public class SongsActivity extends FragmentActivity implements TabPickerDialog.T
         handler.sendMessage(msg);
     }
 
+    /*
+    * Used to begin the TabScraping process
+    * */
     public void beginScraper(String artist, String title){
         final TabScraper scraper = new TabScraper();
         scraper.setArtist(artist);
         scraper.setSongTitle(title);
-        scraper.scrapeUltimateGuitar();
+        scraper.scrape();
+    }
+
+    /*
+    * Used to signal handler to begin TabViewActivity
+    * */
+    public static void signalTabView(Link link){
+        Message msg = new Message();
+        Bundle data = new Bundle();
+
+        data.putString("link",link.getLink());
+        data.putString("source",link.getSource());
+        data.putString("action","showtab");
+
+        msg.setData(data);
+        handler.sendMessage(msg);
     }
 
 
@@ -168,15 +197,24 @@ public class SongsActivity extends FragmentActivity implements TabPickerDialog.T
         TabPickerDialog dialog = new TabPickerDialog();
         HashMap<String[],List<Link>> popupItems = tabDialogItems(artist,title);
         Iterator it = popupItems.entrySet().iterator();
+        int length = -1;
 
         while (it.hasNext()) {
-            Map.Entry pairs = (Map.Entry)it.next();
+            Map.Entry pairs = (Map.Entry) it.next();
             String[] items = (String[]) pairs.getKey();
             List<Link> links = (List<Link>) pairs.getValue();
-//            dialog.setItems(items);
+            length = links.size();
+            dialog.setItems(items);
+            dialog.setLinks(links);
             it.remove(); // avoids a ConcurrentModificationException
         }
-        dialog.show(getFragmentManager(),"TabPickerDialog");
+        Log.d("showTabDialog links length", Integer.toString(length));
+        if(length > 0){
+            dialog.show(getFragmentManager(),"TabPickerDialog");
+        }
+        else{
+            Toast.makeText(getApplicationContext(),"No Tabs found :(",Toast.LENGTH_SHORT).show();
+        }
 
     }
 
@@ -190,17 +228,29 @@ public class SongsActivity extends FragmentActivity implements TabPickerDialog.T
         while (it.hasNext()) {
             Map.Entry pairs = (Map.Entry)it.next();
             Link currentLink = (Link) pairs.getValue();
-            String currentSource = currentLink.getSource();
-            Log.d("tabDialogItems",currentLink.toString());
-            if(currentSource != null){  //adding the item to our list
+            String currentSource = currentLink.getLink();
+            if(currentSource != null && currentSource.contains("http")){  //adding the item to our list
+                Log.d("tabDialogItems",currentLink.toString());
                 links.add(currentLink);
             }
             it.remove(); // avoids a ConcurrentModificationException
         }
 
         //copying our links to a static array
+
         String[] items = new String[links.size()];
-        for(int i = 0; i < links.size(); i++) items[i] = ("Tab " + Integer.toString(i+1));
+        for(int i = 0; i < links.size(); i++) {
+         String originalLink = links.get(i).getLink();
+         String source = links.get(i).getSource();
+         String displayItem = "Version " + Integer.toString(i+1) + " (" + source + ")";
+
+         //Seeing if we have a bass tab or not
+         if(originalLink.contains("btab.htm")){
+            displayItem += " (Bass)";
+         }
+
+         items[i] = (displayItem);
+        }
 
         //preparing the return hash
         HashMap<String[],List<Link>> returnHash = new HashMap<String[], List<Link>>();
@@ -211,6 +261,32 @@ public class SongsActivity extends FragmentActivity implements TabPickerDialog.T
     @Override
     public void onTabClick(DialogFragment dialog) {
 
+    }
+
+    /*
+    * Method to start a new TabViewActivity
+    *
+    * Ultimate-Guitar links will open in browser, other links will ideally open within the app
+    *
+    * */
+    private void startTabView(Bundle extras){
+
+        String source = (String) extras.get("source");
+        String strUrl = (String) extras.get("link");
+        if (!strUrl.startsWith("http://") && !strUrl.startsWith("https://")){
+            strUrl= "http://" + strUrl;
+        }
+
+        if(source.compareTo("ultimate-guitar") == 0){
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(strUrl)));
+        }
+        else {
+            Intent i;
+            i = new Intent(SongsActivity.this, TabViewActivity.class);
+            i.putExtras(extras);
+            startActivity(i);
+        }
+        // close this activity
     }
 
 

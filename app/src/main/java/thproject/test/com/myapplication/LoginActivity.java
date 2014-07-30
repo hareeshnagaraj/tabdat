@@ -59,7 +59,7 @@ public class LoginActivity extends Activity {
                 final TabScraper scraper = new TabScraper();
                 scraper.setArtist(artist);
                 scraper.setSongTitle(title);
-                scraper.scrapeUltimateGuitar();
+                scraper.scrape();
                 Log.d("LoginActivityHandler","past scraper");
             }
         };

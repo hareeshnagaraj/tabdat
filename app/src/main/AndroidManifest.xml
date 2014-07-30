@@ -17,6 +17,7 @@
             android:theme="@android:style/Theme.NoTitleBar" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -34,6 +35,10 @@
             android:name=".SongsActivity"
             android:label="@string/title_activity_songs"
             android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".TabViewActivity"
+            android:label="@string/title_activity_tab_view" >
         </activity>
     </application>
 

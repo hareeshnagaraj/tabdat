@@ -181,8 +181,6 @@ public class MainTabActivity extends Activity
          * number.
          */
         public PlaceholderFragment newInstance(int sectionNumber) {
-            Toast.makeText(getApplicationContext(), Integer.toString(sectionNumber), Toast.LENGTH_SHORT).show();
-
             PlaceholderFragment fragment = new PlaceholderFragment();
             fragment.setPosition(sectionNumber);
             Bundle args = new Bundle();

@@ -26,7 +26,7 @@
     <string name="login_default_password">password</string>
     <string name="title_activity_main_tab">MainTabActivity</string>
     <string name="title_activity_songs">SongsActivity</string>
-
     <string name="share_tab">Share this Tab</string>
+    <string name="title_activity_tab_view">TabViewActivity</string>
 
 </resources>
