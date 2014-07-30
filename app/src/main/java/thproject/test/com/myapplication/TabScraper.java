@@ -76,7 +76,7 @@ public class TabScraper extends Activity{
             /*
             * After execution, message sent to the SongsActivity to close progress dialog and show options
             * */
-            SongsActivity.signalCompletion();
+            SongsActivity.signalCompletion("complete",artist,songtitle);
         }
     }
 

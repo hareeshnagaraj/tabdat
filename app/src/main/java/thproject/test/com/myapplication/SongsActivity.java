@@ -2,6 +2,7 @@ package thproject.test.com.myapplication;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -17,19 +18,28 @@ import android.view.MenuItem;
 import thproject.test.com.myapplication.R;
 import android.widget.Toast;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import static thproject.test.com.myapplication.MySQLiteHelper.getDB;
+
 /*
 *
 * In this class we display all the songs of a particular artist, then allow a click to show the available tabs
 *
 *
 * */
-public class SongsActivity extends FragmentActivity{
+public class SongsActivity extends FragmentActivity implements TabPickerDialog.TabPickerListener{
     private String artist;
     Context context;
-    private SongGrabber grabsongs;
+    private SongGrabber grabsongs = new SongGrabber();
     private static Handler handler;
     public thproject.test.com.myapplication.NowLayout nowSongLayout;
     public ProgressDialog progressDialog;
+    MySQLiteHelper db = getDB(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +75,16 @@ public class SongsActivity extends FragmentActivity{
                 if(action.compareTo("complete") == 0){
                     progressDialog.hide();
                     Toast.makeText(getApplicationContext(),"Loading complete!",Toast.LENGTH_SHORT).show();
+                    showTabDialog(artist,title);
                 }
+                //Action if tab alreadye exists
+                if(action.compareTo("exists") == 0){
+                    if(progressDialog != null) {
+                        progressDialog.hide();
+                    }
+                    showTabDialog(artist,title);
+                }
+
             }
         };
 
@@ -79,7 +98,6 @@ public class SongsActivity extends FragmentActivity{
 
         nowSongLayout = (thproject.test.com.myapplication.NowLayout) findViewById(R.id.mainSongsLayout);
         context = getApplicationContext();
-        grabsongs = new SongGrabber();
         grabsongs.displaySongs(context,nowSongLayout,artist);
 
     }
@@ -96,10 +114,20 @@ public class SongsActivity extends FragmentActivity{
         handler.sendMessage(msg);
     }
 
-    public static void signalCompletion(){
+    public static void signalCompletion(String a){
         Message msg = new Message();
         Bundle data = new Bundle();
-        data.putString("action","complete");
+        data.putString("action",a);
+        msg.setData(data);
+        handler.sendMessage(msg);
+    }
+
+    public static void signalCompletion(String a, String b, String c){
+        Message msg = new Message();
+        Bundle data = new Bundle();
+        data.putString("action",a);
+        data.putString("artist",b);
+        data.putString("title",c);
         msg.setData(data);
         handler.sendMessage(msg);
     }
@@ -134,4 +162,56 @@ public class SongsActivity extends FragmentActivity{
         }
         return super.onOptionsItemSelected(item);
     }
+
+    //method to show our dialog
+    public void showTabDialog(String artist,String title){
+        TabPickerDialog dialog = new TabPickerDialog();
+        HashMap<String[],List<Link>> popupItems = tabDialogItems(artist,title);
+        Iterator it = popupItems.entrySet().iterator();
+
+        while (it.hasNext()) {
+            Map.Entry pairs = (Map.Entry)it.next();
+            String[] items = (String[]) pairs.getKey();
+            List<Link> links = (List<Link>) pairs.getValue();
+//            dialog.setItems(items);
+            it.remove(); // avoids a ConcurrentModificationException
+        }
+        dialog.show(getFragmentManager(),"TabPickerDialog");
+
+    }
+
+    //Method to create list of items that populate tabPickerdialog
+    public HashMap<String[],List<Link>> tabDialogItems(String artist, String title){
+
+        HashMap<String,Link> songHash = db.getLink(artist,title);   //gets the number of matching links from our DB
+        List<Link> links = new LinkedList<Link>();
+
+        Iterator it = songHash.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pairs = (Map.Entry)it.next();
+            Link currentLink = (Link) pairs.getValue();
+            String currentSource = currentLink.getSource();
+            Log.d("tabDialogItems",currentLink.toString());
+            if(currentSource != null){  //adding the item to our list
+                links.add(currentLink);
+            }
+            it.remove(); // avoids a ConcurrentModificationException
+        }
+
+        //copying our links to a static array
+        String[] items = new String[links.size()];
+        for(int i = 0; i < links.size(); i++) items[i] = ("Tab " + Integer.toString(i+1));
+
+        //preparing the return hash
+        HashMap<String[],List<Link>> returnHash = new HashMap<String[], List<Link>>();
+        returnHash.put(items,links);
+        return returnHash;
+    }
+    //Overrides the method from the fragment TabPickerDialog
+    @Override
+    public void onTabClick(DialogFragment dialog) {
+
+    }
+
+
 }

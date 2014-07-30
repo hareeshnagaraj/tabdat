@@ -138,31 +138,22 @@ public class SongGrabber extends Activity {
     * */
     public void showProgressInSongsActivity(String artist, String songname){
 
-        //scraping a specific song
-//        TabScraper scraper = new TabScraper();
-//        scraper.setArtist(artist);
-//        scraper.setSongTitle(songname);
-//        scraper.scrapeUltimateGuitar();
-//        db.getLink(artist,songname);
         HashMap<String,Link> songHash;
 
         songHash = db.getLink(artist, songname);
-        //int numTabs = Integer.parseInt(songHash.get("numlinks"));
         Link dummyLink = songHash.get("numlinks");
         int numTabs = dummyLink.getID();
 
         if(numTabs == 0){   // here we need to scrape for tabs
             SongsActivity.showProgress(artist,songname,"init");
             Log.d("showProgressInSongsActivity",songname + " has " + Integer.toString(numTabs) + " tabs"); //logs number of songs for this tab
-
         }
         else{       //tabs already exist in database
             Log.d("showProgressInSongsActivity",songname + " has " + Integer.toString(numTabs) + " tabs"); //logs number of songs for this tab
-
+            SongsActivity.signalCompletion("exists",artist,songname);
         }
 
     }
-
 
 
 
