@@ -1,6 +1,7 @@
 package thproject.test.com.myapplication;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
@@ -8,6 +9,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,8 +37,7 @@ public class SongRecognitionActivity extends Activity {
     MediaRecorder mRecorder = null;
     MediaPlayer mPlayer = null;
 
-    Handler mHandler;
-    AudioRecorder recorder;
+    static Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,15 +59,42 @@ public class SongRecognitionActivity extends Activity {
             }
         });
 
+        //handler for events within activity
+        handler = new Handler(){
+            public void handleMessage(Message msg) {
+                Bundle data = msg.getData();
+                String artist = data.getString("artist");
+                String album = data.getString("album");
+                String action = data.getString("action");
 
-        mHandler = new Handler();
-
+                //First action occurs when no tabs are present, progress dialog shown
+                if(action.compareTo("test") == 0) {
+                    Toast.makeText(getApplicationContext(),artist + " " + album,Toast.LENGTH_SHORT).show();
+                }
+            }
+        };
         //Executing asynchronous connection
         new gnSync().execute();
 
-
     }
 
+    /*
+    *
+    * Class to signal handler for toasts within loop
+    *
+    * */
+
+    public static void loopToast(String a, String b){
+        Message msg = new Message();
+        Bundle data = new Bundle();
+
+        data.putString("action","test");
+        data.putString("artist",a);
+        data.putString("album",b);
+
+        msg.setData(data);
+        handler.sendMessage(msg);
+    }
     /*
     * Class to establish GnManager, etc.
     * */
@@ -102,75 +130,6 @@ public class SongRecognitionActivity extends Activity {
         }
     }
 
-    /*
-    *
-    * Non-Streaming audio recognition of audio
-    *
-    * */
-    public void startRecording() throws GnException{
-        recorder = new AudioRecorder();
-        recorder.startRecording();
-        Runnable myTask = new Runnable() {
-            @Override
-            public void run() {
-                //do work
-                recorder.stopAndPlay();
-                mHandler.postDelayed(this, 1000);
-            }
-        };
-
-    }
-
-    private class AudioRecorder{
-        public void stopAndPlay()  {
-            stopRecording();
-            play();
-        }
-
-        public void startRecording(){
-            mFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
-            mFileName += "/tabdat.3gp";
-
-            mRecorder = new MediaRecorder();
-            mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-            mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-            mRecorder.setOutputFile(mFileName);
-            mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-
-            Log.d("startRecording directory", mFileName);
-            try {
-                mRecorder.prepare();
-                mRecorder.start();
-            } catch (IOException e) {
-                Log.e("audiorecorder fail", "prepare() failed");
-            } catch(IllegalStateException e){
-                Log.e("IllegalStateException fail", e.toString());
-            }
-        }
-
-        public void stopRecording(){
-            mRecorder.stop();
-            mRecorder.release();
-            mRecorder = null;
-        }
-
-        public void play(){
-            Log.d("startRecording directory", "playing song");
-
-            mPlayer = new MediaPlayer();
-            try {
-                mPlayer.setDataSource(mFileName);
-                mPlayer.prepare();
-                mPlayer.start();
-            } catch (IOException e) {
-                Log.e("IO", "prepare() failed");
-            }
-        }
-        public void stop(){
-            mPlayer.release();
-            mPlayer = null;
-        }
-    }
 
     /*
     * Thread to perform actual streaming of audio
@@ -221,10 +180,14 @@ public class SongRecognitionActivity extends Activity {
 
         }
 
+
         @Override
         public void musicIdStreamIdentifyingStatusEvent(GnMusicIdStreamIdentifyingStatus gnMusicIdStreamIdentifyingStatus, IGnCancellable iGnCancellable) {
             Log.d("musicIdStreamIdentifyingStatusEvent name",gnMusicIdStreamIdentifyingStatus.name());
-
+            //Closing the microphone at the appropriate time
+            if(gnMusicIdStreamIdentifyingStatus.name().compareTo("kStatusIdentifyingEnded") == 0){
+                gnMicrophone.sourceClose();
+            }
         }
         /*
         *
@@ -256,8 +219,8 @@ public class SongRecognitionActivity extends Activity {
                 GnTitle title = result.title();
                 GnName name = artist.name();
 
-                Log.d("musicIdStreamAlbumResult ",  name.display()  + " " + title.display());
-                Toast.makeText(getApplicationContext(),  name.display()  + " " + title.display(), Toast.LENGTH_SHORT).show();
+                loopToast(name.toString(),title.display());
+                Log.d("musicIdStreamAlbumResult ", name.display() + " " + title.display());
            }
         }
 
