@@ -2,17 +2,23 @@ package thproject.test.com.myapplication;
 
 import android.app.Activity;
 import android.content.Context;
+import android.media.MediaPlayer;
+import android.media.MediaRecorder;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.gracenote.gnsdk.*;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 
@@ -24,6 +30,13 @@ public class SongRecognitionActivity extends Activity {
     GnMic gnMicrophone;
     GnMusicIdStream gnMusicIdStream;
     Boolean isListening = true;
+    String mFileName = null;
+
+    MediaRecorder mRecorder = null;
+    MediaPlayer mPlayer = null;
+
+    Handler mHandler;
+    AudioRecorder recorder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,10 +49,17 @@ public class SongRecognitionActivity extends Activity {
         recordButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                recordingTest();
+                try {
+                    startStreaming();
+                } catch (GnException e) {
+                    e.printStackTrace();
+                }
                 return false;
             }
         });
+
+
+        mHandler = new Handler();
 
         //Executing asynchronous connection
         new gnSync().execute();
@@ -77,54 +97,121 @@ public class SongRecognitionActivity extends Activity {
         @Override
         protected void onPostExecute(Void v){
             Log.d("songRecognitionActivity","connection finished");
-            startRecording();
+            Toast.makeText(getApplicationContext(), "Ready to Listen", Toast.LENGTH_SHORT).show();
+
         }
     }
 
-    public void recordingTest(){
-        Log.d("recordingTest", "begin");
+    /*
+    *
+    * Non-Streaming audio recognition of audio
+    *
+    * */
+    public void startRecording() throws GnException{
+        recorder = new AudioRecorder();
+        recorder.startRecording();
+        Runnable myTask = new Runnable() {
+            @Override
+            public void run() {
+                //do work
+                recorder.stopAndPlay();
+                mHandler.postDelayed(this, 1000);
+            }
+        };
+
+    }
+
+    private class AudioRecorder{
+        public void stopAndPlay()  {
+            stopRecording();
+            play();
+        }
+
+        public void startRecording(){
+            mFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
+            mFileName += "/tabdat.3gp";
+
+            mRecorder = new MediaRecorder();
+            mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+            mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+            mRecorder.setOutputFile(mFileName);
+            mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+
+            Log.d("startRecording directory", mFileName);
+            try {
+                mRecorder.prepare();
+                mRecorder.start();
+            } catch (IOException e) {
+                Log.e("audiorecorder fail", "prepare() failed");
+            } catch(IllegalStateException e){
+                Log.e("IllegalStateException fail", e.toString());
+            }
+        }
+
+        public void stopRecording(){
+            mRecorder.stop();
+            mRecorder.release();
+            mRecorder = null;
+        }
+
+        public void play(){
+            Log.d("startRecording directory", "playing song");
+
+            mPlayer = new MediaPlayer();
+            try {
+                mPlayer.setDataSource(mFileName);
+                mPlayer.prepare();
+                mPlayer.start();
+            } catch (IOException e) {
+                Log.e("IO", "prepare() failed");
+            }
+        }
+        public void stop(){
+            mPlayer.release();
+            mPlayer = null;
+        }
     }
 
     /*
     * Thread to perform actual streaming of audio
     * */
-    public void startRecording(){
-        Log.d("startRecording","begin");
+
+     public void startStreaming() throws  GnException{
+        isListening = true;
         gnMicrophone = new GnMic(44100, 16, 1);   //mic initialization
         gnMicrophone.sourceInit();
         //initialize music stream
-        try {
-            gnMusicIdStream = new GnMusicIdStream(gnUser, new GnMusicIdStreamEvents());
-            gnMusicIdStream.audioProcessStart(gnMicrophone.samplesPerSecond(), gnMicrophone.sampleSizeInBits(), gnMicrophone.numberOfChannels());
-            Thread audioProcessThread = new Thread(new Runnable(){
-                @Override
-                public void run() {
+        gnMusicIdStream = new GnMusicIdStream(gnUser, new GnMusicIdStreamEvents());
+        gnMusicIdStream.audioProcessStart(gnMicrophone.samplesPerSecond(), gnMicrophone.sampleSizeInBits(), gnMicrophone.numberOfChannels());
+        Thread audioProcessThread = new Thread(new Runnable(){
+            @Override
+            public void run() {
+                ByteBuffer byteBuffer = ByteBuffer.allocateDirect(1024*4);
+                long bytesRead = 0;
+                Log.d("startRecording","begin loop");
+                while(isListening) {
+                    bytesRead = gnMicrophone.getData(byteBuffer, byteBuffer.capacity());
+                    Long samplerate = gnMicrophone.samplesPerSecond();
+                    Long samplesize = gnMicrophone.sampleSizeInBits();
+                    Log.d("startRecording samplerate samplesize", Long.toString(samplerate) + "  " + Long.toString(samplesize) );
+                    Log.d("startRecording bytesRead", Long.toString(bytesRead) + isListening.toString());
                     try {
-                        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(1024*4);
-                        long bytesRead = 0;
-                        while(isListening) {
-                            bytesRead = gnMicrophone.getData(byteBuffer, byteBuffer.capacity());
-                            gnMusicIdStream.audioProcess(byteBuffer.array(), bytesRead);
-                        }
-                    }
-                    catch (GnException e) {
+                        gnMusicIdStream.audioProcess(byteBuffer.array(), bytesRead);
+                    } catch (GnException e) {
                         e.printStackTrace();
                     }
                 }
-            });
-            audioProcessThread.start();
-            gnMusicIdStream.identifyAlbumAsync();
+                Log.d("startRecording","end loop");
+            }
+        });
+        audioProcessThread.start();
+        gnMusicIdStream.identifyAlbumAsync();
 
-        } catch (GnException e) {
-            e.printStackTrace();
-            Log.d("startRecording","GnException");
-        }
-        Log.d("startRecording","end");
+
     }
 
-
     /*
-    * Class to identify streaming audio
+    * Class to identify streaming audio, overriding the IGnMusicIDStreamEvents
     * */
     private class GnMusicIdStreamEvents implements IGnMusicIdStreamEvents {
 
@@ -136,16 +223,42 @@ public class SongRecognitionActivity extends Activity {
 
         @Override
         public void musicIdStreamIdentifyingStatusEvent(GnMusicIdStreamIdentifyingStatus gnMusicIdStreamIdentifyingStatus, IGnCancellable iGnCancellable) {
-            Log.d("musicIdStreamIdentifyingStatusEvent",gnMusicIdStreamIdentifyingStatus.toString());
+            Log.d("musicIdStreamIdentifyingStatusEvent name",gnMusicIdStreamIdentifyingStatus.name());
 
         }
-
+        /*
+        *
+        * Parsing the results from the API call
+        *
+        * */
         @Override
         public void musicIdStreamAlbumResult(GnResponseAlbums gnResponseAlbums, IGnCancellable iGnCancellable) {
+            GnAlbum result = null;
             Log.d("GnMusicIdStreamEvents",gnResponseAlbums.toString());
-
+//            String albumResponse = gnResponseAlbums.albums();
+            Log.d("GnMusicIdStreamEvents stop listening","isListening = false");
             isListening = false;
 
+            GnResponseAlbums local = gnResponseAlbums;
+            GnAlbumIterable results = local.albums();
+            GnAlbumIterator it = results.getIterator();
+            Long albumCount = results.count();
+            Log.d("GnAlbumIterable count",Long.toString(albumCount));
+
+
+            while(it.hasNext()){
+                try {
+                    result = it.next();
+                } catch (GnException e) {
+                    e.printStackTrace();
+                }
+                GnArtist artist = result.artist();
+                GnTitle title = result.title();
+                GnName name = artist.name();
+
+                Log.d("musicIdStreamAlbumResult ",  name.display()  + " " + title.display());
+                Toast.makeText(getApplicationContext(),  name.display()  + " " + title.display(), Toast.LENGTH_SHORT).show();
+           }
         }
 
         @Override
@@ -156,8 +269,10 @@ public class SongRecognitionActivity extends Activity {
 
         @Override
         public void statusEvent(GnStatus gnStatus, long l, long l2, long l3, IGnCancellable iGnCancellable) {
+            Log.d("GnStatus",Long.toString(l) + Long.toString(l2) + Long.toString(l3) );
 
         }
+
     }
 
 
