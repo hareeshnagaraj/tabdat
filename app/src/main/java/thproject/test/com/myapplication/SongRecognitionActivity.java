@@ -1,5 +1,6 @@
 package thproject.test.com.myapplication;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -10,6 +11,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,7 +26,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 
-public class SongRecognitionActivity extends Activity {
+public class SongRecognitionActivity extends FragmentActivity {
     Context context;
     Button recordButton;
     GnManager gnsdk;
@@ -46,18 +48,6 @@ public class SongRecognitionActivity extends Activity {
 
         context = getApplicationContext();
 
-        recordButton = (Button) findViewById(R.id.record);
-        recordButton.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                try {
-                    startStreaming();
-                } catch (GnException e) {
-                    e.printStackTrace();
-                }
-                return false;
-            }
-        });
 
         //handler for events within activity
         handler = new Handler(){
@@ -76,6 +66,9 @@ public class SongRecognitionActivity extends Activity {
         //Executing asynchronous connection
         new gnSync().execute();
 
+        //disable application icon from ActionBar, set up remaining attributes
+        ActionBar actionBar = getActionBar();
+        actionBar.hide();
     }
 
     /*
@@ -110,12 +103,6 @@ public class SongRecognitionActivity extends Activity {
             try {
                 gnsdk = new GnManager(context, gnsdkLicense, GnLicenseInputMode.kLicenseInputModeString);
                 gnUser = new GnUser( new GnUserStore(context), clientId, clientTag, "1" );
-//                GnLocale locale = new GnLocale(GnLocaleGroup.kLocaleGroupMusic, GnLanguage.kLanguageEnglish, GnRegion.kRegionNorthAmerica, GnDescriptor.kDescriptorDefault, gnUser);
-//                GnMusicId musicId = new GnMusicId(gnUser);
-//                GnMusicIdFile musicIdFile = new GnMusicIdFile(gnUser);
-                // Initialize mic
-
-
 
             } catch (GnException e) {
                 e.printStackTrace();
@@ -125,7 +112,13 @@ public class SongRecognitionActivity extends Activity {
         @Override
         protected void onPostExecute(Void v){
             Log.d("songRecognitionActivity","connection finished");
-            Toast.makeText(getApplicationContext(), "Ready to Listen", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Listening", Toast.LENGTH_SHORT).show();
+            //Begin identification
+            try {
+                startStreaming();
+            } catch (GnException e) {
+                e.printStackTrace();
+            }
 
         }
     }
@@ -134,7 +127,6 @@ public class SongRecognitionActivity extends Activity {
     /*
     * Thread to perform actual streaming of audio
     * */
-
      public void startStreaming() throws  GnException{
         isListening = true;
         gnMicrophone = new GnMic(44100, 16, 1);   //mic initialization
@@ -150,10 +142,6 @@ public class SongRecognitionActivity extends Activity {
                 Log.d("startRecording","begin loop");
                 while(isListening) {
                     bytesRead = gnMicrophone.getData(byteBuffer, byteBuffer.capacity());
-                    Long samplerate = gnMicrophone.samplesPerSecond();
-                    Long samplesize = gnMicrophone.sampleSizeInBits();
-                    Log.d("startRecording samplerate samplesize", Long.toString(samplerate) + "  " + Long.toString(samplesize) );
-                    Log.d("startRecording bytesRead", Long.toString(bytesRead) + isListening.toString());
                     try {
                         gnMusicIdStream.audioProcess(byteBuffer.array(), bytesRead);
                     } catch (GnException e) {
@@ -165,8 +153,6 @@ public class SongRecognitionActivity extends Activity {
         });
         audioProcessThread.start();
         gnMusicIdStream.identifyAlbumAsync();
-
-
     }
 
     /*
@@ -198,7 +184,6 @@ public class SongRecognitionActivity extends Activity {
         public void musicIdStreamAlbumResult(GnResponseAlbums gnResponseAlbums, IGnCancellable iGnCancellable) {
             GnAlbum result = null;
             Log.d("GnMusicIdStreamEvents",gnResponseAlbums.toString());
-//            String albumResponse = gnResponseAlbums.albums();
             Log.d("GnMusicIdStreamEvents stop listening","isListening = false");
             isListening = false;
 
@@ -207,7 +192,6 @@ public class SongRecognitionActivity extends Activity {
             GnAlbumIterator it = results.getIterator();
             Long albumCount = results.count();
             Log.d("GnAlbumIterable count",Long.toString(albumCount));
-
 
             while(it.hasNext()){
                 try {
@@ -219,9 +203,14 @@ public class SongRecognitionActivity extends Activity {
                 GnTitle title = result.title();
                 GnName name = artist.name();
 
-                loopToast(name.toString(),title.display());
+                loopToast(name.display(),title.display());
                 Log.d("musicIdStreamAlbumResult ", name.display() + " " + title.display());
            }
+
+            //Action if no album found
+            if(albumCount == 0){
+
+            }
         }
 
         @Override

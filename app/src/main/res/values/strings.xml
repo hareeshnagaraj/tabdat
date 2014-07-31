@@ -29,6 +29,7 @@
     <string name="share_tab">Share this Tab</string>
     <string name="title_activity_tab_view">TabViewActivity</string>
     <string name="title_activity_song_recognition">SongRecognitionActivity</string>
+    <string name="song_recognition_prompt">Play a Song!</string>
 
     <!--Gracenote strings-->
     <string name="gracenote_action_string">Recognize Song</string>

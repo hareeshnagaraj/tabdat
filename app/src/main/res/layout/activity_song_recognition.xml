@@ -8,11 +8,24 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="thproject.test.com.myapplication.SongRecognitionActivity">
 
-    <Button
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="116dp"
+        android:id="@+id/imageView"
+        android:layout_above="@+id/textView"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/tabdatapp_logo_red" />
+
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Record"
-        android:id="@+id/record"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/song_recognition_prompt"
+        android:id="@+id/textView"
         android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:textColor="@color/primary_red"
+        android:textIsSelectable="false"
+        android:paddingTop="50dp" />
+
 </RelativeLayout>

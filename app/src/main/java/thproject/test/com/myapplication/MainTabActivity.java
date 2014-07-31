@@ -157,9 +157,6 @@ public class MainTabActivity extends Activity
             // decide what to show in the action bar.
             getMenuInflater().inflate(R.menu.main_tab, menu);
             restoreActionBar();
-
-
-
             return true;
         }
         return super.onCreateOptionsMenu(menu);
