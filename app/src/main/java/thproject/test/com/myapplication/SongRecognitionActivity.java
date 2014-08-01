@@ -302,7 +302,7 @@ public class SongRecognitionActivity extends FragmentActivity implements TabPick
         @Override
         protected void onPostExecute(Void v){
             Log.d("songRecognitionActivity","connection finished");
-            Toast.makeText(getApplicationContext(), "Listening", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Listening", Toast.LENGTH_LONG).show();
             //Begin identification
             try {
                 startStreaming();
@@ -312,7 +312,6 @@ public class SongRecognitionActivity extends FragmentActivity implements TabPick
 
         }
     }
-
 
     /*
     * Thread to perform actual streaming of audio
