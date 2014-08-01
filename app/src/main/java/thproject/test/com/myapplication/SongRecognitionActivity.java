@@ -316,7 +316,7 @@ public class SongRecognitionActivity extends FragmentActivity implements TabPick
     /*
     * Thread to perform actual streaming of audio
     * */
-     public void startStreaming() throws  GnException{
+     public void startStreaming() throws GnException{
         isListening = true;
         gnMicrophone = new GnMic(44100, 16, 1);   //mic initialization
         gnMicrophone.sourceInit();
@@ -386,7 +386,7 @@ public class SongRecognitionActivity extends FragmentActivity implements TabPick
             //Action if no album found
             if(albumCount == 0){
                 loopToast("No albums found :(","");
-                finish();   //returning to the previous activity
+                exitSongRecognition();   //returning to the previous activity
             }
             else{
             //if album/s are found we display the appropriate dialog to the user

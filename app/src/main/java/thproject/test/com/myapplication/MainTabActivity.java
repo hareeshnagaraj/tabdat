@@ -150,6 +150,14 @@ public class MainTabActivity extends Activity
         finish();
     }
 
+    /*
+    * Show search dialog
+    * */
+    private void searchDialog(){
+        Log.d("searchDialog","pressed");
+
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if (!mNavigationDrawerFragment.isDrawerOpen()) {
@@ -174,6 +182,10 @@ public class MainTabActivity extends Activity
         }
         if(id == R.id.song_recognition){       //Starting the song recognition activity from action bar
             startSongRecognitionActivity();
+            return true;
+        }
+        if(id == R.id.search){                  //Showing the search dialog
+            searchDialog();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -224,7 +236,6 @@ public class MainTabActivity extends Activity
         * */
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
             thproject.test.com.myapplication.NowLayout myFragmentView = null;
             Log.d("section number",ARG_SECTION_NUMBER);
             View rootView = null;
