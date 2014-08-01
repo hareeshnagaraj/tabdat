@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.AsyncTask;
@@ -108,7 +109,9 @@ public class SongRecognitionActivity extends FragmentActivity implements TabPick
 
                 //Action to exit this activity
                 if(action.compareTo("exit") == 0){
-                    finish();
+                    Intent i;
+                    i = new Intent(SongRecognitionActivity.this,MainTabActivity.class);
+                    startActivity(i);
                 }
             }
         };

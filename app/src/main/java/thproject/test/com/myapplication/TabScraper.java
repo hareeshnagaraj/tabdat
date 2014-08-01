@@ -112,6 +112,14 @@ public class TabScraper extends Activity{
                 String track = selectedTracks.get(i);
                 songtitle = track;
                 SongRecognitionActivity.progressText(track);
+
+                if(!db.tabExists(songtitle,artist)){            //adding to our tab database
+                    Tab newTab = new Tab();
+                    newTab.setTitle(songtitle);
+                    newTab.setArtist(artist);
+                    db.addTab(newTab);
+                }
+
                 Log.d("scrapeAsyncArray","scraping: " + track);
                 try {
                     String ultimateGuitarURL = ultimateGuitarURL1 + URLEncoder.encode(track, "UTF-8");
@@ -191,12 +199,6 @@ public class TabScraper extends Activity{
                     Log.d("tabscraper href",href);
                     Log.d("tabscraper addlink",newLink.toString());
 
-                    if(!db.tabExists(songtitle,artist)){            //adding to our tab database
-                        Tab newTab = new Tab();
-                        newTab.setTitle(songtitle);
-                        newTab.setArtist(artist);
-                        db.addTab(newTab);
-                    }
 
                     db.addLink(newLink);                            //adding to our link database
                 }

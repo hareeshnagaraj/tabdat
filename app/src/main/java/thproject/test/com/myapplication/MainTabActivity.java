@@ -147,6 +147,7 @@ public class MainTabActivity extends Activity
         Intent i;
         i = new Intent(MainTabActivity.this,SongRecognitionActivity.class);
         startActivity(i);
+        finish();
     }
 
     @Override
