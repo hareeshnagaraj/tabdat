@@ -27,6 +27,7 @@ public class TabPickerSongRecognition extends DialogFragment {
     public String[] albumstrings = {"a","b","c"};
     public String[] trackstrings = {"a","b","c"};
     public String titleString = "Choose album";
+    public String artist;
     ArrayList mSelectedItems = new ArrayList();    //tracking selected items
 
 
@@ -78,13 +79,13 @@ public class TabPickerSongRecognition extends DialogFragment {
             builder.setPositiveButton("Select",new DialogInterface.OnClickListener(){
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-
+                    scrapeSelectedTracks();
                 }
             });
             builder.setNegativeButton("Exit",new DialogInterface.OnClickListener(){
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-
+                    SongRecognitionActivity.exitSongRecognition();
                 }
             });
         }
@@ -99,5 +100,25 @@ public class TabPickerSongRecognition extends DialogFragment {
     public void setTitle(String a){ titleString = a; }
     //used to set the tracks
     public void setTracks(String[] tracks){trackstrings = tracks;}
+    //set the current artist
+    public void setArtist(String a){artist = a;}
+
+    //Used to scrape all the tracks selected by the user and add them to our database`
+    private void scrapeSelectedTracks(){
+        int length = mSelectedItems.size();
+        List<String> selectedTracks = new LinkedList<String>();
+        for(int i=0; i < length; i++){
+            int index = (Integer) mSelectedItems.get(i);
+            String trackname = trackstrings[index];
+            Log.d("scrapeSelected",trackname);
+            selectedTracks.add(trackname);
+        }
+
+        TabScraper scraper = new TabScraper();
+        scraper.setArtist(artist);
+        scraper.setCallingActivity("SongRecognitionActivity");
+        scraper.setSelectedTracks(selectedTracks);
+        scraper.scrape();
+    }
 
 }

@@ -150,6 +150,7 @@ public class SongsActivity extends FragmentActivity implements TabPickerDialog.T
         final TabScraper scraper = new TabScraper();
         scraper.setArtist(artist);
         scraper.setSongTitle(title);
+        scraper.setCallingActivity("SongsActivity");
         scraper.scrape();
     }
 

@@ -9,6 +9,9 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -25,6 +28,8 @@ public class TabScraper extends Activity{
     private String songtitle;
     private static final String ultimateGuitarURL1 = "http://www.ultimate-guitar.com/search.php?search_type=title&value=";
     MySQLiteHelper db = getDB(this);
+    private String callingActivity;
+    private List<String> selectedTracks = new LinkedList<String>();
 
     public TabScraper(String artist, String songtitle){
         this.artist = artist;
@@ -34,7 +39,7 @@ public class TabScraper extends Activity{
     public TabScraper(){    }
 
     /*
-    * Setter for artist and title
+    * Setters for artist, title, calling activity, selected tracks
     * */
     public void setArtist(String artist){
         this.artist = artist;
@@ -42,19 +47,29 @@ public class TabScraper extends Activity{
     public void setSongTitle(String title){
         this.songtitle = title;
     }
+    public void setCallingActivity(String activity){
+        this.callingActivity = activity;
+        Log.d("TabScraper calling activity",callingActivity);
+    }
+    public void setSelectedTracks(List<String> a){
+        selectedTracks = a;
+    }
+
 
     /*
-    *
-    * Function to scrape Ultimate-Guitar.com, one of the best tab sites!
-    * Used them all the time growing up
-    *
+    *   Function to scrape the internet for tabs, different AsyncTask based on calling activity
     * */
     public void scrape(){
-        new scrapeAsync().execute("ultimate-guitar");
+        if(callingActivity.compareTo("SongsActivity") == 0) {
+            new scrapeAsync().execute();
+        }
+        if(callingActivity.compareTo("SongRecognitionActivity") == 0){
+            new scrapeAsyncArray().execute();
+        }
     }
 
     /*
-    * AsyncTask to actually do the scraping off the main network thread
+    * AsyncTask to actually do the scraping off the main network thread from SongsActivity
     * */
     public class scrapeAsync extends AsyncTask<String, Void, String>{
         @Override
@@ -62,14 +77,17 @@ public class TabScraper extends Activity{
             /*
             * Scrape functionality if string is ultimate-guitar.com, multiple steps
             * */
-            if(string[0] == "ultimate-guitar") {
-                String url = ultimateGuitarURL1 + songtitle;
-                ultimateGuitarParse(url);
+            Log.d("scrapeAsync","doInBackground");
+            String ultimateGuitarURL = null;
+            try {
+                ultimateGuitarURL = ultimateGuitarURL1 + URLEncoder.encode(songtitle, "UTF-8");
+                Log.d("scrapeAsync URL",ultimateGuitarURL);
+                ultimateGuitarParse(ultimateGuitarURL);
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
             }
             return null;
         }
-
-
         @Override
         protected void onPostExecute(String v){
            Log.d("scrapeAsync","onPostExecute" + v);
@@ -79,6 +97,31 @@ public class TabScraper extends Activity{
             SongsActivity.signalCompletion("complete",artist,songtitle);
         }
     }
+
+    /*
+    * AsyncTask to actually do the scraping off the main network thread from SongRecognitionActivity
+    * Performs task in a loop
+    * */
+    public class scrapeAsyncArray extends AsyncTask <Void, Void, Void>{
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            Log.d("scrapeAsyncArray","artist : " + artist);
+            for(int i = 0; i < selectedTracks.size(); i++){
+                String track = selectedTracks.get(i);
+                Log.d("scrapeAsyncArray","scraping: " + track);
+
+            }
+            return null;
+        }
+        @Override
+        protected void onPostExecute(Void v){
+            Log.d("scrapeAsyncArray","completed");
+
+        }
+    }
+
+
 
 
     /*
@@ -109,7 +152,7 @@ public class TabScraper extends Activity{
                 /*
                 * Defining the current artist based on the above string comparison, which allows us to perform certain actions
                 * */
-               // Log.d("tabscraper link iteration data", link.html());
+               Log.d("tabscraper link iteration data", link.html());
                 if(this.artist.compareTo(link.html()) == 0){
                    currentartist = true;
                 }
@@ -119,43 +162,23 @@ public class TabScraper extends Activity{
             }
             else{
                 /*
-                * Storing the link for the tab
+                * Storing the link for the tab  -- need to store bass/guitar as well as ratings
                 * */
                 if(currentartist && (linkClass.compareTo("song") == 0)){
                     String href = link.attr("href");
                     int hrefLength = href.length();
                     String tabIdentifier = href.substring(hrefLength - 8, hrefLength);
 
-                    //getting the print link
-                    try {
-                        Document tabPage = Jsoup.connect(href).get();
-                        Elements printLinkSearch = tabPage.select("a#print_link");
-                        printLink = printLinkSearch.attr("abs:href");
 
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    Log.d("tabscraper href",href);
 
                     Link newTab = new Link();
                     newTab.setArtist(artist);
                     newTab.setTitle(songtitle);
-                    newTab.setLink(printLink);
+                    newTab.setLink(href);
                     newTab.setSource("ultimate-guitar");
 
-                    //Guitar Tab
-                    if(tabIdentifier.compareTo("_tab.htm") == 0 && printLink != null){
-//                        Log.d("tabscraper tab type ", "guitar");
-//                        Log.d("tabscraper  href ", href);
-//                        Log.d("tab scraper print link ",printLink);
-                          db.addLink(newTab);
-                    }
-                    //Bass Tab
-                    else if(tabIdentifier.compareTo("btab.htm") == 0 && printLink != null){
-//                        Log.d("tabscraper tab type ", "bass");
-//                        Log.d("tabscraper  href ", href);
-//                        Log.d("tab scraper print link ",printLink);
-                          db.addLink(newTab);
-                    }
+                    db.addLink(newTab);
 
                 }
 

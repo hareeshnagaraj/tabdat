@@ -47,6 +47,10 @@ public class SongRecognitionActivity extends FragmentActivity implements TabPick
     String[] globalAlbums = null;   //global list of albums
     List<GnAlbum> albumObjects = new LinkedList<GnAlbum>();
 
+    //Once selected, we instantiate a global object for the artist
+    String artist;
+    private static List<String> selectedTracks = new LinkedList<String>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +81,10 @@ public class SongRecognitionActivity extends FragmentActivity implements TabPick
                     int index = data.getInt("albumIndex");
                     GnAlbum selectedAlbum = albumObjects.get(index);
                     showTracksDialog(selectedAlbum);
+                }
+                //Actino to begin scraping
+                if(action.compareTo("scrape") == 0){
+                    beginScraping();
                 }
 
                 //Action to exit this activity
@@ -110,6 +118,7 @@ public class SongRecognitionActivity extends FragmentActivity implements TabPick
         msg.setData(data);
         handler.sendMessage(msg);
     }
+
     /*
     *
     * Static method to signal handler to show dialog with albums
@@ -143,6 +152,25 @@ public class SongRecognitionActivity extends FragmentActivity implements TabPick
         msg.setData(data);
         handler.sendMessage(msg);
     }
+    /*
+    * Static method to signal handler to begin scraping
+    * */
+    public static void signalTrackScraping(List<String> a){
+        selectedTracks = a;
+        Message msg = new Message();
+        Bundle data = new Bundle();
+        data.putString("action", "scrape");
+        msg.setData(data);
+        handler.sendMessage(msg);
+    }
+
+    /*
+    * Method to begin scraping appropriately
+    * */
+    public void beginScraping(){
+
+    }
+
 
     /*
     * method to show album dialog
@@ -159,9 +187,13 @@ public class SongRecognitionActivity extends FragmentActivity implements TabPick
 
     /*
     * Method to show tracks dialog
+    * Sets global artist
     * Gets the album object, accordingly parses the tracks and displays them
     * */
     public void showTracksDialog(GnAlbum album){
+        GnArtist selectedArtist = album.artist();
+        artist = selectedArtist.name().display();
+
         GnTrackIterable trackIterable = album.tracks();
         GnTrackIterator trackIterator = trackIterable.getIterator();
         GnTrack track = null;
@@ -180,6 +212,8 @@ public class SongRecognitionActivity extends FragmentActivity implements TabPick
         TabPickerSongRecognition dialog = new TabPickerSongRecognition();
         dialog.setDisplayMode(1);   //setting our dialog to display tracks
         dialog.setTracks(finalTrackList);
+        dialog.setTitle("Select Tracks to Tab");
+        dialog.setArtist(artist);
         dialog.show(getFragmentManager(),"TabPickerSongRecognition");
     }
 
