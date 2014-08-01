@@ -45,6 +45,7 @@ public class SongRecognitionActivity extends FragmentActivity implements TabPick
     static Handler handler;         //handler
 
     String[] globalAlbums = null;   //global list of albums
+    List<GnAlbum> albumObjects = new LinkedList<GnAlbum>();
 
 
     @Override
@@ -70,6 +71,17 @@ public class SongRecognitionActivity extends FragmentActivity implements TabPick
                 //Action to show our list of albums
                 if(action.compareTo("albums") == 0){
                     showAlbumDialog();
+                }
+                //Action to show our list of tracks
+                if(action.compareTo("tracks") == 0){
+                    int index = data.getInt("albumIndex");
+                    GnAlbum selectedAlbum = albumObjects.get(index);
+                    showTracksDialog(selectedAlbum);
+                }
+
+                //Action to exit this activity
+                if(action.compareTo("exit") == 0){
+                    finish();
                 }
             }
         };
@@ -100,7 +112,7 @@ public class SongRecognitionActivity extends FragmentActivity implements TabPick
     }
     /*
     *
-    * Static method to signal handler to show dialog
+    * Static method to signal handler to show dialog with albums
     *
     * */
     public static void startAlbumDialog(){
@@ -111,15 +123,76 @@ public class SongRecognitionActivity extends FragmentActivity implements TabPick
         handler.sendMessage(msg);
     }
     /*
+    *Static method signaling handler to show tracks
+    * */
+    public static void startTracksDialog(int a){
+        Message msg = new Message();
+        Bundle data = new Bundle();
+        data.putString("action","tracks");
+        data.putInt("albumIndex",a);
+        msg.setData(data);
+        handler.sendMessage(msg);
+    }
+    /*
+    * Static method to end activity
+    * */
+    public static void exitSongRecognition(){
+        Message msg = new Message();
+        Bundle data = new Bundle();
+        data.putString("action", "exit");
+        msg.setData(data);
+        handler.sendMessage(msg);
+    }
+
+    /*
     * method to show album dialog
+    *
+    * sets the list of albums, as well as passes the album objects
+    *
     * */
     public void showAlbumDialog(){
         TabPickerSongRecognition dialog = new TabPickerSongRecognition();
+        dialog.setDisplayMode(0);           //specifying the display mode as albums
         dialog.setAlbums(globalAlbums);
         dialog.show(getFragmentManager(),"TabPickerSongRecognition");
     }
 
+    /*
+    * Method to show tracks dialog
+    * Gets the album object, accordingly parses the tracks and displays them
+    * */
+    public void showTracksDialog(GnAlbum album){
+        GnTrackIterable trackIterable = album.tracks();
+        GnTrackIterator trackIterator = trackIterable.getIterator();
+        GnTrack track = null;
+        List<String> trackListObject = new LinkedList<String>();
+        while(trackIterator.hasNext()){
+            try {
+                track = trackIterator.next();
+                GnTitle title = track.title();
+                Log.d("showTracksDialog track : " , title.display());
+                trackListObject.add(title.display());
+            } catch (GnException e) {
+                e.printStackTrace();
+            }
+        }
+        String[] finalTrackList = listToArray(trackListObject);
+        TabPickerSongRecognition dialog = new TabPickerSongRecognition();
+        dialog.setDisplayMode(1);   //setting our dialog to display tracks
+        dialog.setTracks(finalTrackList);
+        dialog.show(getFragmentManager(),"TabPickerSongRecognition");
+    }
 
+    /*
+    * Method to convert List objects to arrays for convenience
+    * */
+    public String[] listToArray(List<String> list){
+        String[] returnList = new String[list.size()];
+        for(int i = 0; i < list.size(); i++){
+            returnList[i] = list.get(i);
+        }
+        return returnList;
+    }
 
 
     /*
@@ -197,7 +270,6 @@ public class SongRecognitionActivity extends FragmentActivity implements TabPick
         @Override
         public void musicIdStreamProcessingStatusEvent(GnMusicIdStreamProcessingStatus gnMusicIdStreamProcessingStatus, IGnCancellable iGnCancellable) {
             Log.d("GnMusicIdStreamEvents","musicIdStreamProcessingStatusEvent");
-
         }
 
 
@@ -235,10 +307,11 @@ public class SongRecognitionActivity extends FragmentActivity implements TabPick
                 finish();   //returning to the previous activity
             }
             else{
-            //if album/s are found
+            //if album/s are found we display the appropriate dialog to the user
                 while(it.hasNext()){
                     try {
                         result = it.next();
+                        albumObjects.add(result);
                     } catch (GnException e) {
                         e.printStackTrace();
                     }
@@ -256,13 +329,6 @@ public class SongRecognitionActivity extends FragmentActivity implements TabPick
 
         }
 
-        private String[] listToArray(List<String> list){
-            String[] returnList = new String[list.size()];
-            for(int i = 0; i < list.size(); i++){
-                returnList[i] = list.get(i);
-            }
-            return returnList;
-        }
 
         @Override
         public void musicIdStreamIdentifyCompletedWithError(GnError gnError) {

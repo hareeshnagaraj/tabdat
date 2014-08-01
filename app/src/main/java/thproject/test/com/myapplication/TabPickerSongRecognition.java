@@ -10,22 +10,32 @@ import android.util.Log;
 
 import com.gracenote.gnsdk.GnAlbum;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
  * Created by hareeshnagaraj on 7/31/14.
+ *
+ * This class is used to show the albums after they are recognized
+ * Once an album is recognized, the user is shown a list of tracks and given the option to select one
+ *
+ * After the user selects an album, this same DialogFragment is used to display the list of tracks to the user
+ *
  */
 public class TabPickerSongRecognition extends DialogFragment {
-    List<GnAlbum> albums = new LinkedList<GnAlbum>();
     public String[] albumstrings = {"a","b","c"};
-    public String[] trackstring = {"a","b","c"};
+    public String[] trackstrings = {"a","b","c"};
     public String titleString = "Choose album";
+    ArrayList mSelectedItems = new ArrayList();    //tracking selected items
+
 
     public interface songRecognizedListener{
         public void onTabClick(DialogFragment dialog);
     }
+
     songRecognizedListener listener;
+    int displayMode = 0;        // 0 is for albums, 1 is for tracks
     @Override
     public void onAttach(Activity activity){
         super.onAttach(activity);
@@ -42,17 +52,52 @@ public class TabPickerSongRecognition extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState){
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(titleString);
-        builder.setItems(albumstrings, new DialogInterface.OnClickListener(){
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                Log.d("TabPickerDialog item selected", albumstrings[i]);
 
-            }
-        });
+        if(displayMode == 0) {  //displaying albums
+            builder.setItems(albumstrings, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    Log.d("TabPickerDialog item selected", albumstrings[i]);
+                    SongRecognitionActivity.startTracksDialog(i);           //signaling the
+                }
+            });
+        }
+        if(displayMode == 1){   //displaying tracks, allowing user to select multiple
+            builder.setMultiChoiceItems(trackstrings,null,new DialogInterface.OnMultiChoiceClickListener(){
+                @Override
+                public void onClick(DialogInterface dialogInterface, int which, boolean isChecked) {
+                    if (isChecked) {
+                        // If the user checked the item, add it to the selected items
+                        mSelectedItems.add(which);
+                    } else if (mSelectedItems.contains(which)) {
+                        // Else, if the item is already in the array, remove it
+                        mSelectedItems.remove(Integer.valueOf(which));
+                    }
+                }
+            });
+            builder.setPositiveButton("Select",new DialogInterface.OnClickListener(){
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+
+                }
+            });
+            builder.setNegativeButton("Exit",new DialogInterface.OnClickListener(){
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+
+                }
+            });
+        }
 
         return builder.create();
     }
 
+    public void setDisplayMode(int a){ displayMode = a; };
     //used to set the current albums
     public void setAlbums(String[] albums){ albumstrings = albums; }
+    //used to set the album objects, for access when songs selected
+    public void setTitle(String a){ titleString = a; }
+    //used to set the tracks
+    public void setTracks(String[] tracks){trackstrings = tracks;}
+
 }
