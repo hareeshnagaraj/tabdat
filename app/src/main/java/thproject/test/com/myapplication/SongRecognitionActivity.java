@@ -50,6 +50,7 @@ public class SongRecognitionActivity extends FragmentActivity implements TabPick
     //Once selected, we instantiate a global object for the artist
     String artist;
     private static List<String> selectedTracks = new LinkedList<String>();
+    public ProgressDialog progressDialog;       //dialog to show progress
 
 
     @Override
@@ -86,6 +87,24 @@ public class SongRecognitionActivity extends FragmentActivity implements TabPick
                 if(action.compareTo("scrape") == 0){
                     beginScraping();
                 }
+                //show progress
+                if(action.compareTo("showprogress") == 0){
+                    progressDialog = new ProgressDialog(SongRecognitionActivity.this);
+                    progressDialog.setMessage("Loading tab ");
+                    progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                    progressDialog.show();
+                }
+
+                //hide progress
+                if(action.compareTo("stopprogress") == 0){
+                    progressDialog.hide();
+                }
+
+                //update progress
+                if(action.compareTo("progresstext") == 0){
+                    String text = data.getString("text");
+                    progressDialog.setMessage("Loading tab " + text);
+                }
 
                 //Action to exit this activity
                 if(action.compareTo("exit") == 0){
@@ -103,7 +122,7 @@ public class SongRecognitionActivity extends FragmentActivity implements TabPick
 
     /*
     *
-    * Static class to signal handler for toasts within loop
+    * Static method to signal handler for toasts within loop
     *
     * */
 
@@ -115,6 +134,33 @@ public class SongRecognitionActivity extends FragmentActivity implements TabPick
         data.putString("artist",a);
         data.putString("album",b);
 
+        msg.setData(data);
+        handler.sendMessage(msg);
+    }
+
+    /*
+    * Static method to show progress bar, hide progress bar, update text
+    * */
+    public static void showProgress(){
+        Message msg = new Message();
+        Bundle data = new Bundle();
+        data.putString("action","showprogress");
+        msg.setData(data);
+        handler.sendMessage(msg);
+    }
+    public static void stopProgress(){
+        Message msg = new Message();
+        Bundle data = new Bundle();
+        data.putString("action","stopprogress");
+        msg.setData(data);
+        handler.sendMessage(msg);
+
+    }
+    public static void progressText(String a ){
+        Message msg = new Message();
+        Bundle data = new Bundle();
+        data.putString("action","progresstext");
+        data.putString("text",a);
         msg.setData(data);
         handler.sendMessage(msg);
     }

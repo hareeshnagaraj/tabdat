@@ -107,9 +107,11 @@ public class TabScraper extends Activity{
         @Override
         protected Void doInBackground(Void... voids) {
             Log.d("scrapeAsyncArray","artist : " + artist);
+            SongRecognitionActivity.showProgress();
             for(int i = 0; i < selectedTracks.size(); i++){
                 String track = selectedTracks.get(i);
                 songtitle = track;
+                SongRecognitionActivity.progressText(track);
                 Log.d("scrapeAsyncArray","scraping: " + track);
                 try {
                     String ultimateGuitarURL = ultimateGuitarURL1 + URLEncoder.encode(track, "UTF-8");
@@ -119,11 +121,14 @@ public class TabScraper extends Activity{
                 }
 
             }
+            SongRecognitionActivity.stopProgress();
+
             return null;
         }
         @Override
         protected void onPostExecute(Void v){
             Log.d("scrapeAsyncArray","completed");
+            SongRecognitionActivity.exitSongRecognition();
 
         }
     }
@@ -178,16 +183,22 @@ public class TabScraper extends Activity{
                     String tabIdentifier = href.substring(hrefLength - 8, hrefLength);
 
 
-                    Link newTab = new Link();
-                    newTab.setArtist(artist);
-                    newTab.setTitle(songtitle);
-                    newTab.setLink(href);
-                    newTab.setSource("ultimate-guitar");
+                    Link newLink = new Link();
+                    newLink.setArtist(artist);
+                    newLink.setTitle(songtitle);
+                    newLink.setLink(href);
+                    newLink.setSource("ultimate-guitar");
                     Log.d("tabscraper href",href);
-                    Log.d("tabscraper addlink",newTab.toString());
+                    Log.d("tabscraper addlink",newLink.toString());
 
-                    db.addLink(newTab);
+                    if(!db.tabExists(songtitle,artist)){            //adding to our tab database
+                        Tab newTab = new Tab();
+                        newTab.setTitle(songtitle);
+                        newTab.setArtist(artist);
+                        db.addTab(newTab);
+                    }
 
+                    db.addLink(newLink);                            //adding to our link database
                 }
 
              }
