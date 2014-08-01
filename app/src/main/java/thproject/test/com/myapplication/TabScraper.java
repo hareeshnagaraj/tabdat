@@ -109,7 +109,14 @@ public class TabScraper extends Activity{
             Log.d("scrapeAsyncArray","artist : " + artist);
             for(int i = 0; i < selectedTracks.size(); i++){
                 String track = selectedTracks.get(i);
+                songtitle = track;
                 Log.d("scrapeAsyncArray","scraping: " + track);
+                try {
+                    String ultimateGuitarURL = ultimateGuitarURL1 + URLEncoder.encode(track, "UTF-8");
+                    ultimateGuitarParse(ultimateGuitarURL);
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
 
             }
             return null;
@@ -152,9 +159,10 @@ public class TabScraper extends Activity{
                 /*
                 * Defining the current artist based on the above string comparison, which allows us to perform certain actions
                 * */
-               Log.d("tabscraper link iteration data", link.html());
                 if(this.artist.compareTo(link.html()) == 0){
                    currentartist = true;
+                   Log.d("tabscraper current artist", link.html());
+
                 }
                 else{
                     currentartist = false;
@@ -170,13 +178,13 @@ public class TabScraper extends Activity{
                     String tabIdentifier = href.substring(hrefLength - 8, hrefLength);
 
 
-                    Log.d("tabscraper href",href);
-
                     Link newTab = new Link();
                     newTab.setArtist(artist);
                     newTab.setTitle(songtitle);
                     newTab.setLink(href);
                     newTab.setSource("ultimate-guitar");
+                    Log.d("tabscraper href",href);
+                    Log.d("tabscraper addlink",newTab.toString());
 
                     db.addLink(newTab);
 
