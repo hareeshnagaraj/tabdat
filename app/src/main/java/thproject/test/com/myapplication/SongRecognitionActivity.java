@@ -2,6 +2,7 @@ package thproject.test.com.myapplication;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.DialogFragment;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.media.MediaPlayer;
@@ -25,8 +26,10 @@ import com.gracenote.gnsdk.*;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
-public class SongRecognitionActivity extends FragmentActivity {
+public class SongRecognitionActivity extends FragmentActivity implements TabPickerSongRecognition.songRecognizedListener{
     Context context;
     Button recordButton;
     GnManager gnsdk;
@@ -39,7 +42,10 @@ public class SongRecognitionActivity extends FragmentActivity {
     MediaRecorder mRecorder = null;
     MediaPlayer mPlayer = null;
 
-    static Handler handler;
+    static Handler handler;         //handler
+
+    String[] globalAlbums = null;   //global list of albums
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +67,10 @@ public class SongRecognitionActivity extends FragmentActivity {
                 if(action.compareTo("test") == 0) {
                     Toast.makeText(getApplicationContext(),artist + " " + album,Toast.LENGTH_SHORT).show();
                 }
+                //Action to show our list of albums
+                if(action.compareTo("albums") == 0){
+                    showAlbumDialog();
+                }
             }
         };
         //Executing asynchronous connection
@@ -73,7 +83,7 @@ public class SongRecognitionActivity extends FragmentActivity {
 
     /*
     *
-    * Class to signal handler for toasts within loop
+    * Static class to signal handler for toasts within loop
     *
     * */
 
@@ -88,6 +98,30 @@ public class SongRecognitionActivity extends FragmentActivity {
         msg.setData(data);
         handler.sendMessage(msg);
     }
+    /*
+    *
+    * Static method to signal handler to show dialog
+    *
+    * */
+    public static void startAlbumDialog(){
+        Message msg = new Message();
+        Bundle data = new Bundle();
+        data.putString("action","albums");
+        msg.setData(data);
+        handler.sendMessage(msg);
+    }
+    /*
+    * method to show album dialog
+    * */
+    public void showAlbumDialog(){
+        TabPickerSongRecognition dialog = new TabPickerSongRecognition();
+        dialog.setAlbums(globalAlbums);
+        dialog.show(getFragmentManager(),"TabPickerSongRecognition");
+    }
+
+
+
+
     /*
     * Class to establish GnManager, etc.
     * */
@@ -187,30 +221,47 @@ public class SongRecognitionActivity extends FragmentActivity {
             Log.d("GnMusicIdStreamEvents stop listening","isListening = false");
             isListening = false;
 
+            List<String> displayList = new LinkedList<String>();
+
             GnResponseAlbums local = gnResponseAlbums;
             GnAlbumIterable results = local.albums();
             GnAlbumIterator it = results.getIterator();
             Long albumCount = results.count();
             Log.d("GnAlbumIterable count",Long.toString(albumCount));
 
-            while(it.hasNext()){
-                try {
-                    result = it.next();
-                } catch (GnException e) {
-                    e.printStackTrace();
-                }
-                GnArtist artist = result.artist();
-                GnTitle title = result.title();
-                GnName name = artist.name();
-
-                loopToast(name.display(),title.display());
-                Log.d("musicIdStreamAlbumResult ", name.display() + " " + title.display());
-           }
-
             //Action if no album found
             if(albumCount == 0){
-
+                loopToast("No albums found :(","");
+                finish();   //returning to the previous activity
             }
+            else{
+            //if album/s are found
+                while(it.hasNext()){
+                    try {
+                        result = it.next();
+                    } catch (GnException e) {
+                        e.printStackTrace();
+                    }
+                    GnArtist artist = result.artist();
+                    GnTitle title = result.title();
+                    GnName name = artist.name();
+                    displayList.add(title.display() + " by " + name.display());
+                    Log.d("musicIdStreamAlbumResult ", name.display() + " " + title.display());
+               }
+               String[] returnList = listToArray(displayList);
+               globalAlbums = returnList;       //setting our globalalbums list to this returnList
+               //Signaling our handler
+               startAlbumDialog();
+           }
+
+        }
+
+        private String[] listToArray(List<String> list){
+            String[] returnList = new String[list.size()];
+            for(int i = 0; i < list.size(); i++){
+                returnList[i] = list.get(i);
+            }
+            return returnList;
         }
 
         @Override
@@ -222,7 +273,6 @@ public class SongRecognitionActivity extends FragmentActivity {
         @Override
         public void statusEvent(GnStatus gnStatus, long l, long l2, long l3, IGnCancellable iGnCancellable) {
             Log.d("GnStatus",Long.toString(l) + Long.toString(l2) + Long.toString(l3) );
-
         }
 
     }
@@ -247,14 +297,13 @@ public class SongRecognitionActivity extends FragmentActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * GNSDK MusicID-File event delegate
-     */
-//    private class MusicIDFileEvents extends IGnMusicIdFileEvents {
-//        HashMap<String, String> gnStatus_to_displayStatus;
-//        public MusicIDFileEvents(){
-//        gnStatus_to_displayStatus = new HashMap<String,String>(); gnStatus_to_displayStatus.put("kMusicIdFileCallbackStatusProcessingBegin", "Begin processing file");
-//        gnStatus_to_displayStatus.put("kMusicIdFileCallbackStatusFileInfoQuery", "Querying file info");
-//        gnStatus_to_displayStatus.put("kMusicIdFileCallbackStatusProcessingComplete", "Identificationcomplete"); }
-//    }
-}
+
+    /*
+    * Handling the events for the dialog fragment
+    * */
+
+    @Override
+    public void onTabClick(DialogFragment dialog) {
+
+    }
+ }

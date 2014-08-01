@@ -211,6 +211,7 @@ public class SongsActivity extends FragmentActivity implements TabPickerDialog.T
         Log.d("showTabDialog links length", Integer.toString(length));
         if(length > 0){
             dialog.show(getFragmentManager(),"TabPickerDialog");
+
         }
         else{
             Toast.makeText(getApplicationContext(),"No Tabs found :(",Toast.LENGTH_SHORT).show();

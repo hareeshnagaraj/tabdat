@@ -388,7 +388,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
                link.setLink(cursor.getString(3));
                link.setSource(cursor.getString(4));
                links.add(link);
-               Log.d("getAllLinks",link.toString());
+//               Log.d("getAllLinks",link.toString());
 
             }while(cursor.moveToNext());
         }
