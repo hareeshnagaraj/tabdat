@@ -3,14 +3,25 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingTop="10dp"
-    android:paddingBottom="10dp">
+    >
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Search"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:id="@+id/searchTop"
+        android:paddingLeft="20dp"
+        android:textColor="#ffffffff"
+        android:background="@color/primary_red" />
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/search_title"
-        android:paddingTop="10dp"
         android:paddingBottom="10dp"
+        android:paddingTop="40dp"
         android:text="title"
         android:layout_gravity="center_horizontal"
         android:singleLine="false"
@@ -22,7 +33,7 @@
         android:id="@+id/search_artist"
         android:layout_gravity="center_horizontal"
         android:paddingTop="10dp"
-        android:paddingBottom="10dp"
+        android:paddingBottom="40dp"
         android:text="artist"
         android:background="#00000000"
         android:paddingLeft="20dp" />
@@ -35,6 +46,7 @@
         android:paddingBottom="10dp"
         android:id="@+id/submitSearch"
         android:paddingLeft="20dp"
-        android:textColor="@color/primary_red" />
+        android:textColor="#ffffffff"
+        android:background="@color/primary_red" />
 
 </LinearLayout>

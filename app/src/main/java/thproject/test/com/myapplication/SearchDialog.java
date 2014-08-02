@@ -49,7 +49,6 @@ public class SearchDialog extends DialogFragment {
 
         LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
         View promptView = layoutInflater.inflate(R.layout.search_dialog, null);
-        builder.setTitle("Search");
         builder.setView(promptView);
         searchSubmit(promptView);
 

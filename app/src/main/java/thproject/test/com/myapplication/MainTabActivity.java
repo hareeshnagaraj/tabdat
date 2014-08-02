@@ -100,6 +100,7 @@ public class MainTabActivity extends Activity
                 }
                 if(action.compareTo("hideprogress") == 0){  //hide progress bar
                     progressDialog.hide();
+                    restartActivity();
                 }
                 if(action.compareTo("toast") == 0){         //showing a toast for the dialog
                     String toastmessage = data.getString("toast");
@@ -198,6 +199,15 @@ public class MainTabActivity extends Activity
         i.putExtras(extras);
         startActivity(i);
         // close this activity
+    }
+    /*
+    * Restart this activity to show new cards
+    * */
+    private void restartActivity(){
+        Intent i;
+        i = new Intent(MainTabActivity.this,MainTabActivity.class);
+        startActivity(i);
+        finish();
     }
 
     /*

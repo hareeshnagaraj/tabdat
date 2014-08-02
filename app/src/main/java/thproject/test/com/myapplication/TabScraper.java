@@ -70,7 +70,6 @@ public class TabScraper extends Activity{
         return titleCaseValue;
     }
 
-
     /*
     * Function to scrape the internet for tabs, different AsyncTask based on calling activity
     * */
