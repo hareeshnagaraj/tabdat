@@ -239,12 +239,22 @@ public class TabScraper extends Activity{
 
              }
         }
-        db.getAllLinks();
     }
     /*
     * Function to parse Guitaretab
     *
     * */
+    public void guitareTabParse(String url){
+        Boolean currentartist = false;
+        String printLink = "";
+
+        Document doc = null;
+        try {
+            doc = Jsoup.connect(url).get();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public String stripSpecialChars(String a){
         String stripped = null;
