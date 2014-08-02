@@ -26,6 +26,8 @@ public class TabScraper extends Activity{
     private String artist;
     private String songtitle;
     private static final String ultimateGuitarURL1 = "http://www.ultimate-guitar.com/search.php?search_type=title&value=";
+    private static final String guitareTabURL = "http://www.guitaretab.com/fetch/?type=tab&query=";
+
     MySQLiteHelper db = getDB(this);
     private String callingActivity;
     private List<String> selectedTracks = new LinkedList<String>();
@@ -172,7 +174,7 @@ public class TabScraper extends Activity{
     *
     * Function to parse UG page
     * 1. Execute query and get results for search page
-    * 2. Open links to each tab and store print version
+    * 2. Store links to each tab
     * */
     public void ultimateGuitarParse(String url){
         Boolean currentartist = false;
@@ -215,24 +217,34 @@ public class TabScraper extends Activity{
                 * */
                 if(currentartist && (linkClass.compareTo("song") == 0)){
                     String href = link.attr("href");
-                    int hrefLength = href.length();
+                    Element parent = link.parent().nextElementSibling().nextElementSibling();   //getting the tab type by going over the sibling elements
+                    Element typeWrapper = parent.child(0);
+                    String linkType = typeWrapper.html();
 
-                    Link newLink = new Link();
-                    newLink.setArtist(artist);
-                    newLink.setTitle(songtitle);
-                    newLink.setLink(href);
-                    newLink.setSource("ultimate-guitar");
-                    Log.d("tabscraper href",href);
-                    Log.d("tabscraper addlink",newLink.toString());
+                    //only adding bass and guitar tabs to our database, avoiding tab pro/power tab
+                    if(linkType.contentEquals("tab") || linkType.contentEquals("bass") || linkType.contentEquals("chords")) {
+                        Log.d("Adding tab of type",linkType);
+                        Link newLink = new Link();
+                        newLink.setArtist(artist);
+                        newLink.setTitle(songtitle);
+                        newLink.setLink(href);
+                        newLink.setSource("ultimate-guitar");
+                        Log.d("tabscraper href", href);
+                        Log.d("tabscraper addlink", newLink.toString());
 
-                    db.addLink(newLink);                            //adding to our link database
-                    numTabs++;
+                        db.addLink(newLink);                            //adding to our link database
+                        numTabs++;
+                    }
                 }
 
              }
         }
         db.getAllLinks();
     }
+    /*
+    * Function to parse Guitaretab
+    *
+    * */
 
     public String stripSpecialChars(String a){
         String stripped = null;

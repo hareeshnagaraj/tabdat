@@ -250,7 +250,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
                 linkHash.put(Integer.toString(numlinks),link);
             }while(cursor.moveToNext());
         }
-        Log.d("getLink",Integer.toString(numlinks));
+//        Log.d("getLink",Integer.toString(numlinks));
         cursor.close();
         return linkHash;
     }
@@ -360,7 +360,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         Cursor cursor = db.query(true, TABLE_TABS, new String[] {"artist"}, null, null, "artist", null, null, null);
         if(cursor.moveToNext()){
             do{
-                Log.d("getAllArtists : " , cursor.getString(0));
+//                Log.d("getAllArtists : " , cursor.getString(0));
                 artists.add(cursor.getString(0));
             }while(cursor.moveToNext());
         }
@@ -372,7 +372,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     * Returning all the links we have stored
     * */
     public List<Link> getAllLinks(){
-        Log.d("getAllLinks","begin query");
+//        Log.d("getAllLinks","begin query");
         List<Link> links = new LinkedList<Link>();
         String query = "SELECT * FROM " + TABLE_LINKS;
         SQLiteDatabase db = getWritableDatabase();
