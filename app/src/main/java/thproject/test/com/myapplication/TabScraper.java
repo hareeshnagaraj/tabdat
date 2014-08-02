@@ -41,11 +41,10 @@ public class TabScraper extends Activity{
     * Setters for artist, title, calling activity, selected tracks
     * */
     public void setArtist(String artist){
-        String capitalizedartist = artist.substring(0, 1).toUpperCase() + artist.substring(1);
-        this.artist = capitalizedartist;
+        this.artist = capitalizeEachWord(artist);
     }
     public void setSongTitle(String title){
-        this.songtitle = title;
+        this.songtitle = capitalizeEachWord(title);
     }
     public void setCallingActivity(String activity){
         this.callingActivity = activity;
@@ -53,6 +52,22 @@ public class TabScraper extends Activity{
     }
     public void setSelectedTracks(List<String> a){
         selectedTracks = a;
+    }
+    /*
+    * Used to capitalize each word when setting the artist, to avoid multiple instances of same artist
+    * */
+    public String capitalizeEachWord(String a){
+        String[] words = a.split(" ");
+        StringBuilder sb = new StringBuilder();
+        if (words[0].length() > 0) {
+            sb.append(Character.toUpperCase(words[0].charAt(0)) + words[0].subSequence(1, words[0].length()).toString().toLowerCase());
+            for (int i = 1; i < words.length; i++) {
+                sb.append(" ");
+                sb.append(Character.toUpperCase(words[i].charAt(0)) + words[i].subSequence(1, words[i].length()).toString().toLowerCase());
+            }
+        }
+        String titleCaseValue = sb.toString();
+        return titleCaseValue;
     }
 
 
@@ -90,7 +105,6 @@ public class TabScraper extends Activity{
                 db.addTab(newTab);
                 Log.d("scrapeAsync","adding artist");
             }
-
             try {
                 ultimateGuitarURL = ultimateGuitarURL1 + URLEncoder.encode(songtitle, "UTF-8");
                 Log.d("scrapeAsync URL",ultimateGuitarURL);
@@ -154,10 +168,6 @@ public class TabScraper extends Activity{
             SongRecognitionActivity.exitSongRecognition();
         }
     }
-
-
-
-
     /*
     *
     * Function to parse UG page
