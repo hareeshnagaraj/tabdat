@@ -2,8 +2,10 @@ package thproject.test.com.myapplication;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
@@ -19,6 +21,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.HashMap;
@@ -26,7 +30,7 @@ import java.util.HashMap;
 import static thproject.test.com.myapplication.MySQLiteHelper.getDB;
 
 public class MainTabActivity extends Activity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks,SearchDialog.SearchListener {
 
     private static Handler handler;
     /**
@@ -46,7 +50,11 @@ public class MainTabActivity extends Activity
     private Context context;
     public thproject.test.com.myapplication.NowLayout nowLayout;
     MySQLiteHelper db;
-
+    EditText artist;
+    EditText title;
+    TextView submit;
+    public ProgressDialog progressDialog;       //dialog to show progress
+    SearchDialog dialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,11 +83,31 @@ public class MainTabActivity extends Activity
             public void handleMessage(Message msg) {
                 Log.d("message", "hit");
                 Bundle data = msg.getData();
-                Bundle extras = new Bundle();
-                extras.putString("artist", data.getString("artist"));
-                startSongActivity(extras);
+                String action = data.getString("action");
+
+                if(action.compareTo("songs") == 0) {        //showing the songs activity on swipe
+                    Bundle extras = new Bundle();
+                    extras.putString("artist", data.getString("artist"));
+                    startSongActivity(extras);
+                }
+                if(action.compareTo("showprogress") == 0){  //show progress bar
+                    dialog.dismiss();
+                    String searchTitle = data.getString("title");
+                    progressDialog = new ProgressDialog(MainTabActivity.this);
+                    progressDialog.setMessage("Loading tab " + searchTitle);
+                    progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                    progressDialog.show();
+                }
+                if(action.compareTo("hideprogress") == 0){  //hide progress bar
+                    progressDialog.hide();
+                }
+                if(action.compareTo("toast") == 0){         //showing a toast for the dialog
+                    String toastmessage = data.getString("toast");
+                    Toast.makeText(getApplicationContext(),toastmessage,Toast.LENGTH_SHORT).show();
+                }
             }
         };
+        //adding listener for search function
 
     }
 
@@ -121,10 +149,39 @@ public class MainTabActivity extends Activity
    *
    * */
     public static void signalHandlerDisplaySongs(String artist){
-
         Message msg = new Message();
         Bundle data = new Bundle();
         data.putString("artist",artist);
+        data.putString("action","songs");
+        msg.setData(data);
+        handler.sendMessage(msg);
+    }
+     /*
+    * Show progress bar
+    * */
+    public static void showProgress(String title){
+        Message msg = new Message();
+        Bundle data = new Bundle();
+        data.putString("title",title);
+        data.putString("action","showprogress");
+        msg.setData(data);
+        handler.sendMessage(msg);
+    }
+    /*
+    * Hide progress bar
+    * */
+    public static void hideProgress(){
+        Message msg = new Message();
+        Bundle data = new Bundle();
+        data.putString("action","hideprogress");
+        msg.setData(data);
+        handler.sendMessage(msg);
+    }
+    public static void toasty(String a){
+        Message msg = new Message();
+        Bundle data = new Bundle();
+        data.putString("toast",a);
+        data.putString("action","toast");
         msg.setData(data);
         handler.sendMessage(msg);
     }
@@ -150,13 +207,17 @@ public class MainTabActivity extends Activity
         finish();
     }
 
+
     /*
     * Show search dialog
     * */
     private void searchDialog(){
         Log.d("searchDialog","pressed");
+        dialog = new SearchDialog();
+        dialog.show(getFragmentManager(), "SearchDialog");
 
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -191,6 +252,13 @@ public class MainTabActivity extends Activity
         return super.onOptionsItemSelected(item);
     }
 
+    /*
+    * Used to show our dialog
+    * */
+    @Override
+    public void onTabClick(DialogFragment dialog) {
+
+    }
 
 
     /**
