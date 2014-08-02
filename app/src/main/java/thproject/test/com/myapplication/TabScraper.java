@@ -29,6 +29,7 @@ public class TabScraper extends Activity{
     MySQLiteHelper db = getDB(this);
     private String callingActivity;
     private List<String> selectedTracks = new LinkedList<String>();
+    int numTabs = 0; //used to count the tabs, exclusively in MainTabActivity
 
     public TabScraper(String artist, String songtitle){
         this.artist = artist;
@@ -123,7 +124,7 @@ public class TabScraper extends Activity{
                 SongsActivity.signalCompletion("complete",artist,songtitle);
             }
             if(callingActivity.compareTo("MainTabActivity") == 0){
-                MainTabActivity.scrapeCompleted();
+                MainTabActivity.scrapeCompleted(numTabs);   //sending the number of tabs back to the main activity
             }
         }
     }
@@ -215,8 +216,6 @@ public class TabScraper extends Activity{
                 if(currentartist && (linkClass.compareTo("song") == 0)){
                     String href = link.attr("href");
                     int hrefLength = href.length();
-                    String tabIdentifier = href.substring(hrefLength - 8, hrefLength);
-
 
                     Link newLink = new Link();
                     newLink.setArtist(artist);
@@ -227,6 +226,7 @@ public class TabScraper extends Activity{
                     Log.d("tabscraper addlink",newLink.toString());
 
                     db.addLink(newLink);                            //adding to our link database
+                    numTabs++;
                 }
 
              }

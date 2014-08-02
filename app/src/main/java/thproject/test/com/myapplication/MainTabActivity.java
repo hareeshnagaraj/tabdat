@@ -100,6 +100,7 @@ public class MainTabActivity extends Activity
                 }
                 if(action.compareTo("hideprogress") == 0){  //hide progress bar
                     progressDialog.hide();
+                    progressDialog.dismiss();
                     restartActivity();
                 }
                 if(action.compareTo("toast") == 0){         //showing a toast for the dialog
@@ -186,7 +187,16 @@ public class MainTabActivity extends Activity
         msg.setData(data);
         handler.sendMessage(msg);
     }
-    public static void scrapeCompleted(){
+    /*
+    * Show results of search scrape
+    * */
+    public static void scrapeCompleted(int a){
+        if(a == 0){                     //action if no tabs are found
+            toasty("No tabs found");
+        }
+        else{
+            toasty(Integer.toString(a) + " tabs added");
+        }
         hideProgress();
     }
 
