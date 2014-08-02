@@ -57,10 +57,13 @@ public class TabScraper extends Activity{
 
 
     /*
-    *   Function to scrape the internet for tabs, different AsyncTask based on calling activity
+    * Function to scrape the internet for tabs, different AsyncTask based on calling activity
     * */
     public void scrape(){
         if(callingActivity.compareTo("SongsActivity") == 0) {
+            new scrapeAsync().execute();
+        }
+        if(callingActivity.compareTo("MainTabActivity") == 0) {
             new scrapeAsync().execute();
         }
         if(callingActivity.compareTo("SongRecognitionActivity") == 0){
@@ -79,6 +82,16 @@ public class TabScraper extends Activity{
             * */
             Log.d("scrapeAsync","doInBackground");
             String ultimateGuitarURL = null;
+
+            if(!db.tabExists(songtitle,artist)){            //adding to our tab database
+                Tab newTab = new Tab();
+                newTab.setTitle(songtitle);
+                newTab.setArtist(artist);
+                db.addTab(newTab);
+                Log.d("scrapeAsync","adding artist");
+
+            }
+
             try {
                 ultimateGuitarURL = ultimateGuitarURL1 + URLEncoder.encode(songtitle, "UTF-8");
                 Log.d("scrapeAsync URL",ultimateGuitarURL);
@@ -92,9 +105,14 @@ public class TabScraper extends Activity{
         protected void onPostExecute(String v){
            Log.d("scrapeAsync","onPostExecute" + v);
             /*
-            * After execution, message sent to the SongsActivity to close progress dialog and show options
+            * After execution, message sent to the SongsActivity or MainTabActivity to close progress dialog and show options
             * */
-            SongsActivity.signalCompletion("complete",artist,songtitle);
+            if(callingActivity.compareTo("SongsActivity") == 0){
+                SongsActivity.signalCompletion("complete",artist,songtitle);
+            }
+            if(callingActivity.compareTo("MainTabActivity") == 0){
+                MainTabActivity.scrapeCompleted();
+            }
         }
     }
 
@@ -127,17 +145,14 @@ public class TabScraper extends Activity{
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }
-
             }
             SongRecognitionActivity.stopProgress();
-
             return null;
         }
         @Override
         protected void onPostExecute(Void v){
             Log.d("scrapeAsyncArray","completed");
             SongRecognitionActivity.exitSongRecognition();
-
         }
     }
 
@@ -172,7 +187,11 @@ public class TabScraper extends Activity{
                 /*
                 * Defining the current artist based on the above string comparison, which allows us to perform certain actions
                 * */
-                if(this.artist.compareTo(link.html()) == 0){
+                String comparisonLocal = stripSpecialChars(this.artist);    //using a regular expression to compare values
+                String comparisonLink = stripSpecialChars(link.html());
+
+                Log.d("Regex Comparison",comparisonLocal + " " + comparisonLink);
+                if(comparisonLocal.compareTo(comparisonLink) == 0){
                    currentartist = true;
                    Log.d("tabscraper current artist", link.html());
 
@@ -199,12 +218,19 @@ public class TabScraper extends Activity{
                     Log.d("tabscraper href",href);
                     Log.d("tabscraper addlink",newLink.toString());
 
-
                     db.addLink(newLink);                            //adding to our link database
                 }
 
              }
         }
         db.getAllLinks();
+    }
+
+    public String stripSpecialChars(String a){
+        String stripped = null;
+        stripped = a.replaceAll("[^a-zA-Z0-9]","");
+        stripped = stripped.replaceAll("\\s+","");
+        stripped = stripped.toLowerCase();
+        return stripped;
     }
 }

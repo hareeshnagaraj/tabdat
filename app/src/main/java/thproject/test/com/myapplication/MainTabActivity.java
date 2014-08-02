@@ -185,6 +185,9 @@ public class MainTabActivity extends Activity
         msg.setData(data);
         handler.sendMessage(msg);
     }
+    public static void scrapeCompleted(){
+        hideProgress();
+    }
 
     /*
     * Method to start new activity

@@ -78,6 +78,11 @@ public class SearchDialog extends DialogFragment {
                 }
                 else{
                     MainTabActivity.showProgress(title);
+                    TabScraper scraper = new TabScraper();
+                    scraper.setArtist(artist);
+                    scraper.setSongTitle(title);
+                    scraper.setCallingActivity("MainTabActivity");
+                    scraper.scrape();
                 }
             }
         });
