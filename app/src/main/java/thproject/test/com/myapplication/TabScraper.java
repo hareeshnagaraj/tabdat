@@ -2,7 +2,6 @@ package thproject.test.com.myapplication;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.util.Log;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -42,7 +41,8 @@ public class TabScraper extends Activity{
     * Setters for artist, title, calling activity, selected tracks
     * */
     public void setArtist(String artist){
-        this.artist = artist;
+        String capitalizedartist = artist.substring(0, 1).toUpperCase() + artist.substring(1);
+        this.artist = capitalizedartist;
     }
     public void setSongTitle(String title){
         this.songtitle = title;
@@ -89,7 +89,6 @@ public class TabScraper extends Activity{
                 newTab.setArtist(artist);
                 db.addTab(newTab);
                 Log.d("scrapeAsync","adding artist");
-
             }
 
             try {
