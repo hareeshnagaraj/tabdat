@@ -246,7 +246,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
                 link.setLink(cursor.getString(3));
                 link.setSource(cursor.getString(4));
                 numlinks++;
-                Log.d("getLink",link.toString());
+//                Log.d("getLink",link.toString());
                 linkHash.put(Integer.toString(numlinks),link);
             }while(cursor.moveToNext());
         }

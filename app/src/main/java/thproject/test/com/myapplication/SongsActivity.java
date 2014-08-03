@@ -230,7 +230,7 @@ public class SongsActivity extends FragmentActivity implements TabPickerDialog.T
             Link currentLink = (Link) pairs.getValue();
             String currentSource = currentLink.getLink();
             if(currentSource != null && currentSource.contains("http")){  //adding the item to our list
-                Log.d("tabDialogItems",currentLink.toString());
+//                Log.d("tabDialogItems",currentLink.toString());
                 links.add(currentLink);
             }
             it.remove(); // avoids a ConcurrentModificationException

@@ -15,6 +15,8 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.LinkedList;
@@ -35,6 +37,7 @@ public class TabScraper extends Activity{
     private static final String ultimateGuitarURL1 = "http://www.ultimate-guitar.com/search.php?search_type=title&value=";
     private static final String guitareTabURLPrefix = "http://www.guitaretab.com/fetch/?type=tab&query=";
     private static final String guitarTabsCCPrefix = "http://www.guitartabs.cc/search.php?tabtype=any&band=&song=";
+    private static final String echordsPrefix = "http://www.e-chords.com/search-all/";
 
     MySQLiteHelper db = getDB(this);
     private String callingActivity;
@@ -120,11 +123,13 @@ public class TabScraper extends Activity{
                 ultimateGuitarURL = ultimateGuitarURL1 + URLEncoder.encode(songtitle, "UTF-8");
                 guitareTabURL = guitareTabURLPrefix + URLEncoder.encode(songtitle, "UTF-8");
                 String guitarCCURL = guitarTabsCCPrefix + URLEncoder.encode(songtitle, "UTF-8");
+                String echordsURL = echordsPrefix + URLEncoder.encode(songtitle, "UTF-8");
 
                 Log.d("scrapeAsync URL",ultimateGuitarURL);
                 guitarTabCCParse(guitarCCURL);
                 guitareTabParse(guitareTabURL);
                 ultimateGuitarParse(ultimateGuitarURL);
+                echordScrape(echordsURL);
 
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
@@ -173,9 +178,12 @@ public class TabScraper extends Activity{
                     String ultimateGuitarURL = ultimateGuitarURL1 + URLEncoder.encode(track, "UTF-8");
                     String guitareTabURL = guitareTabURLPrefix + URLEncoder.encode(songtitle, "UTF-8");
                     String guitarCCURL = guitarTabsCCPrefix + URLEncoder.encode(songtitle, "UTF-8");
+                    String echordsURL = echordsPrefix + URLEncoder.encode(songtitle, "UTF-8");
+
                     guitarTabCCParse(guitarCCURL);
                     guitareTabParse(guitareTabURL);
                     ultimateGuitarParse(ultimateGuitarURL);
+                    echordScrape(echordsURL);
 
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
@@ -280,7 +288,7 @@ public class TabScraper extends Activity{
             Elements table = doc.select(".specrows");
             Elements tableInner = table.first().select("li");
 //            Log.d("guitareTabParse table",table.toString());
-            Log.d("guitareTabParse tableInner",tableInner.toString());
+//            Log.d("guitareTabParse tableInner",tableInner.toString());
             for(Element tableElement : tableInner){
                 Elements links = tableElement.select("a");
                 int numlinks = links.size();
@@ -292,7 +300,7 @@ public class TabScraper extends Activity{
                     String comparisonLink = stripSpecialChars(artistString);
                     String comparisonLocal = stripSpecialChars(this.artist);
                     if(comparisonLink.contentEquals(comparisonLocal)){
-                        Log.d("guitareTabParse adding " , artistLink.toString());
+//                        Log.d("guitareTabParse adding " , artistLink.toString());
 
                         String href = songLink.attr("abs:href");
                         Link newLink = new Link();
@@ -304,8 +312,8 @@ public class TabScraper extends Activity{
                         numlinks++;
 
                     }
-                    Log.d("guitareTabParse artist" , artistLink.toString());
-                    Log.d("guitareTabParse link" , songLink.toString());
+//                    Log.d("guitareTabParse artist" , artistLink.toString());
+//                    Log.d("guitareTabParse link" , songLink.toString());
                 }
             }
 
@@ -368,6 +376,49 @@ public class TabScraper extends Activity{
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /*
+    * Function to scrape the site echords
+    * */
+    public void echordScrape(String url){
+        String testURL = url.replace("+","%20");
+        Log.d("echordScrape testURL",testURL);
+        try {
+            Document doc = Jsoup.connect(testURL)
+                    .header("Accept-Encoding", "gzip, deflate")
+                    .userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
+                    .maxBodySize(0)
+                    .timeout(600000)
+                    .get();
+            Elements composersList = doc.select(".lista");
+//            Log.d("echordScrape composersList num : ",Integer.toString(composersList.size()));
+            for(Element composer : composersList){
+//                Log.d("echordScrape composer block",composer.toString());
+                Element artist = composer.select("h2").first().child(0);
+                Element link = composer.select("h1").first().child(0);
+                String comparisonLocal = stripSpecialChars(this.artist);
+                String comparisonLink = stripSpecialChars(artist.html());
+
+                if(comparisonLink.contentEquals(comparisonLocal)){                  //conditionally adding the tab if the artist matches
+                    String href = "http://www.e-chords.com/"+link.attr("href");     //different than other functions, absolute value does not apply
+                    Link newLink = new Link();
+                    newLink.setArtist(this.artist);
+                    newLink.setTitle(songtitle);
+                    newLink.setLink(href);
+                    newLink.setSource("echords");
+                    db.addLink(newLink);
+                    numTabs++;
+                }
+
+                Log.d("echordScrape artist",artist.toString());
+                Log.d("echordScrape link",link.toString());
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public String stripSpecialChars(String a){
