@@ -143,7 +143,7 @@ public class TabScraper extends Activity{
             * After execution, message sent to the SongsActivity or MainTabActivity to close progress dialog and show options
             * */
             if(callingActivity.compareTo("SongsActivity") == 0){
-                SongsActivity.signalCompletion("complete",artist,songtitle);
+                SongsActivity.signalCompletion("complete",artist,songtitle,numTabs);
             }
             if(callingActivity.compareTo("MainTabActivity") == 0){
                 MainTabActivity.scrapeCompleted(numTabs);   //sending the number of tabs back to the main activity
@@ -309,7 +309,7 @@ public class TabScraper extends Activity{
                         newLink.setLink(href);
                         newLink.setSource("guitaretab");
                         db.addLink(newLink);                            //adding to our link database
-                        numlinks++;
+                        numTabs++;
 
                     }
 //                    Log.d("guitareTabParse artist" , artistLink.toString());
@@ -367,7 +367,7 @@ public class TabScraper extends Activity{
                         newLink.setSource("guitartabs.cc");
                         db.addLink(newLink);                            //adding to our link database
 //                        Log.d("guitarTabCCParse addlink", newLink.toString());
-                        numLinks++;
+                        numTabs++;
                     }
                 }
             }

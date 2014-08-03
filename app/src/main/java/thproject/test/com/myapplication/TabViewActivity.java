@@ -69,7 +69,7 @@ public class TabViewActivity extends Activity {
         //load in the webview
         webView = (WebView) findViewById(R.id.webView);
         webView.getSettings().setJavaScriptEnabled(false);
-
+        webView.getSettings().setBuiltInZoomControls(true);
 
         //Passing headers into the webView to avoid ugly ads and such
         Map<String, String> headers = new HashMap<String, String>();

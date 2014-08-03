@@ -75,6 +75,10 @@ public class SongsActivity extends FragmentActivity implements TabPickerDialog.T
                 //Action when loading the tabs is complete
                 if(action.compareTo("complete") == 0){
                     progressDialog.hide();
+                    int numtabs = data.getInt("numtabs");
+                    if(numtabs > 0){
+                        Toast.makeText(getApplicationContext(),Integer.toString(numtabs)+" tabs added",Toast.LENGTH_SHORT).show();
+                    }
                     showTabDialog(artist,title);
                 }
                 //Action if tab alreadye exists
@@ -93,7 +97,6 @@ public class SongsActivity extends FragmentActivity implements TabPickerDialog.T
                     extras.putString("source",srctype);
                     startTabView(extras);
                 }
-
             }
         };
 
@@ -139,6 +142,16 @@ public class SongsActivity extends FragmentActivity implements TabPickerDialog.T
         data.putString("action",a);
         data.putString("artist",b);
         data.putString("title",c);
+        msg.setData(data);
+        handler.sendMessage(msg);
+    }
+    public static void signalCompletion(String a, String b, String c, int d){
+        Message msg = new Message();
+        Bundle data = new Bundle();
+        data.putString("action",a);
+        data.putString("artist",b);
+        data.putString("title",c);
+        data.putInt("numtabs",d);
         msg.setData(data);
         handler.sendMessage(msg);
     }
