@@ -2,13 +2,20 @@ package thproject.test.com.myapplication;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.util.Log;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.util.LinkedList;
 import java.util.List;
@@ -26,7 +33,8 @@ public class TabScraper extends Activity{
     private String artist;
     private String songtitle;
     private static final String ultimateGuitarURL1 = "http://www.ultimate-guitar.com/search.php?search_type=title&value=";
-    private static final String guitareTabURL = "http://www.guitaretab.com/fetch/?type=tab&query=";
+    private static final String guitareTabURLPrefix = "http://www.guitaretab.com/fetch/?type=tab&query=";
+    private static final String guitarTabsCCPrefix = "http://www.guitartabs.cc/search.php?tabtype=any&band=&song=";
 
     MySQLiteHelper db = getDB(this);
     private String callingActivity;
@@ -99,6 +107,7 @@ public class TabScraper extends Activity{
             * */
             Log.d("scrapeAsync","doInBackground");
             String ultimateGuitarURL = null;
+            String guitareTabURL = null;
 
             if(!db.tabExists(songtitle,artist)){            //adding to our tab database
                 Tab newTab = new Tab();
@@ -109,8 +118,14 @@ public class TabScraper extends Activity{
             }
             try {
                 ultimateGuitarURL = ultimateGuitarURL1 + URLEncoder.encode(songtitle, "UTF-8");
+                guitareTabURL = guitareTabURLPrefix + URLEncoder.encode(songtitle, "UTF-8");
+                String guitarCCURL = guitarTabsCCPrefix + URLEncoder.encode(songtitle, "UTF-8");
+
                 Log.d("scrapeAsync URL",ultimateGuitarURL);
                 ultimateGuitarParse(ultimateGuitarURL);
+//                guitareTabParse(guitareTabURL);
+                guitarTabCCParse(guitarCCURL);
+
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
@@ -156,7 +171,12 @@ public class TabScraper extends Activity{
                 Log.d("scrapeAsyncArray","scraping: " + track);
                 try {
                     String ultimateGuitarURL = ultimateGuitarURL1 + URLEncoder.encode(track, "UTF-8");
+                    String guitareTabURL = guitareTabURLPrefix + URLEncoder.encode(songtitle, "UTF-8");
+                    String guitarCCURL = guitarTabsCCPrefix + URLEncoder.encode(songtitle, "UTF-8");
                     ultimateGuitarParse(ultimateGuitarURL);
+//                    guitareTabParse(guitareTabURL);
+                    guitarTabCCParse(guitarCCURL);
+
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }
@@ -241,19 +261,53 @@ public class TabScraper extends Activity{
         }
     }
     /*
-    * Function to parse Guitaretab
+    * Function to parse Guitaretab page
+    * encountering issues, may have to use HtmlUnit to render javascript -
     *
     * */
     public void guitareTabParse(String url){
+        Log.d("guitareTabParse","begin url " + url);
         Boolean currentartist = false;
         String printLink = "";
 
         Document doc = null;
         try {
-            doc = Jsoup.connect(url).get();
+            doc = Jsoup.connect(url).userAgent("Chrome/15.0.874.120").timeout(3000).maxBodySize(0).get();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        Elements table = doc.select(".specrows albums");
+        Log.d("resultingDoc",doc.toString());
+
+        Log.d("resultingTable",table.toString());
+        Log.d("guitareTabParse","end");
+    }
+
+    /*
+    * Function to parse Guitartabs.cc
+    * */
+    public void guitarTabCCParse(String url){
+        Log.d("guitarTabCCParse","begin url " + url);
+        Document doc = null;
+        try {
+            doc = Jsoup.connect(url)
+                    .header("Accept-Encoding", "gzip, deflate")
+                    .userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
+                    .maxBodySize(0)
+                    .timeout(600000)
+                    .get();
+
+//            Log.d("guitarTabCCParse result : ", doc.toString());
+            String a = doc.toString();
+            for( String line : a.split("\n") ) {
+                Log.d( "guitarTabCCParse result", line );
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
     }
 
     public String stripSpecialChars(String a){
