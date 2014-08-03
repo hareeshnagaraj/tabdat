@@ -25,7 +25,12 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.HttpResponse;
+
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +40,7 @@ public class LoginActivity extends Activity {
     Button loginButton;
     EditText email;
     EditText password;
-    String user_email,user_password,default_email,default_password;
+    String user_email,user_password,default_email,default_password,existingEmail,existingPass;
     private static int SPLASH_TIME_OUT = 3000;
     public MySQLiteHelper db;
     public SongGrabber grabsongs;
@@ -69,12 +74,11 @@ public class LoginActivity extends Activity {
         numberOfUsers = users.size();
         Log.d("LoginActivity","num users : " + Integer.toString(numberOfUsers));
         if(numberOfUsers > 0){
-            String existingEmail = users.get(0).getEmail();
-            String existingPass = users.get(0).getPassword();
+            existingEmail = users.get(0).getEmail();
+            existingPass = users.get(0).getPassword();
             Log.d("LoginActivity","user " + existingEmail + " pass " + existingPass);
             email.setText(existingEmail);
             password.setText(existingPass);
-
         }
 
         //creating a handler to start the next activity
@@ -117,6 +121,7 @@ public class LoginActivity extends Activity {
                     new loginAsync().execute();
 
                 }*/
+
                 //bypassing the login checks temporarily
                 progressDialog = new ProgressDialog(LoginActivity.this);
                 progressDialog.setMessage("Logging In");
@@ -207,31 +212,30 @@ public class LoginActivity extends Activity {
         protected Void doInBackground(Void... voids) {
               String sEmail = email.getText().toString();
               String sPass = password.getText().toString();
-              addUserToDB(sEmail,sPass);                    //Adding the user to our local database
-
-//            HttpClient httpclient = new DefaultHttpClient();
-//            HttpPost httppost = new HttpPost("http://162.243.66.98:3000/users");
-//
-//            try {
-//                // Add your data
-//                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-//                nameValuePairs.add(new BasicNameValuePair("email", user_email));
-//                nameValuePairs.add(new BasicNameValuePair("password", user_password));
-//                httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-//                // Execute HTTP Post Request
-//                HttpResponse response = httpclient.execute(httppost);
-//
-//            } catch (ClientProtocolException e) {
-//                // TODO Auto-generated catch block
-//            } catch (IOException e) {
-//                // TODO Auto-generated catch block
-//            }
-            Log.d("loginAsync : ", "beginning update query");
-
-            if(numberOfUsers == 0) {
+              if(numberOfUsers == 0) {
                 updateSongsInDb();
-            }
+                addUserToDB(sEmail,sPass);                    //Adding the user to our local database
+              }
+            HttpClient httpclient = new DefaultHttpClient();
+            HttpPost httppost = new HttpPost("http://162.243.66.98:3000/users");
 
+            try {
+                // Add your data
+                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+                nameValuePairs.add(new BasicNameValuePair("email", user_email));
+                nameValuePairs.add(new BasicNameValuePair("password", user_password));
+                httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+                // Execute HTTP Post Request
+                HttpResponse response = httpclient.execute(httppost);
+                InputStream stream = response.getEntity().getContent();
+                Log.d("loginAsync response" , getStringFromInputStream(stream));
+
+            } catch (ClientProtocolException e) {
+                // TODO Auto-generated catch block
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+            }
+            Log.d("loginAsync : ", "beginning update query");
             Log.d("loginAsync : ", "end update query");
             return null;
         }
@@ -241,5 +245,35 @@ public class LoginActivity extends Activity {
         }
 
     }
+
+    /*
+    * used to parse API responses
+    * */
+
+    // convert InputStream to String
+    private static String getStringFromInputStream(InputStream is) {
+        BufferedReader br = null;
+        StringBuilder sb = new StringBuilder();
+        String line;
+        try {
+            br = new BufferedReader(new InputStreamReader(is));
+            while ((line = br.readLine()) != null) {
+                sb.append(line);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return sb.toString();
+    }
+
 }
 

@@ -120,7 +120,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     * */
    public List<User> getAllUsers(){
        List<User> users = new LinkedList<User>();
-       String query = "SELECT  * FROM " + TABLE_USERS;
+       String query = "SELECT  * FROM " + TABLE_USERS + " ORDER BY id ASC";
        SQLiteDatabase db = getWritableDatabase();
        Cursor cursor = db.rawQuery(query, null);
        User current = null;
