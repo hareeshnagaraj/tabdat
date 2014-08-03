@@ -95,6 +95,8 @@ public class SongsActivity extends FragmentActivity implements TabPickerDialog.T
                     Bundle extras = new Bundle();
                     extras.putString("link",src);
                     extras.putString("source",srctype);
+                    extras.putString("title",data.getString("title"));
+                    extras.putString("artist",data.getString("artist"));
                     startTabView(extras);
                 }
             }
@@ -176,6 +178,8 @@ public class SongsActivity extends FragmentActivity implements TabPickerDialog.T
 
         data.putString("link",link.getLink());
         data.putString("source",link.getSource());
+        data.putString("title",link.getTitle());
+        data.putString("artist",link.getArtist());
         data.putString("action","showtab");
 
         msg.setData(data);

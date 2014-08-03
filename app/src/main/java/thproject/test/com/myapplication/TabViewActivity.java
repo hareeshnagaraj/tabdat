@@ -2,6 +2,7 @@ package thproject.test.com.myapplication;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -28,9 +29,10 @@ import static thproject.test.com.myapplication.MySQLiteHelper.getDB;
 * */
 public class TabViewActivity extends Activity {
     private Link display;
-    String link;
+    private String link;
     String song = "";
     String source;
+    String artist;
     MySQLiteHelper db = getDB(this);
     private WebView webView;
 
@@ -45,19 +47,16 @@ public class TabViewActivity extends Activity {
         if ( extras != null ) {
             if ( extras.containsKey("link") ) {
                 link = extras.getString("link");
-                Log.d("TabViewActivity raw link",link);
-                display = db.getLinkFromSource(link);
-                Log.d("TabViewActivity queried link",display.toString());
-                try{
-                    song = display.getTitle();
-                }
-                catch(NullPointerException a){
-                    song = "Unknown";
-                }
             }
             if( extras.containsKey("source")){
                 source = extras.getString("source");
                 Log.d("TabViewActivity source",source);
+            }
+            if(extras.containsKey("artist")){
+                artist = extras.getString("artist");
+            }
+            if(extras.containsKey("title")){
+                song = extras.getString("title");
             }
         }
         //disable application icon from ActionBar, set up remaining attributes
@@ -96,7 +95,8 @@ public class TabViewActivity extends Activity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
+        if (id == R.id.shareSong) {
+            shareDialog();
             return true;
         }
         if(id == android.R.id.home){
@@ -106,5 +106,16 @@ public class TabViewActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+    /*
+    * Used to share the tab to different platforms
+    * */
+    public void shareDialog(){
+        Intent intent=new Intent(android.content.Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+        intent.putExtra(Intent.EXTRA_SUBJECT, this.song + " tab by " +   this.artist );
+        intent.putExtra(Intent.EXTRA_TEXT, "Link: " + this.link + "\nFrom tab dat!");
+        startActivity(Intent.createChooser(intent, "Share tab"));
+    }
 
 }

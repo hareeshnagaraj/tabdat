@@ -207,15 +207,17 @@ public class TabScraper extends Activity{
     public void ultimateGuitarParse(String url){
         Boolean currentartist = false;
         String printLink = "";
+        Elements tableCells = null;
 
         Document doc = null;
         try {
             doc = Jsoup.connect(url).get();
+            Elements table = doc.select(".tresults");
+            tableCells = table.select("a");
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Elements table = doc.select(".tresults");
-        Elements tableCells = table.select("a");
+
 
         //iterating and getting links
         for( Element link : tableCells ){

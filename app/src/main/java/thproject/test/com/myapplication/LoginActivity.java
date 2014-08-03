@@ -1,6 +1,7 @@
 package thproject.test.com.myapplication;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -39,6 +40,8 @@ public class LoginActivity extends Activity {
     public SongGrabber grabsongs;
     Context context;
     static Handler handler;
+    public ProgressDialog progressDialog;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
