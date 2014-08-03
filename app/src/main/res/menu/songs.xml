@@ -1,8 +1,4 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="thproject.test.com.myapplication.SongsActivity" >
-    <item android:id="@+id/action_settings"
-        android:title="@string/share_tab"
-        android:orderInCategory="100"
-        android:showAsAction="never" />
 </menu>

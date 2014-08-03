@@ -118,11 +118,12 @@ public class TabScraper extends Activity{
             }
             try {
                 ultimateGuitarURL = ultimateGuitarURL1 + URLEncoder.encode(songtitle, "UTF-8");
-//                guitareTabURL = guitareTabURLPrefix + URLEncoder.encode(songtitle, "UTF-8");
+                guitareTabURL = guitareTabURLPrefix + URLEncoder.encode(songtitle, "UTF-8");
                 String guitarCCURL = guitarTabsCCPrefix + URLEncoder.encode(songtitle, "UTF-8");
 
                 Log.d("scrapeAsync URL",ultimateGuitarURL);
                 guitarTabCCParse(guitarCCURL);
+                guitareTabParse(guitareTabURL);
                 ultimateGuitarParse(ultimateGuitarURL);
 
             } catch (UnsupportedEncodingException e) {
@@ -172,8 +173,8 @@ public class TabScraper extends Activity{
                     String ultimateGuitarURL = ultimateGuitarURL1 + URLEncoder.encode(track, "UTF-8");
                     String guitareTabURL = guitareTabURLPrefix + URLEncoder.encode(songtitle, "UTF-8");
                     String guitarCCURL = guitarTabsCCPrefix + URLEncoder.encode(songtitle, "UTF-8");
-//                    guitareTabParse(guitareTabURL);
                     guitarTabCCParse(guitarCCURL);
+                    guitareTabParse(guitareTabURL);
                     ultimateGuitarParse(ultimateGuitarURL);
 
                 } catch (UnsupportedEncodingException e) {
@@ -212,7 +213,6 @@ public class TabScraper extends Activity{
         for( Element link : tableCells ){
             String linkClass = link.className();
 //          Log.d("tabscraper link class", linkClass);
-
             if(linkClass.compareTo("song search_art") == 0){
                 /*
                 * Defining the current artist based on the above string comparison, which allows us to perform certain actions
@@ -223,7 +223,7 @@ public class TabScraper extends Activity{
                 Log.d("Regex Comparison",comparisonLocal + " " + comparisonLink);
                 if(comparisonLocal.compareTo(comparisonLink) == 0){
                    currentartist = true;
-                   Log.d("tabscraper current artist", link.html());
+//                   Log.d("tabscraper current artist", link.html());
 
                 }
                 else{
@@ -248,9 +248,8 @@ public class TabScraper extends Activity{
                         newLink.setTitle(songtitle);
                         newLink.setLink(href);
                         newLink.setSource("ultimate-guitar");
-                        Log.d("tabscraper href", href);
-                        Log.d("tabscraper addlink", newLink.toString());
-
+//                        Log.d("tabscraper href", href);
+//                        Log.d("tabscraper addlink", newLink.toString());
                         db.addLink(newLink);                            //adding to our link database
                         numTabs++;
                     }
@@ -278,14 +277,43 @@ public class TabScraper extends Activity{
                     .timeout(600000)
                     .get();
 
+            Elements table = doc.select(".specrows");
+            Elements tableInner = table.first().select("li");
+//            Log.d("guitareTabParse table",table.toString());
+            Log.d("guitareTabParse tableInner",tableInner.toString());
+            for(Element tableElement : tableInner){
+                Elements links = tableElement.select("a");
+                int numlinks = links.size();
+                if(numlinks > 0){           //only getting links if they exist
+                    Element artistLink = links.get(0);
+                    Element songLink = links.get(1);
+                    String artistString = artistLink.html();
+
+                    String comparisonLink = stripSpecialChars(artistString);
+                    String comparisonLocal = stripSpecialChars(this.artist);
+                    if(comparisonLink.contentEquals(comparisonLocal)){
+                        Log.d("guitareTabParse adding " , artistLink.toString());
+
+                        String href = songLink.attr("abs:href");
+                        Link newLink = new Link();
+                        newLink.setArtist(artist);
+                        newLink.setTitle(songtitle);
+                        newLink.setLink(href);
+                        newLink.setSource("guitaretab");
+                        db.addLink(newLink);                            //adding to our link database
+                        numlinks++;
+
+                    }
+                    Log.d("guitareTabParse artist" , artistLink.toString());
+                    Log.d("guitareTabParse link" , songLink.toString());
+                }
+            }
+
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Elements table = doc.select(".specrows albums");
-        Log.d("resultingDoc",doc.toString());
-
-        Log.d("resultingTable",table.toString());
         Log.d("guitareTabParse","end");
+
     }
 
     /*
@@ -311,16 +339,16 @@ public class TabScraper extends Activity{
             for( Element tableElement : innerTable ){
                 Elements links = tableElement.select("a");
                 int numLinks = links.size();
-                Log.d("guitarTabCCParse element",tableElement.toString());
-                Log.d("guitarTabCCParse numLinks",Integer.toString(numLinks));
+//                Log.d("guitarTabCCParse element",tableElement.toString());
+//                Log.d("guitarTabCCParse numLinks",Integer.toString(numLinks));
                 if(numLinks > 0){       //only performing actions if link is present
                     String artist = links.get(0).html();
                     Element tableLink = links.get(1);
                     String href = tableLink.attr("abs:href");
                     String comparisonLink = stripSpecialChars(artist);
-                    Log.d("guitarTabCCParse Link1",links.get(0).toString());
-                    Log.d("guitarTabCCParse Artist",artist);
-                    Log.d("guitarTabCCParse href",href);
+//                    Log.d("guitarTabCCParse Link1",links.get(0).toString());
+//                    Log.d("guitarTabCCParse Artist",artist);
+//                    Log.d("guitarTabCCParse href",href);
 
                     if(comparisonLink.contentEquals(comparisonLocal)){      //only adding valid tabs to our database
                         Log.d("guitarTabCCParse href","adding tab");
@@ -330,7 +358,8 @@ public class TabScraper extends Activity{
                         newLink.setLink(href);
                         newLink.setSource("guitartabs.cc");
                         db.addLink(newLink);                            //adding to our link database
-                        Log.d("guitarTabCCParse addlink", newLink.toString());
+//                        Log.d("guitarTabCCParse addlink", newLink.toString());
+                        numLinks++;
                     }
                 }
             }
