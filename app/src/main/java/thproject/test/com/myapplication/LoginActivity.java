@@ -216,6 +216,7 @@ public class LoginActivity extends Activity {
                 updateSongsInDb();
                 addUserToDB(sEmail,sPass);                    //Adding the user to our local database
               }
+
             HttpClient httpclient = new DefaultHttpClient();
             HttpPost httppost = new HttpPost("http://162.243.66.98:3000/users");
 
