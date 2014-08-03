@@ -295,7 +295,7 @@ public class MainTabActivity extends Activity
          * fragment.
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
-        private String link = "dummy";
+        private String link = "https://github.com/hareeshnagaraj/tabdat";
 
         /**
          * Returns a new instance of this fragment for the given section
