@@ -15,7 +15,7 @@
 
     <string name="title_activity_main">MainActivity</string>
     <string name="title_section1">My Tabs</string>
-    <string name="title_section2">Share Tabs</string>
+    <string name="title_section2">Share</string>
     <string name="title_section3">Invite Friends</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

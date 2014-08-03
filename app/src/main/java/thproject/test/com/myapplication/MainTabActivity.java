@@ -52,7 +52,7 @@ public class MainTabActivity extends Activity
     MySQLiteHelper db;
     EditText artist;
     EditText title;
-    TextView submit;
+
     public ProgressDialog progressDialog;       //dialog to show progress
     SearchDialog dialog;
     @Override
@@ -130,7 +130,7 @@ public class MainTabActivity extends Activity
                 mTitle = getString(R.string.title_section1);
                 break;
             case 2:
-                mTitle = getString(R.string.title_section2);
+                mTitle = getString(R.string.title_section1);
                 break;
             case 3:
                 mTitle = getString(R.string.title_section3);
@@ -241,7 +241,6 @@ public class MainTabActivity extends Activity
 
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if (!mNavigationDrawerFragment.isDrawerOpen()) {
@@ -296,6 +295,7 @@ public class MainTabActivity extends Activity
          * fragment.
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
+        private String link = "dummy";
 
         /**
          * Returns a new instance of this fragment for the given section
@@ -313,6 +313,19 @@ public class MainTabActivity extends Activity
         public PlaceholderFragment() {
 
         }
+
+        /*
+        * Method to show the share app dialog
+        * */
+        public void showShareDialog(){
+            Intent intent=new Intent(android.content.Intent.ACTION_SEND);
+            intent.setType("text/plain");
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+            intent.putExtra(Intent.EXTRA_SUBJECT, "Any tab, anywhere! Check out tab dat on Google Play :)");
+            intent.putExtra(Intent.EXTRA_TEXT, "Link: " + this.link);
+            startActivity(Intent.createChooser(intent, "Share"));
+        }
+
 
         /*
         * Sets the position
@@ -349,7 +362,11 @@ public class MainTabActivity extends Activity
                     grabsongs.displayArtists(context,myFragmentView);
                     break;
                 case 2:
-                    rootView = inflater.inflate(R.layout.fragment_my, container, false);
+                    rootView = inflater.inflate(R.layout.fragment_main_tab, container, false);
+                    myFragmentView = (NowLayout) rootView.findViewById(R.id.mainTabLayout);
+                    grabsongs = new SongGrabber();
+                    grabsongs.displayArtists(context,myFragmentView);
+                    showShareDialog();
                     break;
                 case 3:
                     rootView = inflater.inflate(R.layout.fragment_my, container, false);

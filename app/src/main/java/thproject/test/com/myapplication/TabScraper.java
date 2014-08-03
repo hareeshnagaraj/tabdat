@@ -218,7 +218,6 @@ public class TabScraper extends Activity{
             e.printStackTrace();
         }
 
-
         //iterating and getting links
         for( Element link : tableCells ){
             String linkClass = link.className();
@@ -321,6 +320,8 @@ public class TabScraper extends Activity{
 
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
         }
         Log.d("guitareTabParse","end");
 
@@ -377,6 +378,8 @@ public class TabScraper extends Activity{
 
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
         }
     }
 
@@ -418,6 +421,8 @@ public class TabScraper extends Activity{
             }
 
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (NullPointerException e) {
             e.printStackTrace();
         }
 
