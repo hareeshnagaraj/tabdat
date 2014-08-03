@@ -261,7 +261,7 @@ public class TabScraper extends Activity{
     }
     /*
     * Function to parse Guitaretab page
-    * encountering issues, may have to use HtmlUnit to render javascript -
+    * Issues resolved - Log.d not containing enough characters
     *
     * */
     public void guitareTabParse(String url){
@@ -271,7 +271,13 @@ public class TabScraper extends Activity{
 
         Document doc = null;
         try {
-            doc = Jsoup.connect(url).userAgent("Chrome/15.0.874.120").timeout(3000).maxBodySize(0).get();
+            doc = Jsoup.connect(url)
+                    .header("Accept-Encoding", "gzip, deflate")
+                    .userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
+                    .maxBodySize(0)
+                    .timeout(600000)
+                    .get();
+
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -267,7 +267,6 @@ public class SongsActivity extends FragmentActivity implements TabPickerDialog.T
     * Method to start a new TabViewActivity
     *
     * Ultimate-Guitar links will open in browser, other links will ideally open within the app
-    *
     * */
     private void startTabView(Bundle extras){
 
@@ -277,15 +276,15 @@ public class SongsActivity extends FragmentActivity implements TabPickerDialog.T
             strUrl= "http://" + strUrl;
         }
 
-//        if(source.compareTo("ultimate-guitar") == 0){
-//            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(strUrl)));
-//        }
-//        else {
-        Intent i;
-        i = new Intent(SongsActivity.this, TabViewActivity.class);
-        i.putExtras(extras);
-        startActivity(i);
-       // }
+        if(source.compareTo("ultimate-guitar") == 0){       //only for ultimate-guitar
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(strUrl)));
+        }
+        else {
+            Intent i;
+            i = new Intent(SongsActivity.this, TabViewActivity.class);
+            i.putExtras(extras);
+            startActivity(i);
+       }
         // close this activity
     }
 

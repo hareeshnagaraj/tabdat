@@ -68,16 +68,13 @@ public class TabViewActivity extends Activity {
 
         //load in the webview
         webView = (WebView) findViewById(R.id.webView);
-        webView.getSettings().setJavaScriptEnabled(true);
+        webView.getSettings().setJavaScriptEnabled(false);
 
 
         //Passing headers into the webView to avoid ugly ads and such
         Map<String, String> headers = new HashMap<String, String>();
-//        headers.put("User-Agent","Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/537.36");
+        headers.put("User-Agent","Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/537.36");
 
-        if (source == "ultimate-guitar"){
-            headers.put("Host","tabs.ultimate-guitar.com");
-        }
         if (source == "guitartabs.cc"){
             headers.put("Host","www.guitartabs.cc");
         }
@@ -100,6 +97,10 @@ public class TabViewActivity extends Activity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_settings) {
+            return true;
+        }
+        if(id == android.R.id.home){
+            onBackPressed();
             return true;
         }
         return super.onOptionsItemSelected(item);
