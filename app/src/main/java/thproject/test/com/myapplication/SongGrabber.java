@@ -1,6 +1,7 @@
 package thproject.test.com.myapplication;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -43,6 +44,9 @@ public class SongGrabber extends Activity {
         LayoutInflater inflater = (LayoutInflater) mContext.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
 
         Tab newtab = null;
+
+        //Changing the login dialog text
+        LoginActivity.loginDialogText("Updating Database");
 
         int numsongs = 0;
         if(musicCursor!=null && musicCursor.moveToFirst()){

@@ -1,5 +1,6 @@
 package thproject.test.com.myapplication;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -41,16 +42,40 @@ public class LoginActivity extends Activity {
     Context context;
     static Handler handler;
     public ProgressDialog progressDialog;
-
+    public List<User> users;
+    int numberOfUsers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        //disable ActionBar, set up remaining attributes
+        ActionBar actionBar = getActionBar();
+        actionBar.hide();
+
         //getting our DB
         db = getDB(this);
         grabsongs = new SongGrabber();
+
+
+        loginButton = (Button) findViewById(R.id.loginButton);
+        email = (EditText) findViewById(R.id.email);
+        password = (EditText) findViewById(R.id.password);
+        default_email = "Email";
+        default_password = "password";
+
+        users = db.getAllUsers();
+        numberOfUsers = users.size();
+        Log.d("LoginActivity","num users : " + Integer.toString(numberOfUsers));
+        if(numberOfUsers > 0){
+            String existingEmail = users.get(0).getEmail();
+            String existingPass = users.get(0).getPassword();
+            Log.d("LoginActivity","user " + existingEmail + " pass " + existingPass);
+            email.setText(existingEmail);
+            password.setText(existingPass);
+
+        }
 
         //creating a handler to start the next activity
         handler = new Handler(){
@@ -58,23 +83,18 @@ public class LoginActivity extends Activity {
                 Bundle data = msg.getData();
                 String artist = data.getString("artist");
                 String title = data.getString("title");
+                String text = data.getString("text");
+                progressDialog.setMessage(text);
 
-                final TabScraper scraper = new TabScraper();
-                scraper.setArtist(artist);
-                scraper.setSongTitle(title);
-                scraper.scrape();
                 Log.d("LoginActivityHandler","past scraper");
             }
         };
 
+
+
         /*
         * This button is used to grab the user's email and password information, and prompt them to correctly enter the information if they have not
         * */
-        loginButton = (Button) findViewById(R.id.loginButton);
-        email = (EditText) findViewById(R.id.email);
-        password = (EditText) findViewById(R.id.password);
-        default_email = "Email";
-        default_password = "password";
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,6 +118,14 @@ public class LoginActivity extends Activity {
 
                 }*/
                 //bypassing the login checks temporarily
+                progressDialog = new ProgressDialog(LoginActivity.this);
+                progressDialog.setMessage("Logging In");
+                progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+
+                if(numberOfUsers == 0){         //we only need to show if the user's songs are being catalogued
+                    progressDialog.show();
+                }
+
                 new loginAsync().execute();
 
 
@@ -136,7 +164,10 @@ public class LoginActivity extends Activity {
     //used to start the main login activity
     private void startMain(){
         Log.d("startMain","links as of mainActivity");
-        db.getAllLinks();
+        if(progressDialog != null) {
+            progressDialog.hide();
+            progressDialog.dismiss();
+        }
         Intent i = new Intent(LoginActivity.this, MainTabActivity.class);
         startActivity(i);
         // close this activity
@@ -144,28 +175,39 @@ public class LoginActivity extends Activity {
     }
 
     /*
-    * Class to signal scrape
-    * */
-
-    public static void scrapeSong(String artist, String title){
+    * Static method to signal handler for toasts within loop
+    */
+    public static void loginDialogText(String a){
         Message msg = new Message();
         Bundle data = new Bundle();
-        data.putString("artist",artist);
-        data.putString("title",title);
+
+        data.putString("action","test");
+        data.putString("text",a);
+
         msg.setData(data);
         handler.sendMessage(msg);
+    }
+
+    /*
+    * Add user, then list all the available users
+    * */
+    public void addUserToDB(String email, String pass){
+        db.addUser(email,pass);
+        db.getAllUsers();
     }
 
 /*
     Class to handle asynchronous login
 */
     private class loginAsync extends AsyncTask<Void, Void, Void>{
-
     /*
     *     Server - side login is implemented as well commented out for time being
     * */
         @Override
         protected Void doInBackground(Void... voids) {
+              String sEmail = email.getText().toString();
+              String sPass = password.getText().toString();
+              addUserToDB(sEmail,sPass);                    //Adding the user to our local database
 
 //            HttpClient httpclient = new DefaultHttpClient();
 //            HttpPost httppost = new HttpPost("http://162.243.66.98:3000/users");
@@ -185,7 +227,11 @@ public class LoginActivity extends Activity {
 //                // TODO Auto-generated catch block
 //            }
             Log.d("loginAsync : ", "beginning update query");
-            updateSongsInDb();
+
+            if(numberOfUsers == 0) {
+                updateSongsInDb();
+            }
+
             Log.d("loginAsync : ", "end update query");
             return null;
         }
@@ -193,7 +239,6 @@ public class LoginActivity extends Activity {
         protected void onPostExecute(Void v) {
             startMain();
         }
-
 
     }
 }

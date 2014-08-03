@@ -74,7 +74,10 @@ public class SongsActivity extends FragmentActivity implements TabPickerDialog.T
                 }
                 //Action when loading the tabs is complete
                 if(action.compareTo("complete") == 0){
-                    progressDialog.hide();
+                    if(progressDialog != null) {
+                        progressDialog.hide();
+                        progressDialog.dismiss();
+                    }
                     int numtabs = data.getInt("numtabs");
                     if(numtabs > 0){
                         Toast.makeText(getApplicationContext(),Integer.toString(numtabs)+" tabs added",Toast.LENGTH_SHORT).show();
@@ -85,6 +88,7 @@ public class SongsActivity extends FragmentActivity implements TabPickerDialog.T
                 if(action.compareTo("exists") == 0){
                     if(progressDialog != null) {
                         progressDialog.hide();
+                        progressDialog.dismiss();
                     }
                     showTabDialog(artist,title);
                 }
