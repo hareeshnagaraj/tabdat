@@ -212,12 +212,10 @@ public class SongsActivity extends FragmentActivity implements TabPickerDialog.T
         Log.d("showTabDialog links length", Integer.toString(length));
         if(length > 0){
             dialog.show(getFragmentManager(),"TabPickerDialog");
-
         }
         else{
             Toast.makeText(getApplicationContext(),"No Tabs found :(",Toast.LENGTH_SHORT).show();
         }
-
     }
 
     //Method to create list of items that populate tabPickerdialog
@@ -279,15 +277,15 @@ public class SongsActivity extends FragmentActivity implements TabPickerDialog.T
             strUrl= "http://" + strUrl;
         }
 
-        if(source.compareTo("ultimate-guitar") == 0){
-            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(strUrl)));
-        }
-        else {
-            Intent i;
-            i = new Intent(SongsActivity.this, TabViewActivity.class);
-            i.putExtras(extras);
-            startActivity(i);
-        }
+//        if(source.compareTo("ultimate-guitar") == 0){
+//            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(strUrl)));
+//        }
+//        else {
+        Intent i;
+        i = new Intent(SongsActivity.this, TabViewActivity.class);
+        i.putExtras(extras);
+        startActivity(i);
+       // }
         // close this activity
     }
 

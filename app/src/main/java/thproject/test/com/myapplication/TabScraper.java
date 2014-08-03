@@ -118,13 +118,12 @@ public class TabScraper extends Activity{
             }
             try {
                 ultimateGuitarURL = ultimateGuitarURL1 + URLEncoder.encode(songtitle, "UTF-8");
-                guitareTabURL = guitareTabURLPrefix + URLEncoder.encode(songtitle, "UTF-8");
+//                guitareTabURL = guitareTabURLPrefix + URLEncoder.encode(songtitle, "UTF-8");
                 String guitarCCURL = guitarTabsCCPrefix + URLEncoder.encode(songtitle, "UTF-8");
 
                 Log.d("scrapeAsync URL",ultimateGuitarURL);
-                ultimateGuitarParse(ultimateGuitarURL);
-//                guitareTabParse(guitareTabURL);
                 guitarTabCCParse(guitarCCURL);
+                ultimateGuitarParse(ultimateGuitarURL);
 
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
@@ -173,9 +172,9 @@ public class TabScraper extends Activity{
                     String ultimateGuitarURL = ultimateGuitarURL1 + URLEncoder.encode(track, "UTF-8");
                     String guitareTabURL = guitareTabURLPrefix + URLEncoder.encode(songtitle, "UTF-8");
                     String guitarCCURL = guitarTabsCCPrefix + URLEncoder.encode(songtitle, "UTF-8");
-                    ultimateGuitarParse(ultimateGuitarURL);
 //                    guitareTabParse(guitareTabURL);
                     guitarTabCCParse(guitarCCURL);
+                    ultimateGuitarParse(ultimateGuitarURL);
 
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
@@ -297,17 +296,43 @@ public class TabScraper extends Activity{
                     .timeout(600000)
                     .get();
 
-//            Log.d("guitarTabCCParse result : ", doc.toString());
-            String a = doc.toString();
-            for( String line : a.split("\n") ) {
-                Log.d( "guitarTabCCParse result", line );
+            Elements outerTable = doc.select(".tabslist");
+            Element outerTableBody = outerTable.get(0);
+            Elements innerTable = outerTableBody.children().select("tr");
+
+            String comparisonLocal = stripSpecialChars(this.artist);
+
+            for( Element tableElement : innerTable ){
+                Elements links = tableElement.select("a");
+                int numLinks = links.size();
+                Log.d("guitarTabCCParse element",tableElement.toString());
+                Log.d("guitarTabCCParse numLinks",Integer.toString(numLinks));
+                if(numLinks > 0){       //only performing actions if link is present
+                    String artist = links.get(0).html();
+                    Element tableLink = links.get(1);
+                    String href = tableLink.attr("abs:href");
+                    String comparisonLink = stripSpecialChars(artist);
+                    Log.d("guitarTabCCParse Link1",links.get(0).toString());
+                    Log.d("guitarTabCCParse Artist",artist);
+                    Log.d("guitarTabCCParse href",href);
+
+                    if(comparisonLink.contentEquals(comparisonLocal)){      //only adding valid tabs to our database
+                        Log.d("guitarTabCCParse href","adding tab");
+                        Link newLink = new Link();
+                        newLink.setArtist(artist);
+                        newLink.setTitle(songtitle);
+                        newLink.setLink(href);
+                        newLink.setSource("guitartabs.cc");
+                        db.addLink(newLink);                            //adding to our link database
+                        Log.d("guitarTabCCParse addlink", newLink.toString());
+                    }
+                }
             }
+
 
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
     }
 
     public String stripSpecialChars(String a){

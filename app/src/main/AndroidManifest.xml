@@ -46,6 +46,9 @@
             android:name=".SongRecognitionActivity"
             android:label="@string/title_activity_song_recognition" >
         </activity>
+        <supports-screens android:smallScreens="true"
+            android:normalScreens="true" android:largeScreens="true"
+            android:anyDensity="true" />
     </application>
 
 </manifest>

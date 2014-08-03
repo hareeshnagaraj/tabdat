@@ -3,7 +3,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:scrollbars="none"
-    tools:context="thproject.test.com.myapplication.TabViewActivity">
+    tools:context="thproject.test.com.myapplication.TabViewActivity"
+    android:fillViewport="false"
+    android:id="@+id/tabView">
 
 
     <WebView

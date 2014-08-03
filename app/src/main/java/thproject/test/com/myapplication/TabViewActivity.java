@@ -14,6 +14,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import thproject.test.com.myapplication.R;
 
@@ -28,6 +30,7 @@ public class TabViewActivity extends Activity {
     private Link display;
     String link;
     String song = "";
+    String source;
     MySQLiteHelper db = getDB(this);
     private WebView webView;
 
@@ -52,6 +55,10 @@ public class TabViewActivity extends Activity {
                     song = "Unknown";
                 }
             }
+            if( extras.containsKey("source")){
+                source = extras.getString("source");
+                Log.d("TabViewActivity source",source);
+            }
         }
         //disable application icon from ActionBar, set up remaining attributes
         ActionBar actionBar = getActionBar();
@@ -63,17 +70,19 @@ public class TabViewActivity extends Activity {
         webView = (WebView) findViewById(R.id.webView);
         webView.getSettings().setJavaScriptEnabled(true);
 
-        webView.setWebViewClient(new WebViewClient() {
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                view.loadUrl(url);
-                return true;
-            }
-        });
 
-        webView.loadUrl(link);
+        //Passing headers into the webView to avoid ugly ads and such
+        Map<String, String> headers = new HashMap<String, String>();
+//        headers.put("User-Agent","Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/537.36");
 
-
+        if (source == "ultimate-guitar"){
+            headers.put("Host","tabs.ultimate-guitar.com");
+        }
+        if (source == "guitartabs.cc"){
+            headers.put("Host","www.guitartabs.cc");
+        }
+        headers.put("Referrer",source);
+        webView.loadUrl(link,headers);
     }
 
 
