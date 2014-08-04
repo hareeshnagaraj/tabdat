@@ -62,6 +62,17 @@ public class MainTabActivity extends Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_tab);
 
+        Bundle extras = this.getIntent().getExtras();
+        if ( extras != null ) {
+            if ( extras.containsKey("numUsers") ) {
+                int numberOfUsers = extras.getInt("numUsers");
+                Log.d("numberOFUsers main",Integer.toString(numberOfUsers));
+                if(numberOfUsers == 0){
+                    showInfoDialog();
+                }
+            }
+        }
+
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
@@ -70,6 +81,8 @@ public class MainTabActivity extends Activity
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+
+        //conditionally showing the info on the first login
 
         //creating our database and adding a single tab
         db = getDB(this);

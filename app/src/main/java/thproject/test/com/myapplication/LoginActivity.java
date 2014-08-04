@@ -182,6 +182,9 @@ public class LoginActivity extends Activity {
             progressDialog.dismiss();
         }
         Intent i = new Intent(LoginActivity.this, MainTabActivity.class);
+        Bundle extras = new Bundle();
+        extras.putInt("numUsers",numberOfUsers);
+        i.putExtras(extras);
         startActivity(i);
         // close this activity
         finish();
