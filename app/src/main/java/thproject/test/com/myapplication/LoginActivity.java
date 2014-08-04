@@ -12,6 +12,7 @@ import android.os.Message;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -70,6 +71,10 @@ public class LoginActivity extends Activity {
         default_email = "Email";
         default_password = "password";
 
+        email.setHintTextColor(getResources().getColor(R.color.straight_white));
+        password.setHintTextColor(getResources().getColor(R.color.straight_white));
+        password.setText(default_password);
+
         users = db.getAllUsers();
         numberOfUsers = users.size();
         Log.d("LoginActivity","num users : " + Integer.toString(numberOfUsers));
@@ -81,6 +86,18 @@ public class LoginActivity extends Activity {
             password.setText(existingPass);
         }
 
+        //Listening to replace the password field on click
+        password.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                String val = password.getText().toString();
+                if (val.contentEquals(default_password)) {
+                    password.setText("");
+                }
+            }
+        });
+
         //creating a handler to start the next activity
         handler = new Handler(){
             public void handleMessage(Message msg) {
@@ -89,11 +106,9 @@ public class LoginActivity extends Activity {
                 String title = data.getString("title");
                 String text = data.getString("text");
                 progressDialog.setMessage(text);
-
                 Log.d("LoginActivityHandler","past scraper");
             }
         };
-
 
 
         /*
@@ -106,7 +121,7 @@ public class LoginActivity extends Activity {
                 user_email = email.getText().toString();
                 user_password = password.getText().toString();
 
-                /*//Catch cases for people trying to continue without username or password
+                //Catch cases for people trying to continue without username or password
                 if( user_email.equalsIgnoreCase(default_email) ){
                     Toast.makeText(getApplicationContext(),"Please Enter an Email",Toast.LENGTH_SHORT).show();
                 }
@@ -117,23 +132,16 @@ public class LoginActivity extends Activity {
                     Toast.makeText(getApplicationContext(),"Please Enter a Valid Password",Toast.LENGTH_SHORT).show();
                 }
                 else{
-
+                    //bypassing the login checks temporarily
+                    progressDialog = new ProgressDialog(LoginActivity.this);
+                    progressDialog.setMessage("Logging In");
+                    progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                    progressDialog.setCancelable(false);
+                    if(numberOfUsers == 0){         //we only need to show if the user's songs are being catalogued
+                        progressDialog.show();
+                    }
                     new loginAsync().execute();
-
-                }*/
-
-                //bypassing the login checks temporarily
-                progressDialog = new ProgressDialog(LoginActivity.this);
-                progressDialog.setMessage("Logging In");
-                progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-
-                if(numberOfUsers == 0){         //we only need to show if the user's songs are being catalogued
-                    progressDialog.show();
                 }
-
-                new loginAsync().execute();
-
-
             }
         });
 

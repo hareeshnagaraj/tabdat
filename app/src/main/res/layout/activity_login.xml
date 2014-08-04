@@ -27,7 +27,6 @@
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:inputType="textPersonName"
-        android:text="Email"
         android:textColor="#ffffffff"
         android:textAlignment="center"
         android:ems="10"
@@ -42,13 +41,13 @@
         android:layout_gravity="top"
         android:linksClickable="false"
         android:background="@color/primary_red"
-        android:gravity="center" />
+        android:gravity="center"
+        android:hint="Email" />
 
     <EditText
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:inputType="textPassword"
-        android:text="password"
         android:textAlignment="center"
         android:textColor="#ffffffee"
         android:ems="10"
@@ -61,7 +60,8 @@
         android:layout_alignParentEnd="true"
         android:layout_marginTop="-5dp"
         android:background="@color/primary_red"
-        android:gravity="center" />
+        android:gravity="center"
+        android:hint="Password" />
 
     <Button
         android:layout_width="match_parent"
