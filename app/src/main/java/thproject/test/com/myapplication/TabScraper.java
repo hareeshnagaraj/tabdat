@@ -214,57 +214,58 @@ public class TabScraper extends Activity{
             doc = Jsoup.connect(url).get();
             Elements table = doc.select(".tresults");
             tableCells = table.select("a");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        //iterating and getting links
-        for( Element link : tableCells ){
-            String linkClass = link.className();
+            //iterating and getting links
+            for( Element link : tableCells ){
+                String linkClass = link.className();
 //          Log.d("tabscraper link class", linkClass);
-            if(linkClass.compareTo("song search_art") == 0){
+                if(linkClass.compareTo("song search_art") == 0){
                 /*
                 * Defining the current artist based on the above string comparison, which allows us to perform certain actions
                 * */
-                String comparisonLocal = stripSpecialChars(this.artist);    //using a regular expression to compare values
-                String comparisonLink = stripSpecialChars(link.html());
+                    String comparisonLocal = stripSpecialChars(this.artist);    //using a regular expression to compare values
+                    String comparisonLink = stripSpecialChars(link.html());
 
-                Log.d("Regex Comparison",comparisonLocal + " " + comparisonLink);
-                if(comparisonLocal.compareTo(comparisonLink) == 0){
-                   currentartist = true;
+                    Log.d("Regex Comparison",comparisonLocal + " " + comparisonLink);
+                    if(comparisonLocal.compareTo(comparisonLink) == 0){
+                        currentartist = true;
 //                   Log.d("tabscraper current artist", link.html());
 
+                    }
+                    else{
+                        currentartist = false;
+                    }
                 }
                 else{
-                    currentartist = false;
-                }
-            }
-            else{
                 /*
                 * Storing the link for the tab  -- need to store bass/guitar as well as ratings
                 * */
-                if(currentartist && (linkClass.compareTo("song") == 0)){
-                    String href = link.attr("href");
-                    Element parent = link.parent().nextElementSibling().nextElementSibling();   //getting the tab type by going over the sibling elements
-                    Element typeWrapper = parent.child(0);
-                    String linkType = typeWrapper.html();
+                    if(currentartist && (linkClass.compareTo("song") == 0)){
+                        String href = link.attr("href");
+                        Element parent = link.parent().nextElementSibling().nextElementSibling();   //getting the tab type by going over the sibling elements
+                        Element typeWrapper = parent.child(0);
+                        String linkType = typeWrapper.html();
 
-                    //only adding bass and guitar tabs to our database, avoiding tab pro/power tab
-                    if(linkType.contentEquals("tab") || linkType.contentEquals("bass") || linkType.contentEquals("chords")) {
-                        Log.d("Adding tab of type",linkType);
-                        Link newLink = new Link();
-                        newLink.setArtist(artist);
-                        newLink.setTitle(songtitle);
-                        newLink.setLink(href);
-                        newLink.setSource("ultimate-guitar");
+                        //only adding bass and guitar tabs to our database, avoiding tab pro/power tab
+                        if(linkType.contentEquals("tab") || linkType.contentEquals("bass") || linkType.contentEquals("chords")) {
+                            Log.d("Adding tab of type",linkType);
+                            Link newLink = new Link();
+                            newLink.setArtist(artist);
+                            newLink.setTitle(songtitle);
+                            newLink.setLink(href);
+                            newLink.setSource("ultimate-guitar");
 //                        Log.d("tabscraper href", href);
 //                        Log.d("tabscraper addlink", newLink.toString());
-                        db.addLink(newLink);                            //adding to our link database
-                        numTabs++;
+                            db.addLink(newLink);                            //adding to our link database
+                            numTabs++;
+                        }
                     }
-                }
 
-             }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (NullPointerException e){
+            e.printStackTrace();
         }
     }
     /*

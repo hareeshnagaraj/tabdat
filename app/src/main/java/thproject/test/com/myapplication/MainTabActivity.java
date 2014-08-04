@@ -30,7 +30,7 @@ import java.util.HashMap;
 import static thproject.test.com.myapplication.MySQLiteHelper.getDB;
 
 public class MainTabActivity extends Activity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks,SearchDialog.SearchListener {
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks,SearchDialog.SearchListener,InfoDialog.InformationDialogInterface {
 
     private static Handler handler;
     /**
@@ -55,6 +55,8 @@ public class MainTabActivity extends Activity
 
     public ProgressDialog progressDialog;       //dialog to show progress
     SearchDialog dialog;
+    InfoDialog infoDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -271,6 +273,10 @@ public class MainTabActivity extends Activity
             searchDialog();
             return true;
         }
+        if(id == R.id.info_dialog){             //Showing the info dialog
+            showInfoDialog();
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -280,6 +286,15 @@ public class MainTabActivity extends Activity
     @Override
     public void onTabClick(DialogFragment dialog) {
 
+    }
+
+    /*
+    * Used to show our info dialog
+    * */
+    @Override
+    public void showInfoDialog() {
+        infoDialog = new InfoDialog();
+        infoDialog.show(getFragmentManager(),"infoDialog");
     }
 
 

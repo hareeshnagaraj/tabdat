@@ -112,6 +112,7 @@ public class SongRecognitionActivity extends FragmentActivity implements TabPick
                     Intent i;
                     i = new Intent(SongRecognitionActivity.this,MainTabActivity.class);
                     startActivity(i);
+                    finish();
                 }
             }
         };
