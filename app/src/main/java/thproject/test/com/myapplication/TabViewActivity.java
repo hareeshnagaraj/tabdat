@@ -69,6 +69,9 @@ public class TabViewActivity extends Activity {
         webView = (WebView) findViewById(R.id.webView);
         webView.getSettings().setJavaScriptEnabled(false);
         webView.getSettings().setBuiltInZoomControls(true);
+        webView.getSettings().setUseWideViewPort(true);
+        webView.setScrollbarFadingEnabled(false);
+        webView.setInitialScale(50);
 
         //Passing headers into the webView to avoid ugly ads and such
         Map<String, String> headers = new HashMap<String, String>();
@@ -79,6 +82,7 @@ public class TabViewActivity extends Activity {
         }
         headers.put("Referrer",source);
         webView.loadUrl(link,headers);
+
     }
 
 

@@ -167,13 +167,11 @@ public class SongGrabber extends Activity {
     * */
     public void addArtistCard(final Context acontext, View view, LinearLayout layout,final List<String> artistlist){
         view.setOnTouchListener(new OnSwipeTouchListener(acontext,view) {
-
             public void onSwipeLeft(View view) {
                 int cardnum = view.getId();
                 String cardname = artistlist.get(cardnum);
                 MainTabActivity.signalHandlerDisplaySongs(cardname);
             }
-
             @Override
             public void onTouch(View view) { }
         });

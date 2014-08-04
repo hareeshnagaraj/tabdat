@@ -291,10 +291,6 @@ public class SongsActivity extends FragmentActivity implements TabPickerDialog.T
     * */
     private void startTabView(Bundle extras){
 
-        if(progressDialog != null){
-            progressDialog.dismiss();
-        }
-
         String source = (String) extras.get("source");
         String strUrl = (String) extras.get("link");
         if (!strUrl.startsWith("http://") && !strUrl.startsWith("https://")){
@@ -309,6 +305,7 @@ public class SongsActivity extends FragmentActivity implements TabPickerDialog.T
             i = new Intent(SongsActivity.this, TabViewActivity.class);
             i.putExtras(extras);
             startActivity(i);
+            return;
        }
         // close this activity
     }
