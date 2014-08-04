@@ -62,12 +62,13 @@ public class MainTabActivity extends Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_tab);
 
+
         Bundle extras = this.getIntent().getExtras();
         if ( extras != null ) {
             if ( extras.containsKey("numUsers") ) {
                 int numberOfUsers = extras.getInt("numUsers");
                 Log.d("numberOFUsers main",Integer.toString(numberOfUsers));
-                if(numberOfUsers == 0){
+                if(numberOfUsers == 0){      //To be replaced with showcaseview, the introduction/explanation
                     showInfoDialog();
                 }
             }

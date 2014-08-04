@@ -69,10 +69,10 @@ public class SearchDialog extends DialogFragment {
                 title = titleEdit.getText().toString();
                 artist = artistEdit.getText().toString();
                 Log.d("searchSubmit"," title " + title + " artist " + artist);
-                if(title.compareTo("title") == 0){
+                if(title.compareTo("title") == 0 || title == null){
                     MainTabActivity.toasty("Please enter a title");
                 }
-                else if(artist.compareTo("artist") == 0){
+                else if(artist.compareTo("artist") == 0 || artist == null){
                     MainTabActivity.toasty("Please enter an artist");
                 }
                 else{

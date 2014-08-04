@@ -11,7 +11,6 @@ public class NowLayout extends LinearLayout implements OnGlobalLayoutListener {
     public NowLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
         initLayoutObserver();
-
     }
 
     public NowLayout(Context context) {
