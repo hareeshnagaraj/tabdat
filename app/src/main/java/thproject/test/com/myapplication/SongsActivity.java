@@ -18,6 +18,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import thproject.test.com.myapplication.R;
+
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.HashMap;
@@ -33,13 +36,14 @@ import static thproject.test.com.myapplication.MySQLiteHelper.getDB;
 * In this class we display all the songs of a particular artist, then allow a click to show the available tabs
 *
 * */
-public class SongsActivity extends FragmentActivity implements TabPickerDialog.TabPickerListener{
+public class SongsActivity extends FragmentActivity implements TabPickerDialog.TabPickerListener,SearchDialog.SearchListener{
     private String artist;
     Context context;
     private SongGrabber grabsongs = new SongGrabber();
     private static Handler handler;
     public thproject.test.com.myapplication.NowLayout nowSongLayout;
     public ProgressDialog progressDialog;
+    SearchDialog searchDialog;
     MySQLiteHelper db = getDB(this);
 
     @Override
@@ -53,7 +57,17 @@ public class SongsActivity extends FragmentActivity implements TabPickerDialog.T
                 Log.d("SongsActivity", artist);
             }
         }
+
         context = getApplicationContext();
+        //disable application icon from ActionBar, set up remaining attributes
+        ActionBar actionBar = getActionBar();
+        actionBar.setDisplayShowHomeEnabled(false);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        getActionBar().setTitle(artist);
+
+        nowSongLayout = (thproject.test.com.myapplication.NowLayout) findViewById(R.id.mainSongsLayout);
+        context = getApplicationContext();
+        grabsongs.displaySongs(context,nowSongLayout,artist);
 
         //Handler to show loading progress
         handler = new Handler(){
@@ -65,6 +79,9 @@ public class SongsActivity extends FragmentActivity implements TabPickerDialog.T
 
                 //First action occurs when no tabs are present, progress dialog shown
                 if(action.compareTo("init") == 0) {
+                    if(searchDialog != null){
+                        searchDialog.dismiss();
+                    }
                     progressDialog = new ProgressDialog(SongsActivity.this);
                     progressDialog.setMessage("Loading tab " + title);
                     progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -82,7 +99,15 @@ public class SongsActivity extends FragmentActivity implements TabPickerDialog.T
                     if(numtabs > 0){
                         Toast.makeText(getApplicationContext(),Integer.toString(numtabs)+" tabs added",Toast.LENGTH_SHORT).show();
                     }
-                    showTabDialog(artist,title);
+                    if(!cardExists(title)){
+                        Log.d("cardExists is false: ", title);
+                        stripCards();
+                        grabsongs.displaySongs(context,nowSongLayout,artist);
+                        showTabDialog(artist,title);
+                    }
+                    else{
+                        showTabDialog(artist,title);
+                    }
                 }
                 //Action if tab alreadye exists
                 if(action.compareTo("exists") == 0){
@@ -91,6 +116,11 @@ public class SongsActivity extends FragmentActivity implements TabPickerDialog.T
                         progressDialog.dismiss();
                     }
                     showTabDialog(artist,title);
+
+                }
+                if(action.contentEquals("toast")){
+                    String toast = data.getString("toast");
+                    Toast.makeText(getApplicationContext(),toast,Toast.LENGTH_SHORT).show();
                 }
                 //Action to start the TabViewActivity
                 if(action.compareTo("showtab") == 0){
@@ -106,17 +136,33 @@ public class SongsActivity extends FragmentActivity implements TabPickerDialog.T
             }
         };
 
-        //disable application icon from ActionBar, set up remaining attributes
-        ActionBar actionBar = getActionBar();
-        actionBar.setDisplayShowHomeEnabled(false);
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        getActionBar().setTitle(artist);
-
-        nowSongLayout = (thproject.test.com.myapplication.NowLayout) findViewById(R.id.mainSongsLayout);
-        context = getApplicationContext();
-        grabsongs.displaySongs(context,nowSongLayout,artist);
-
     }
+
+    /*
+    * Function to conditionally add card to layout
+    * */
+    public Boolean cardExists(String title){
+        int numChildren = nowSongLayout.getChildCount();
+        Boolean childExists = false;
+        for(int i = 0; i < numChildren; i ++){
+            TextView currentView = (TextView) nowSongLayout.getChildAt(i);
+            String currentText = currentView.getText().toString();
+            Log.d("getChildren",currentText);
+            if(currentText.contentEquals(title)){
+                childExists = true;
+            }
+        }
+        return childExists;
+    }
+
+    /*
+    * remove all cards from the layout
+    * */
+    public void stripCards(){
+       nowSongLayout.removeAllViews();
+    }
+
+
 
     public static void showProgress(String artist, String title, String action){
         Message msg = new Message();
@@ -127,7 +173,17 @@ public class SongsActivity extends FragmentActivity implements TabPickerDialog.T
         msg.setData(data);
         handler.sendMessage(msg);
     }
-
+    /*
+    * Action to show toasts
+    * */
+    public static void toasty(String a){
+        Message msg = new Message();
+        Bundle data = new Bundle();
+        data.putString("toast",a);
+        data.putString("action","toast");
+        msg.setData(data);
+        handler.sendMessage(msg);
+    }
     /*
     * Used to signal the handler with the appropriate message
     * */
@@ -186,6 +242,15 @@ public class SongsActivity extends FragmentActivity implements TabPickerDialog.T
         msg.setData(data);
         handler.sendMessage(msg);
     }
+    /*
+    * Used to show the search dialog
+    * */
+    public void showSearchDialog(){
+        searchDialog = new SearchDialog();
+        searchDialog.setCallingActivity("SongsActivity");
+        searchDialog.setArtist(artist);
+        searchDialog.show(getFragmentManager(),"searchDialog");
+    }
 
 
     @Override
@@ -203,6 +268,9 @@ public class SongsActivity extends FragmentActivity implements TabPickerDialog.T
         int id = item.getItemId();
         if (id == R.id.action_settings) {
             return true;
+        }
+        if ( id == R.id.searchInSongActivity ){
+            showSearchDialog();
         }
         if(id == android.R.id.home){
             onBackPressed();
@@ -275,7 +343,7 @@ public class SongsActivity extends FragmentActivity implements TabPickerDialog.T
         returnHash.put(items,links);
         return returnHash;
     }
-    //Overrides the method from the fragment TabPickerDialog
+    //Overrides the method from the fragment TabPickerDialog and searchDialog
     @Override
     public void onTabClick(DialogFragment dialog) {
 

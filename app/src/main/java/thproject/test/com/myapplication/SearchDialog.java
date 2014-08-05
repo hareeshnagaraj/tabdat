@@ -22,6 +22,7 @@ public class SearchDialog extends DialogFragment {
     private String title;
     EditText artistEdit;
     EditText titleEdit;
+    String callingActivity;
 
 
     // The interface commmunicates back to the parent activity
@@ -54,6 +55,12 @@ public class SearchDialog extends DialogFragment {
 
         return builder.create();
     }
+    //Set the calling activity to distinguish between the main activity and songs activity
+    public void setCallingActivity(String a){
+        this.callingActivity = a;
+    }
+    //Set artist
+    public void setArtist(String a){ this.artist = a; }
 
     /*
     * Search dialog listener
@@ -62,6 +69,12 @@ public class SearchDialog extends DialogFragment {
         TextView submit = (TextView) v.findViewById(R.id.submitSearch);
         artistEdit = (EditText) v.findViewById(R.id.search_artist);
         titleEdit = (EditText) v.findViewById(R.id.search_title);
+
+        if(callingActivity.contentEquals("SongsActivity")){         //setting the artist field if searching within songsActivity
+            artistEdit.setText(artist);
+            artistEdit.setClickable(false);
+            artistEdit.setFocusable(false);
+        }
 
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -72,19 +85,29 @@ public class SearchDialog extends DialogFragment {
                 int artistLength = artist.length();
 //                Log.d("searchSubmit"," title " + title + " length" + Integer.toString(titleLength) + " artist " + artist + " length" + Integer.toString(artistLength) );
 
-                if(titleLength == 0){
-                    MainTabActivity.toasty("Please enter a title");
+                if(callingActivity.contentEquals("MainTabActivity")){       //Action if searching in main activity
+                    if(titleLength == 0){
+                        MainTabActivity.toasty("Please enter a title");
+                    }
+                    else if(artistLength == 0){
+                        MainTabActivity.toasty("Please enter an artist");
+                    }
+                    else{
+                        MainTabActivity.showProgress(title);
+                        TabScraper scraper = new TabScraper();
+                        scraper.setArtist(artist);
+                        scraper.setSongTitle(title);
+                        scraper.setCallingActivity("MainTabActivity");
+                        scraper.scrape();
+                    }
                 }
-                else if(artistLength == 0){
-                    MainTabActivity.toasty("Please enter an artist");
-                }
-                else{
-                    MainTabActivity.showProgress(title);
-                    TabScraper scraper = new TabScraper();
-                    scraper.setArtist(artist);
-                    scraper.setSongTitle(title);
-                    scraper.setCallingActivity("MainTabActivity");
-                    scraper.scrape();
+                if(callingActivity.contentEquals("SongsActivity")){     //Action if called in SongsActivity
+                    if(titleLength == 0){
+                        SongsActivity.toasty("Please enter a title");
+                    }
+                    else{
+                        SongsActivity.showProgress(artist,title,"init");
+                    }
                 }
             }
         });

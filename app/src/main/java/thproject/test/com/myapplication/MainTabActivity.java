@@ -253,8 +253,8 @@ public class MainTabActivity extends Activity
     private void searchDialog(){
         Log.d("searchDialog","pressed");
         dialog = new SearchDialog();
+        dialog.setCallingActivity("MainTabActivity");
         dialog.show(getFragmentManager(), "SearchDialog");
-
     }
 
     @Override
