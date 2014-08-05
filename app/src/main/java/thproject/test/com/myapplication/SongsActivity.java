@@ -118,8 +118,6 @@ public class SongsActivity extends FragmentActivity implements TabPickerDialog.T
 
     }
 
-
-
     public static void showProgress(String artist, String title, String action){
         Message msg = new Message();
         Bundle data = new Bundle();
@@ -129,7 +127,6 @@ public class SongsActivity extends FragmentActivity implements TabPickerDialog.T
         msg.setData(data);
         handler.sendMessage(msg);
     }
-
 
     /*
     * Used to signal the handler with the appropriate message

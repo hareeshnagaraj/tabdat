@@ -68,11 +68,14 @@ public class SearchDialog extends DialogFragment {
             public void onClick(View view) {
                 title = titleEdit.getText().toString();
                 artist = artistEdit.getText().toString();
-                Log.d("searchSubmit"," title " + title + " artist " + artist);
-                if(title.compareTo("title") == 0 || title == null){
+                int titleLength = title.length();
+                int artistLength = artist.length();
+//                Log.d("searchSubmit"," title " + title + " length" + Integer.toString(titleLength) + " artist " + artist + " length" + Integer.toString(artistLength) );
+
+                if(titleLength == 0){
                     MainTabActivity.toasty("Please enter a title");
                 }
-                else if(artist.compareTo("artist") == 0 || artist == null){
+                else if(artistLength == 0){
                     MainTabActivity.toasty("Please enter an artist");
                 }
                 else{
