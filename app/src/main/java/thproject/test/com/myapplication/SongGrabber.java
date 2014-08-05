@@ -84,7 +84,7 @@ public class SongGrabber extends Activity {
                 numsongs++;
             }
             while (musicCursor.moveToNext());
-            Log.d("num songs from songGrabber", Integer.toString(numsongs));
+//            Log.d("num songs from songGrabber", Integer.toString(numsongs));
 
         }
     }
@@ -99,7 +99,7 @@ public class SongGrabber extends Activity {
         LayoutInflater inflater = (LayoutInflater) mContext.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
 
         for (int i=0; i<artistlist.size(); i++) {
-            Log.d("displayArtist :",artistlist.get(i));
+//            Log.d("displayArtist :",artistlist.get(i));
             String displaytext;
             String currentArtist = artistlist.get(i);
             int numberOfSongs = db.getNumberOfTabsBy(currentArtist);
@@ -149,10 +149,10 @@ public class SongGrabber extends Activity {
 
         if(numTabs == 0){   // here we need to scrape for tabs
             SongsActivity.showProgress(artist,songname,"init");
-            Log.d("showProgressInSongsActivity",songname + " has " + Integer.toString(numTabs) + " tabs"); //logs number of songs for this tab
+//            Log.d("showProgressInSongsActivity",songname + " has " + Integer.toString(numTabs) + " tabs"); //logs number of songs for this tab
         }
         else{       //tabs already exist in database
-            Log.d("showProgressInSongsActivity",songname + " has " + Integer.toString(numTabs) + " tabs"); //logs number of songs for this tab
+//            Log.d("showProgressInSongsActivity",songname + " has " + Integer.toString(numTabs) + " tabs"); //logs number of songs for this tab
             SongsActivity.signalCompletion("exists",artist,songname);
         }
 

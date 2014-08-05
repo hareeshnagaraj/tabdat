@@ -5,10 +5,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
-import android.util.Log;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -54,7 +51,7 @@ public class TabPickerDialog extends DialogFragment {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 Link selectedLink = getSelectedLink(i);
-                Log.d("TabPickerDialog item selected", selectedLink.toString());
+//                Log.d("TabPickerDialog item selected", selectedLink.toString());
 //                Link selectedLink = links.get(i);
 //                Log.d("TabPickerDialog link selected", selectedLink.toString());
                 //signaling the SongsActivity to open the TabViewActivity

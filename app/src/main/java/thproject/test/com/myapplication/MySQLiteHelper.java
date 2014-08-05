@@ -131,7 +131,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
                current.setEmail(cursor.getString(1));
                current.setPassword(cursor.getString(2));
                users.add(current);
-               Log.d("getAllUsers ", current.toString());
+//               Log.d("getAllUsers ", current.toString());
            }while(cursor.moveToNext());
        }
        return users;
@@ -271,7 +271,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
                         null, // g. order by
                         null); // h. limit
         int numlinks = cursor.getCount();
-        Log.d("getLinkFromSource num : ", Integer.toString(numlinks));
+//        Log.d("getLinkFromSource num : ", Integer.toString(numlinks));
         if(cursor.moveToFirst()){
             link.setID(Integer.parseInt(cursor.getString(0)));
             link.setArtist(cursor.getString(1));
@@ -343,7 +343,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
             tab.setTitle("NO_TAB");
         }
 
-        Log.d("getTab",tab.toString());
+//        Log.d("getTab",tab.toString());
         return tab;
     }
 
@@ -392,7 +392,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 
             }while(cursor.moveToNext());
         }
-        Log.d("getAllLinks","end query");
+//        Log.d("getAllLinks","end query");
         return links;
     }
 
@@ -437,7 +437,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     * Returning all the tabs that we currently have stored
     * */
     public List<Tab> getAllTabs(){
-        Log.d("getAllTabs : " , "beginning query");
+//        Log.d("getAllTabs : " , "beginning query");
 
         List<Tab> tabs = new LinkedList<Tab>();
         // 1. build the query
@@ -461,7 +461,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 
             }while(cursor.moveToNext());
         }
-        Log.d("getAllTabs : " , "end query");
+//        Log.d("getAllTabs : " , "end query");
         return tabs;
     }
 

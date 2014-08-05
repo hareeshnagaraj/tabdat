@@ -6,9 +6,6 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
-
-import com.gracenote.gnsdk.GnAlbum;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -58,7 +55,7 @@ public class TabPickerSongRecognition extends DialogFragment {
             builder.setItems(albumstrings, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    Log.d("TabPickerDialog item selected", albumstrings[i]);
+//                    Log.d("TabPickerDialog item selected", albumstrings[i]);
                     SongRecognitionActivity.startTracksDialog(i);           //signaling the
                 }
             });
@@ -110,7 +107,7 @@ public class TabPickerSongRecognition extends DialogFragment {
         for(int i=0; i < length; i++){
             int index = (Integer) mSelectedItems.get(i);
             String trackname = trackstrings[index];
-            Log.d("scrapeSelected",trackname);
+//            Log.d("scrapeSelected",trackname);
             selectedTracks.add(trackname);
         }
 

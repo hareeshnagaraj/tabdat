@@ -78,11 +78,11 @@ public class LoginActivity extends Activity {
 
         users = db.getAllUsers();
         numberOfUsers = users.size();
-        Log.d("LoginActivity","num users : " + Integer.toString(numberOfUsers));
+//        Log.d("LoginActivity","num users : " + Integer.toString(numberOfUsers));
         if(numberOfUsers > 0){
             existingEmail = users.get(0).getEmail();
             existingPass = users.get(0).getPassword();
-            Log.d("LoginActivity","user " + existingEmail + " pass " + existingPass);
+//            Log.d("LoginActivity","user " + existingEmail + " pass " + existingPass);
             email.setText(existingEmail);
             password.setText(existingPass);
         }
@@ -107,7 +107,7 @@ public class LoginActivity extends Activity {
                 String title = data.getString("title");
                 String text = data.getString("text");
                 progressDialog.setMessage(text);
-                Log.d("LoginActivityHandler","past scraper");
+//                Log.d("LoginActivityHandler","past scraper");
             }
         };
 
@@ -177,7 +177,7 @@ public class LoginActivity extends Activity {
 
     //used to start the main login activity
     private void startMain(){
-        Log.d("startMain","links as of mainActivity");
+//        Log.d("startMain","links as of mainActivity");
         if(progressDialog != null) {
             progressDialog.hide();
             progressDialog.dismiss();
@@ -224,7 +224,7 @@ public class LoginActivity extends Activity {
                 && cm.getActiveNetworkInfo().isConnected()) {
             return true;
         } else {
-            Log.v("checkInternetConnection", "Internet Connection Not Present");
+//            Log.v("checkInternetConnection", "Internet Connection Not Present");
             return false;
         }
     }
@@ -257,14 +257,14 @@ public class LoginActivity extends Activity {
                 // Execute HTTP Post Request
                 HttpResponse response = httpclient.execute(httppost);
                 InputStream stream = response.getEntity().getContent();
-                Log.d("loginAsync response" , getStringFromInputStream(stream));
+//                Log.d("loginAsync response" , getStringFromInputStream(stream));
             } catch (ClientProtocolException e) {
                 // TODO Auto-generated catch block
             } catch (IOException e) {
                 // TODO Auto-generated catch block
             }
-            Log.d("loginAsync : ", "beginning update query");
-            Log.d("loginAsync : ", "end update query");
+//            Log.d("loginAsync : ", "beginning update query");
+//            Log.d("loginAsync : ", "end update query");
             return null;
         }
         @Override

@@ -68,7 +68,7 @@ public class MainTabActivity extends Activity
         if ( extras != null ) {
             if ( extras.containsKey("numUsers") ) {
                 int numberOfUsers = extras.getInt("numUsers");
-                Log.d("numberOFUsers main",Integer.toString(numberOfUsers));
+//                Log.d("numberOFUsers main",Integer.toString(numberOfUsers));
                 if(numberOfUsers == 0){      //To be replaced with showcaseview, the introduction/explanation
                     showInfoDialog();
                 }
@@ -98,7 +98,7 @@ public class MainTabActivity extends Activity
         //creating a handler to start the next activity
         handler = new Handler(){
             public void handleMessage(Message msg) {
-                Log.d("message", "hit");
+//                Log.d("message", "hit");
                 Bundle data = msg.getData();
                 String action = data.getString("action");
 
@@ -254,7 +254,7 @@ public class MainTabActivity extends Activity
     * Show search dialog
     * */
     private void searchDialog(){
-        Log.d("searchDialog","pressed");
+//        Log.d("searchDialog","pressed");
         dialog = new SearchDialog();
         dialog.setCallingActivity("MainTabActivity");
         dialog.show(getFragmentManager(), "SearchDialog");
@@ -325,7 +325,7 @@ public class MainTabActivity extends Activity
                 && cm.getActiveNetworkInfo().isConnected()) {
             return true;
         } else {
-            Log.v("checkInternetConnection", "Internet Connection Not Present");
+//            Log.v("checkInternetConnection", "Internet Connection Not Present");
             toasty(getString(R.string.connect_to_network));
             return false;
         }
@@ -390,7 +390,7 @@ public class MainTabActivity extends Activity
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             thproject.test.com.myapplication.NowLayout myFragmentView = null;
-            Log.d("section number",ARG_SECTION_NUMBER);
+//            Log.d("section number",ARG_SECTION_NUMBER);
             View rootView = null;
 
             /*

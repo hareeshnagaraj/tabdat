@@ -1,26 +1,19 @@
 package thproject.test.com.myapplication;
 
 import android.app.ActionBar;
-import android.app.Activity;
 import android.app.DialogFragment;
-import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import thproject.test.com.myapplication.R;
-
-import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -55,7 +48,7 @@ public class SongsActivity extends FragmentActivity implements TabPickerDialog.T
         if ( extras != null ) {
             if ( extras.containsKey("artist") ) {
                 this.artist = extras.getString("artist");
-                Log.d("SongsActivity", artist);
+//                Log.d("SongsActivity", artist);
             }
         }
 
@@ -101,7 +94,7 @@ public class SongsActivity extends FragmentActivity implements TabPickerDialog.T
                         Toast.makeText(getApplicationContext(),Integer.toString(numtabs)+" tabs added",Toast.LENGTH_SHORT).show();
                     }
                     if(!cardExists(title)){
-                        Log.d("cardExists is false: ", title);
+//                        Log.d("cardExists is false: ", title);
                         stripCards();
                         grabsongs.displaySongs(context,nowSongLayout,artist);
                         showTabDialog(artist,title);
@@ -148,7 +141,7 @@ public class SongsActivity extends FragmentActivity implements TabPickerDialog.T
         for(int i = 0; i < numChildren; i ++){
             TextView currentView = (TextView) nowSongLayout.getChildAt(i);
             String currentText = currentView.getText().toString();
-            Log.d("getChildren",currentText);
+//            Log.d("getChildren",currentText);
             if(currentText.contentEquals(title)){
                 childExists = true;
             }
@@ -310,7 +303,7 @@ public class SongsActivity extends FragmentActivity implements TabPickerDialog.T
             dialog.setLinks(links);
             it.remove(); // avoids a ConcurrentModificationException
         }
-        Log.d("showTabDialog links length", Integer.toString(length));
+//        Log.d("showTabDialog links length", Integer.toString(length));
         if(length > 0){
             dialog.show(getFragmentManager(),"TabPickerDialog");
         }

@@ -252,7 +252,7 @@ public class SongRecognitionActivity extends FragmentActivity implements TabPick
             try {
                 track = trackIterator.next();
                 GnTitle title = track.title();
-                Log.d("showTracksDialog track : " , title.display());
+//                Log.d("showTracksDialog track : " , title.display());
                 trackListObject.add(title.display());
             } catch (GnException e) {
                 e.printStackTrace();
@@ -302,7 +302,7 @@ public class SongRecognitionActivity extends FragmentActivity implements TabPick
         }
         @Override
         protected void onPostExecute(Void v){
-            Log.d("songRecognitionActivity","connection finished");
+//            Log.d("songRecognitionActivity","connection finished");
             Toast.makeText(getApplicationContext(), "Listening", Toast.LENGTH_LONG).show();
             //Begin identification
             try {
@@ -329,7 +329,7 @@ public class SongRecognitionActivity extends FragmentActivity implements TabPick
             public void run() {
                 ByteBuffer byteBuffer = ByteBuffer.allocateDirect(1024*4);
                 long bytesRead = 0;
-                Log.d("startRecording","begin loop");
+//                Log.d("startRecording","begin loop");
                 while(isListening) {
                     bytesRead = gnMicrophone.getData(byteBuffer, byteBuffer.capacity());
                     try {
@@ -338,7 +338,7 @@ public class SongRecognitionActivity extends FragmentActivity implements TabPick
                         e.printStackTrace();
                     }
                 }
-                Log.d("startRecording","end loop");
+
             }
         });
         audioProcessThread.start();
@@ -352,13 +352,13 @@ public class SongRecognitionActivity extends FragmentActivity implements TabPick
 
         @Override
         public void musicIdStreamProcessingStatusEvent(GnMusicIdStreamProcessingStatus gnMusicIdStreamProcessingStatus, IGnCancellable iGnCancellable) {
-            Log.d("GnMusicIdStreamEvents","musicIdStreamProcessingStatusEvent");
+//            Log.d("GnMusicIdStreamEvents","musicIdStreamProcessingStatusEvent");
         }
 
 
         @Override
         public void musicIdStreamIdentifyingStatusEvent(GnMusicIdStreamIdentifyingStatus gnMusicIdStreamIdentifyingStatus, IGnCancellable iGnCancellable) {
-            Log.d("musicIdStreamIdentifyingStatusEvent name",gnMusicIdStreamIdentifyingStatus.name());
+//            Log.d("musicIdStreamIdentifyingStatusEvent name",gnMusicIdStreamIdentifyingStatus.name());
             //Closing the microphone at the appropriate time
             if(gnMusicIdStreamIdentifyingStatus.name().compareTo("kStatusIdentifyingEnded") == 0){
                 gnMicrophone.sourceClose();
@@ -372,8 +372,8 @@ public class SongRecognitionActivity extends FragmentActivity implements TabPick
         @Override
         public void musicIdStreamAlbumResult(GnResponseAlbums gnResponseAlbums, IGnCancellable iGnCancellable) {
             GnAlbum result = null;
-            Log.d("GnMusicIdStreamEvents",gnResponseAlbums.toString());
-            Log.d("GnMusicIdStreamEvents stop listening","isListening = false");
+//            Log.d("GnMusicIdStreamEvents",gnResponseAlbums.toString());
+//            Log.d("GnMusicIdStreamEvents stop listening","isListening = false");
             isListening = false;
 
             List<String> displayList = new LinkedList<String>();
@@ -382,7 +382,7 @@ public class SongRecognitionActivity extends FragmentActivity implements TabPick
             GnAlbumIterable results = local.albums();
             GnAlbumIterator it = results.getIterator();
             Long albumCount = results.count();
-            Log.d("GnAlbumIterable count",Long.toString(albumCount));
+//            Log.d("GnAlbumIterable count",Long.toString(albumCount));
 
             //Action if no album found
             if(albumCount == 0){
@@ -402,7 +402,7 @@ public class SongRecognitionActivity extends FragmentActivity implements TabPick
                     GnTitle title = result.title();
                     GnName name = artist.name();
                     displayList.add(title.display() + " by " + name.display());
-                    Log.d("musicIdStreamAlbumResult ", name.display() + " " + title.display());
+//                    Log.d("musicIdStreamAlbumResult ", name.display() + " " + title.display());
                }
                String[] returnList = listToArray(displayList);
                globalAlbums = returnList;       //setting our globalalbums list to this returnList
@@ -415,13 +415,13 @@ public class SongRecognitionActivity extends FragmentActivity implements TabPick
 
         @Override
         public void musicIdStreamIdentifyCompletedWithError(GnError gnError) {
-            Log.d("GnMusicIdStreamEvents",gnError.toString());
+//            Log.d("GnMusicIdStreamEvents",gnError.toString());
             isListening = false;
         }
 
         @Override
         public void statusEvent(GnStatus gnStatus, long l, long l2, long l3, IGnCancellable iGnCancellable) {
-            Log.d("GnStatus",Long.toString(l) + Long.toString(l2) + Long.toString(l3) );
+//            Log.d("GnStatus",Long.toString(l) + Long.toString(l2) + Long.toString(l3) );
         }
 
     }

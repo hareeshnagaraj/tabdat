@@ -3,22 +3,13 @@ package thproject.test.com.myapplication;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
-import thproject.test.com.myapplication.R;
 
 import static thproject.test.com.myapplication.MySQLiteHelper.getDB;
 
@@ -50,7 +41,7 @@ public class TabViewActivity extends Activity {
             }
             if( extras.containsKey("source")){
                 source = extras.getString("source");
-                Log.d("TabViewActivity source",source);
+//                Log.d("TabViewActivity source",source);
             }
             if(extras.containsKey("artist")){
                 artist = extras.getString("artist");

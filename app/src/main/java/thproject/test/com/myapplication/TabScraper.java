@@ -1,29 +1,17 @@
 package thproject.test.com.myapplication;
 import android.app.Activity;
-import android.content.Context;
-import android.net.ConnectivityManager;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import static thproject.test.com.myapplication.MySQLiteHelper.getDB;
 
@@ -64,7 +52,7 @@ public class TabScraper extends Activity{
     }
     public void setCallingActivity(String activity){
         this.callingActivity = activity;
-        Log.d("TabScraper calling activity",callingActivity);
+//        Log.d("TabScraper calling activity",callingActivity);
     }
     public void setSelectedTracks(List<String> a){
         selectedTracks = a;
@@ -112,7 +100,7 @@ public class TabScraper extends Activity{
             /*
             * Scrape functionality if string is ultimate-guitar.com, multiple steps
             * */
-            Log.d("scrapeAsync","doInBackground");
+//            Log.d("scrapeAsync","doInBackground");
             String ultimateGuitarURL = null;
             String guitareTabURL = null;
 
@@ -121,7 +109,7 @@ public class TabScraper extends Activity{
                 newTab.setTitle(songtitle);
                 newTab.setArtist(artist);
                 db.addTab(newTab);
-                Log.d("scrapeAsync","adding artist");
+//                Log.d("scrapeAsync","adding artist");
             }
             try {
                 ultimateGuitarURL = ultimateGuitarURL1 + URLEncoder.encode(songtitle, "UTF-8");
@@ -129,7 +117,7 @@ public class TabScraper extends Activity{
                 String guitarCCURL = guitarTabsCCPrefix + URLEncoder.encode(songtitle, "UTF-8");
                 String echordsURL = echordsPrefix + URLEncoder.encode(songtitle, "UTF-8");
 
-                Log.d("scrapeAsync URL",ultimateGuitarURL);
+//                Log.d("scrapeAsync URL",ultimateGuitarURL);
                 guitarTabCCParse(guitarCCURL);
                 guitareTabParse(guitareTabURL);
                 ultimateGuitarParse(ultimateGuitarURL);
@@ -142,7 +130,7 @@ public class TabScraper extends Activity{
         }
         @Override
         protected void onPostExecute(String v){
-           Log.d("scrapeAsync","onPostExecute" + v);
+//           Log.d("scrapeAsync","onPostExecute" + v);
             /*
             * After execution, message sent to the SongsActivity or MainTabActivity to close progress dialog and show options
             * */
@@ -163,7 +151,7 @@ public class TabScraper extends Activity{
 
         @Override
         protected Void doInBackground(Void... voids) {
-            Log.d("scrapeAsyncArray","artist : " + artist);
+//            Log.d("scrapeAsyncArray","artist : " + artist);
             SongRecognitionActivity.showProgress();
             for(int i = 0; i < selectedTracks.size(); i++){
                 String track = selectedTracks.get(i);
@@ -177,7 +165,7 @@ public class TabScraper extends Activity{
                     db.addTab(newTab);
                 }
 
-                Log.d("scrapeAsyncArray","scraping: " + track);
+//                Log.d("scrapeAsyncArray","scraping: " + track);
                 try {
                     String ultimateGuitarURL = ultimateGuitarURL1 + URLEncoder.encode(track, "UTF-8");
                     String guitareTabURL = guitareTabURLPrefix + URLEncoder.encode(songtitle, "UTF-8");
@@ -198,7 +186,7 @@ public class TabScraper extends Activity{
         }
         @Override
         protected void onPostExecute(Void v){
-            Log.d("scrapeAsyncArray","completed");
+//            Log.d("scrapeAsyncArray","completed");
             SongRecognitionActivity.exitSongRecognition();
         }
     }
@@ -229,7 +217,7 @@ public class TabScraper extends Activity{
                     String comparisonLocal = stripSpecialChars(this.artist);    //using a regular expression to compare values
                     String comparisonLink = stripSpecialChars(link.html());
 
-                    Log.d("Regex Comparison",comparisonLocal + " " + comparisonLink);
+//                    Log.d("Regex Comparison",comparisonLocal + " " + comparisonLink);
                     if(compareLocalToRemote(this.artist,link.html())){
                         currentartist = true;
 //                   Log.d("tabscraper current artist", link.html());
@@ -251,7 +239,7 @@ public class TabScraper extends Activity{
 
                         //only adding bass and guitar tabs to our database, avoiding tab pro/power tab
                         if(linkType.contentEquals("tab") || linkType.contentEquals("bass") || linkType.contentEquals("chords")) {
-                            Log.d("Adding tab of type",linkType);
+//                            Log.d("Adding tab of type",linkType);
                             Link newLink = new Link();
                             newLink.setArtist(artist);
                             newLink.setTitle(songtitle);
@@ -278,7 +266,7 @@ public class TabScraper extends Activity{
     *
     * */
     public void guitareTabParse(String url){
-        Log.d("guitareTabParse","begin url " + url);
+//        Log.d("guitareTabParse","begin url " + url);
         Boolean currentartist = false;
         String printLink = "";
 
@@ -328,7 +316,7 @@ public class TabScraper extends Activity{
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
-        Log.d("guitareTabParse","end");
+//        Log.d("guitareTabParse","end");
 
     }
 
@@ -336,7 +324,7 @@ public class TabScraper extends Activity{
     * Function to parse Guitartabs.cc
     * */
     public void guitarTabCCParse(String url){
-        Log.d("guitarTabCCParse","begin url " + url);
+//        Log.d("guitarTabCCParse","begin url " + url);
         Document doc = null;
         try {
             doc = Jsoup.connect(url)
@@ -367,7 +355,7 @@ public class TabScraper extends Activity{
 //                    Log.d("guitarTabCCParse href",href);
 
                     if(compareLocalToRemote(this.artist,artist)){      //only adding valid tabs to our database
-                        Log.d("guitarTabCCParse href","adding tab");
+//                        Log.d("guitarTabCCParse href","adding tab");
                         Link newLink = new Link();
                         newLink.setArtist(artist);
                         newLink.setTitle(songtitle);
@@ -393,7 +381,7 @@ public class TabScraper extends Activity{
     * */
     public void echordScrape(String url){
         String testURL = url.replace("+","%20");
-        Log.d("echordScrape testURL",testURL);
+//        Log.d("echordScrape testURL",testURL);
         try {
             Document doc = Jsoup.connect(testURL)
                     .header("Accept-Encoding", "gzip, deflate")
@@ -419,8 +407,8 @@ public class TabScraper extends Activity{
                     numTabs++;
                 }
 
-                Log.d("echordScrape artist",artist.toString());
-                Log.d("echordScrape link",link.toString());
+//                Log.d("echordScrape artist",artist.toString());
+//                Log.d("echordScrape link",link.toString());
             }
 
         } catch (IOException e) {
@@ -455,8 +443,8 @@ public class TabScraper extends Activity{
     public Boolean compareLocalToRemote(String a, String b){
         String rawA = stripSpecialChars(a);
         String rawB = stripSpecialChars(b);
-        Log.d("compareLocalToRemote string 1",rawA);
-        Log.d("compareLocalToRemote string 2",rawB);
+//        Log.d("compareLocalToRemote string 1",rawA);
+//        Log.d("compareLocalToRemote string 2",rawB);
         if(rawA.contentEquals(rawB)){
             return true;
         }
