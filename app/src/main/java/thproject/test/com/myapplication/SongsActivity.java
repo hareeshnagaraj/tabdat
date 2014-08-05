@@ -162,8 +162,6 @@ public class SongsActivity extends FragmentActivity implements TabPickerDialog.T
        nowSongLayout.removeAllViews();
     }
 
-
-
     public static void showProgress(String artist, String title, String action){
         Message msg = new Message();
         Bundle data = new Bundle();
