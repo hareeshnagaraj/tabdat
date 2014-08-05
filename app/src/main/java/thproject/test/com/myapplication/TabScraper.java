@@ -226,7 +226,7 @@ public class TabScraper extends Activity{
                     String comparisonLink = stripSpecialChars(link.html());
 
                     Log.d("Regex Comparison",comparisonLocal + " " + comparisonLink);
-                    if(comparisonLocal.compareTo(comparisonLink) == 0){
+                    if(compareLocalToRemote(this.artist,link.html())){
                         currentartist = true;
 //                   Log.d("tabscraper current artist", link.html());
 
@@ -301,7 +301,7 @@ public class TabScraper extends Activity{
 
                     String comparisonLink = stripSpecialChars(artistString);
                     String comparisonLocal = stripSpecialChars(this.artist);
-                    if(comparisonLink.contentEquals(comparisonLocal)){
+                    if(compareLocalToRemote(this.artist,artistString)){
 //                        Log.d("guitareTabParse adding " , artistLink.toString());
 
                         String href = songLink.attr("abs:href");
@@ -362,7 +362,7 @@ public class TabScraper extends Activity{
 //                    Log.d("guitarTabCCParse Artist",artist);
 //                    Log.d("guitarTabCCParse href",href);
 
-                    if(comparisonLink.contentEquals(comparisonLocal)){      //only adding valid tabs to our database
+                    if(compareLocalToRemote(this.artist,artist)){      //only adding valid tabs to our database
                         Log.d("guitarTabCCParse href","adding tab");
                         Link newLink = new Link();
                         newLink.setArtist(artist);
@@ -403,10 +403,8 @@ public class TabScraper extends Activity{
 //                Log.d("echordScrape composer block",composer.toString());
                 Element artist = composer.select("h2").first().child(0);
                 Element link = composer.select("h1").first().child(0);
-                String comparisonLocal = stripSpecialChars(this.artist);
-                String comparisonLink = stripSpecialChars(artist.html());
 
-                if(comparisonLink.contentEquals(comparisonLocal)){                  //conditionally adding the tab if the artist matches
+                if(compareLocalToRemote(this.artist,artist.html())){                  //conditionally adding the tab if the artist matches
                     String href = "http://www.e-chords.com/"+link.attr("href");     //different than other functions, absolute value does not apply
                     Link newLink = new Link();
                     newLink.setArtist(this.artist);
@@ -429,11 +427,37 @@ public class TabScraper extends Activity{
 
     }
 
+    /*
+    * Function to strip characters from two strings
+    *
+    * remove all spaces
+    * remove all non alphabet characters
+    * remove all prepositions such as the, is, and, etc.
+    *
+    * */
     public String stripSpecialChars(String a){
         String stripped = null;
         stripped = a.replaceAll("[^a-zA-Z0-9]","");
         stripped = stripped.replaceAll("\\s+","");
         stripped = stripped.toLowerCase();
+        stripped = stripped.replaceAll("the","");
+        stripped = stripped.replaceAll("and","");
         return stripped;
     }
-}
+
+    /*
+    * Function to compare two strings
+    * */
+    public Boolean compareLocalToRemote(String a, String b){
+        String rawA = stripSpecialChars(a);
+        String rawB = stripSpecialChars(b);
+        Log.d("compareLocalToRemote string 1",rawA);
+        Log.d("compareLocalToRemote string 2",rawB);
+        if(rawA.contentEquals(rawB)){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+ }

@@ -61,7 +61,7 @@ public class SongGrabber extends Activity {
             do {
                 long thisId = musicCursor.getLong(idColumn);
                 String thisTitle = musicCursor.getString(titleColumn);
-                String thisArtist = musicCursor.getString(artistColumn);
+                String thisArtist = capitalizeEachWord(musicCursor.getString(artistColumn));
                 newtab = new Tab();
 
                 if(thisTitle == null || thisTitle == "<unknown>"){
@@ -70,6 +70,7 @@ public class SongGrabber extends Activity {
                 if(thisArtist == null || thisArtist.contains("<unknown>")){
                     thisArtist = "Unknown Artist";
                 }
+
 
                 //Querying database to see if tab record exists, if not, add it
                 if(!db.tabExists(thisTitle,thisArtist)){
@@ -124,9 +125,7 @@ public class SongGrabber extends Activity {
     public void displaySongs(final Context mContext, LinearLayout myFragmentView,String artist){
         final List<String> songs = db.getSongsBy(artist);
         LayoutInflater inflater = (LayoutInflater) mContext.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
-
         this.artist = artist;
-
         for(int j=0; j<songs.size(); j++){
             String songname = songs.get(j);
             TextView newCard = (TextView) inflater.inflate(R.layout.songcard, null);
@@ -134,7 +133,6 @@ public class SongGrabber extends Activity {
             newCard.setId(j);
             addSongCard(mContext,newCard,myFragmentView,songs);
         }
-
     }
 
     /*
@@ -206,6 +204,22 @@ public class SongGrabber extends Activity {
         layout.addView(view);
     }
 
+    /*
+    * Used to capitalize each word when setting the artist, to avoid multiple instances of same artist
+    * */
+    public String capitalizeEachWord(String a){
+        String[] words = a.split(" ");
+        StringBuilder sb = new StringBuilder();
+        if (words[0].length() > 0) {
+            sb.append(Character.toUpperCase(words[0].charAt(0)) + words[0].subSequence(1, words[0].length()).toString().toLowerCase());
+            for (int i = 1; i < words.length; i++) {
+                sb.append(" ");
+                sb.append(Character.toUpperCase(words[i].charAt(0)) + words[i].subSequence(1, words[i].length()).toString().toLowerCase());
+            }
+        }
+        String titleCaseValue = sb.toString();
+        return titleCaseValue;
+    }
 
 
 
