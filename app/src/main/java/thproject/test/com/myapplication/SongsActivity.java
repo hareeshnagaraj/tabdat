@@ -8,6 +8,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -78,7 +79,7 @@ public class SongsActivity extends FragmentActivity implements TabPickerDialog.T
                 String action = data.getString("action");
 
                 //First action occurs when no tabs are present, progress dialog shown
-                if(action.compareTo("init") == 0) {
+                if(action.compareTo("init") == 0 && checkInternetConnection()) {
                     if(searchDialog != null){
                         searchDialog.dismiss();
                     }
@@ -250,6 +251,22 @@ public class SongsActivity extends FragmentActivity implements TabPickerDialog.T
         searchDialog.show(getFragmentManager(),"searchDialog");
     }
 
+    /*
+    * Used to check internet connectivity
+    * */
+    private boolean checkInternetConnection() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        // test for connection
+        if (cm.getActiveNetworkInfo() != null
+                && cm.getActiveNetworkInfo().isAvailable()
+                && cm.getActiveNetworkInfo().isConnected()) {
+            return true;
+        } else {
+            Log.v("checkInternetConnection", "Internet Connection Not Present");
+            toasty("Connect mobile data or WiFi network");
+            return false;
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

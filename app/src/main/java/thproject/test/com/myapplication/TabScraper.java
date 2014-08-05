@@ -1,5 +1,7 @@
 package thproject.test.com.myapplication;
 import android.app.Activity;
+import android.content.Context;
+import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -84,15 +86,17 @@ public class TabScraper extends Activity{
         return titleCaseValue;
     }
 
+
     /*
     * Function to scrape the internet for tabs, different AsyncTask based on calling activity
+    * Tests for internet connection
     * */
     public void scrape(){
         if(callingActivity.compareTo("SongsActivity") == 0) {
-            new scrapeAsync().execute();
+           new scrapeAsync().execute();
         }
         if(callingActivity.compareTo("MainTabActivity") == 0) {
-            new scrapeAsync().execute();
+           new scrapeAsync().execute();
         }
         if(callingActivity.compareTo("SongRecognitionActivity") == 0){
             new scrapeAsyncArray().execute();

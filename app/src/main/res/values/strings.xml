@@ -32,7 +32,7 @@
     <string name="title_activity_tab_view">TabViewActivity</string>
     <string name="title_activity_song_recognition">SongRecognitionActivity</string>
     <string name="song_recognition_prompt">Play a Song!</string>
-
+    <string name="connect_to_network">Connect mobile data or WiFi network</string>
     <!--Gracenote strings-->
     <string name="gracenote_action_string">Recognize Song</string>
     <string name="gracenote_client_id">2095360</string>

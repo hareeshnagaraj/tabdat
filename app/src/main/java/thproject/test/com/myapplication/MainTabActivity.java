@@ -9,6 +9,7 @@ import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -240,10 +241,12 @@ public class MainTabActivity extends Activity
     * Start song recognition activity
     * */
     private void startSongRecognitionActivity(){
-        Intent i;
-        i = new Intent(MainTabActivity.this,SongRecognitionActivity.class);
-        startActivity(i);
-        finish();
+        if(checkInternetConnection()){
+            Intent i;
+            i = new Intent(MainTabActivity.this,SongRecognitionActivity.class);
+            startActivity(i);
+            finish();
+        }
     }
 
 
@@ -309,6 +312,23 @@ public class MainTabActivity extends Activity
     public void showInfoDialog() {
         infoDialog = new InfoDialog();
         infoDialog.show(getFragmentManager(),"infoDialog");
+    }
+
+    /*
+    * Used to check internet connectivity
+    * */
+    public boolean checkInternetConnection() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        // test for connection
+        if (cm.getActiveNetworkInfo() != null
+                && cm.getActiveNetworkInfo().isAvailable()
+                && cm.getActiveNetworkInfo().isConnected()) {
+            return true;
+        } else {
+            Log.v("checkInternetConnection", "Internet Connection Not Present");
+            toasty(getString(R.string.connect_to_network));
+            return false;
+        }
     }
 
 

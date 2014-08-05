@@ -6,6 +6,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -158,7 +159,6 @@ public class SongGrabber extends Activity {
     }
 
 
-
     /*
     * Method to add card to list of artists displayed in our main activity fragment
     * Left swipe on each card takes us to an activity that contains the list of songs for that particular artist
@@ -196,7 +196,6 @@ public class SongGrabber extends Activity {
 //                scraper.scrapeUltimateGuitar();
                 //db.getLink(songname,searchArtist);
                 showProgressInSongsActivity(searchArtist,songname);
-
             }
             @Override
             public void onTouch(View view) { }

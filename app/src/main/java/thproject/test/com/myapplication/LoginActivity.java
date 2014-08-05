@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -210,6 +211,22 @@ public class LoginActivity extends Activity {
     public void addUserToDB(String email, String pass){
         db.addUser(email,pass);
         db.getAllUsers();
+    }
+
+    /*
+    * Used to check internet connectivity
+    * */
+    private boolean checkInternetConnection() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        // test for connection
+        if (cm.getActiveNetworkInfo() != null
+                && cm.getActiveNetworkInfo().isAvailable()
+                && cm.getActiveNetworkInfo().isConnected()) {
+            return true;
+        } else {
+            Log.v("checkInternetConnection", "Internet Connection Not Present");
+            return false;
+        }
     }
 
 /*

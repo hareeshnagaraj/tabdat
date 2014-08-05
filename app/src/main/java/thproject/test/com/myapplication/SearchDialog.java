@@ -62,6 +62,7 @@ public class SearchDialog extends DialogFragment {
     //Set artist
     public void setArtist(String a){ this.artist = a; }
 
+
     /*
     * Search dialog listener
     * */
