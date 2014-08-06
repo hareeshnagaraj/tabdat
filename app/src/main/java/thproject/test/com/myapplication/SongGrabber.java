@@ -57,7 +57,7 @@ public class SongGrabber extends Activity {
             do {
                 long thisId = musicCursor.getLong(idColumn);
                 String thisTitle = musicCursor.getString(titleColumn);
-                String thisArtist = capitalizeEachWord(musicCursor.getString(artistColumn));
+                String thisArtist = musicCursor.getString(artistColumn);
                 newtab = new Tab();
 
                 if(thisTitle == null || thisTitle == "<unknown>"){
@@ -75,12 +75,10 @@ public class SongGrabber extends Activity {
                     db.addTab(newtab);
                     //Scraping the web for this song via handler, and adding that to our DB
                 }
-
                 numsongs++;
             }
             while (musicCursor.moveToNext());
-//            Log.d("num songs from songGrabber", Integer.toString(numsongs));
-
+    //            Log.d("num songs from songGrabber", Integer.toString(numsongs));
         }
     }
 
@@ -224,6 +222,7 @@ public class SongGrabber extends Activity {
             }
         }
         String titleCaseValue = sb.toString();
+
         return titleCaseValue;
     }
 
