@@ -40,6 +40,6 @@
     <string name="gracenote_license_string">-- BEGIN LICENSE v1.0 B774D5BF --\nlicensee: Gracenote, Inc.\nname:\nnotes: Lic Gen 2.1\nstart_date: 0000-00-00\nclient_id: 2095360\nmusicid_file: enabled\nmusicid_search: enabled\nmusicid_stream: enabled\nmusicid: enabled\nplaylist: enabled\n-- SIGNATURE B774D5BF --\nlAADAgAfAVaz/YRmF/G9JklkWZvKS0I+oGOziAEznh3coCplxwAe7x6zQzP4sS3+1NjjAeojMhDl20YOB7rgnJ/whIkc\n-- END LICENSE B774D5BF --</string>
 
     <!--Info Dialog -->
-    <string name="info_dialog">tab dat is an app to help you find tabs online, without the hassle of having to manually search for them.\n\nTo navigate, swipe left on any artist card to open that artist\'s songs. From there, swipe on a song to load the tabs for that specific song! \n\nthis app was made for purely educational and study purposes, and no claim of ownership of any materials is intended.\n\n</string>
+    <string name="info_dialog">tab dat is an app to help you find tabs online, without the hassle of having to manually search for them.\n\nTo navigate, swipe left or long press on any artist card to open that artist\'s songs. From there, swipe left or long press on a song to load the tabs for that specific song! \n\nthis app was made for purely educational and study purposes, and no claim of ownership of any materials is intended.\n\n</string>
 
 </resources>
