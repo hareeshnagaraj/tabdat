@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     style="@style/nowCardStyle"
+    android:longClickable="true"
     android:text="@string/hello_world"
     android:gravity="left"
     android:paddingLeft="25dp"

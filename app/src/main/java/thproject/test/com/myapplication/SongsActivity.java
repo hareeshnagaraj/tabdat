@@ -23,7 +23,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import static thproject.test.com.myapplication.MySQLiteHelper.getDB;
+import thproject.test.com.myapplication.R;
 
 /*
 *
@@ -35,10 +35,10 @@ public class SongsActivity extends FragmentActivity implements TabPickerDialog.T
     Context context;
     private SongGrabber grabsongs = new SongGrabber();
     private static Handler handler;
-    public thproject.test.com.myapplication.NowLayout nowSongLayout;
+    public NowLayout nowSongLayout;
     public ProgressDialog progressDialog;
     SearchDialog searchDialog;
-    MySQLiteHelper db = getDB(this);
+    MySQLiteHelper db = MySQLiteHelper.getDB(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +59,7 @@ public class SongsActivity extends FragmentActivity implements TabPickerDialog.T
         actionBar.setDisplayHomeAsUpEnabled(true);
         getActionBar().setTitle(artist);
 
-        nowSongLayout = (thproject.test.com.myapplication.NowLayout) findViewById(R.id.mainSongsLayout);
+        nowSongLayout = (NowLayout) findViewById(R.id.mainSongsLayout);
         context = getApplicationContext();
         grabsongs.displaySongs(context,nowSongLayout,artist);
 

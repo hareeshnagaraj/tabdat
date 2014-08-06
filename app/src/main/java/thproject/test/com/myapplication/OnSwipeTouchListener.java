@@ -31,6 +31,10 @@ public abstract class OnSwipeTouchListener implements View.OnTouchListener {
 
     public void onSwipeRight() {
     }
+
+    public void longPress(View v){
+
+    }
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         return gestureDetector.onTouchEvent(event);
@@ -50,6 +54,11 @@ public abstract class OnSwipeTouchListener implements View.OnTouchListener {
         @Override
         public boolean onDown(MotionEvent e) {
             return true;
+        }
+
+        @Override
+        public void onLongPress(MotionEvent e){
+            longPress(cardView);
         }
 
         @Override

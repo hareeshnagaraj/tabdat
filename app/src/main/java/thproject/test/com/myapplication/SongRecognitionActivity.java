@@ -1,7 +1,6 @@
 package thproject.test.com.myapplication;
 
 import android.app.ActionBar;
-import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -10,25 +9,21 @@ import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
 import com.gracenote.gnsdk.*;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+
+import thproject.test.com.myapplication.R;
 
 public class SongRecognitionActivity extends FragmentActivity implements TabPickerSongRecognition.songRecognizedListener{
     Context context;

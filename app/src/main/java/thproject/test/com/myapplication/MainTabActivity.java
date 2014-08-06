@@ -6,7 +6,6 @@ import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.ProgressDialog;
-import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -14,21 +13,15 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.widget.DrawerLayout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.HashMap;
-
-import static thproject.test.com.myapplication.MySQLiteHelper.getDB;
+import thproject.test.com.myapplication.R;
 
 public class MainTabActivity extends Activity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks,SearchDialog.SearchListener,InfoDialog.InformationDialogInterface {
@@ -49,7 +42,7 @@ public class MainTabActivity extends Activity
     * */
     private int currentActivity = 1;
     private Context context;
-    public thproject.test.com.myapplication.NowLayout nowLayout;
+    public NowLayout nowLayout;
     MySQLiteHelper db;
     EditText artist;
     EditText title;
@@ -87,13 +80,13 @@ public class MainTabActivity extends Activity
         //conditionally showing the info on the first login
 
         //creating our database and adding a single tab
-        db = getDB(this);
+        db = MySQLiteHelper.getDB(this);
         //disable application icon from ActionBar
         getActionBar().setDisplayShowHomeEnabled(false);
 
         //getting the user's songs
         context = getApplicationContext();
-        nowLayout = (thproject.test.com.myapplication.NowLayout) findViewById(R.id.mainTabLayout);
+        nowLayout = (NowLayout) findViewById(R.id.mainTabLayout);
 
         //creating a handler to start the next activity
         handler = new Handler(){
@@ -389,7 +382,7 @@ public class MainTabActivity extends Activity
         * */
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            thproject.test.com.myapplication.NowLayout myFragmentView = null;
+            NowLayout myFragmentView = null;
 //            Log.d("section number",ARG_SECTION_NUMBER);
             View rootView = null;
 

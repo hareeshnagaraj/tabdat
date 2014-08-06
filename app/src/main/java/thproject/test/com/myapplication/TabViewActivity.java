@@ -11,6 +11,8 @@ import android.webkit.WebView;
 import java.util.HashMap;
 import java.util.Map;
 
+import thproject.test.com.myapplication.R;
+
 import static thproject.test.com.myapplication.MySQLiteHelper.getDB;
 
 /*

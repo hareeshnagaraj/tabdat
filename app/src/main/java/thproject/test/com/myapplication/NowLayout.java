@@ -6,6 +6,8 @@ import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 
+import thproject.test.com.myapplication.R;
+
 public class NowLayout extends LinearLayout implements OnGlobalLayoutListener {
 
     public NowLayout(Context context, AttributeSet attrs) {

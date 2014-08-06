@@ -7,6 +7,8 @@ import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import thproject.test.com.myapplication.R;
+
 public class tabdat extends Activity {
     // Splash screen timer
     private static int SPLASH_TIME_OUT = 3000;

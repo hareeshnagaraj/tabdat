@@ -1,12 +1,9 @@
 package thproject.test.com.myapplication;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
-import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,13 +11,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import static thproject.test.com.myapplication.MySQLiteHelper.getDB;
+
+import thproject.test.com.myapplication.R;
 
 
 /**
@@ -35,7 +30,7 @@ public class SongGrabber extends Activity {
 
     private String cardText;
     private String artist = "";
-    MySQLiteHelper db = getDB(this);
+    MySQLiteHelper db = MySQLiteHelper.getDB(this);
 
 
     public void getUserSongs(final Context mContext){
@@ -162,16 +157,25 @@ public class SongGrabber extends Activity {
     /*
     * Method to add card to list of artists displayed in our main activity fragment
     * Left swipe on each card takes us to an activity that contains the list of songs for that particular artist
+    * Long click to do the same action
     * */
     public void addArtistCard(final Context acontext, View view, LinearLayout layout,final List<String> artistlist){
+        Log.d("artistCard", "added");
+
         view.setOnTouchListener(new OnSwipeTouchListener(acontext,view) {
             public void onSwipeLeft(View view) {
                 int cardnum = view.getId();
                 String cardname = artistlist.get(cardnum);
                 MainTabActivity.signalHandlerDisplaySongs(cardname);
             }
+            public void longPress(View view){
+                int cardnum = view.getId();
+                String cardname = artistlist.get(cardnum);
+                MainTabActivity.signalHandlerDisplaySongs(cardname);
+            }
             @Override
             public void onTouch(View view) { }
+
         });
         layout.addView(view);
     }
@@ -192,9 +196,12 @@ public class SongGrabber extends Activity {
             public void onSwipeLeft(View view) {
                 int songid = view.getId();
                 String songname = songlist.get(songid);
-//                scraper.setSongTitle(songname);
-//                scraper.scrapeUltimateGuitar();
-                //db.getLink(songname,searchArtist);
+                showProgressInSongsActivity(searchArtist,songname);
+            }
+            public void longPress(View view){
+                Log.d("songCard", "longPress");
+                int songid = view.getId();
+                String songname = songlist.get(songid);
                 showProgressInSongsActivity(searchArtist,songname);
             }
             @Override
